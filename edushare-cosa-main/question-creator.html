@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare — Question Creator</title>
+
+    <!-- Global styles (topbar/layout/buttons) -->
+    <link rel="stylesheet" href="css/styles.css"/>
+
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="css/question-creator.css"/>
+</head>
+<body>
+
+<!-- Top bar -->
+<header class="topbar">
+    <div class="topbar__left">
+        <!-- Brand -->
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+    </div>
+
+</header>
+
+<div class="layout" style="grid-template-columns:1fr;">
+    <main class="main" style="padding:24px 18px;">
+        <!-- Card -->
+        <section class="qb">
+            <header class="qb__header">
+                <h2 class="qb__title">Question Creation</h2>
+                <div class="qb__context" id="contextInfo"></div>
+            </header>
+
+            <!-- Form -->
+            <form id="questionForm" class="qb__form" autocomplete="off">
+                <!-- Question -->
+                <div class="qb__field">
+                    <label for="qText">Question</label>
+                    <textarea id="qText" class="qb__textarea" placeholder="Type your question here..."></textarea>
+                </div>
+
+                <!-- Standard + Answer Type -->
+                <div class="qb__row2">
+                    <div class="qb__field">
+                        <label for="qStandard">Standard</label>
+                        <select id="qStandard" class="qb__select">
+                            <option value="">Select standard...</option>
+                            <option>ELA 9.1</option>
+                            <option>ELA 9.2</option>
+                            <option>ELA 10.1</option>
+                            <option>Custom...</option>
+                        </select>
+                    </div>
+
+                    <div class="qb__field">
+                        <label>Answer Type</label>
+                        <div class="qb__type">
+                            <label><input type="radio" name="qType" value="MCQ" checked/> MCQ</label>
+                            <label><input type="radio" name="qType" value="TF"/> T/F</label>
+                            <label><input type="radio" name="qType" value="SA"/> S/A</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCQ block (starts with only Option 1) -->
+                <div id="mcqPanel" class="qb__block">
+                    <div id="choicesList" class="qb__choices">
+                        <div class="qb__choice">
+                            <input type="radio" name="correct" class="qb__correct" title="Correct?"/>
+                            <input type="text" class="qb__choice-text" placeholder="Option 1"/>
+                            <button type="button" class="qb__remove" title="Remove">×</button>
+                        </div>
+                    </div>
+                    <div class="qb__choice-actions">
+                        <button type="button" id="btnAddChoice" class="btn btn-orange-pill">+ Add Option</button>
+                        <small class="qb__hint">Mark the correct one with the circle</small>
+                    </div>
+                </div>
+
+                <!-- True/False -->
+                <div id="tfPanel" class="qb__block hidden">
+                    <div class="qb__type">
+                        <label><input type="radio" name="tfCorrect" value="True" checked/> True</label>
+                        <label><input type="radio" name="tfCorrect" value="False"/> False</label>
+                    </div>
+                </div>
+
+                <!-- Short Answer -->
+                <div id="saPanel" class="qb__block hidden">
+                    <small class="qb__hint">Students will type a short free-form answer.</small>
+                </div>
+
+                <!-- Actions -->
+                <div class="qb__actions">
+                    <button type="button" id="btnCancel" class="btn btn-muted">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Save Question</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Optional compact list (unused on this page, saved to localStorage) -->
+        <div id="savedQuestionsList" class="qb__list"></div>
+    </main>
+</div>
+
+<script src="js/question-creator.js"></script>
+</body>
+</html>

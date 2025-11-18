@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare — Add New Play</title>
+    <!-- Reuse your app stylesheet -->
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar" aria-label="Top navigation">
+    <div class="topbar__left">
+        <!-- Brand goes home -->
+
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+
+        <!-- Primary app nav -->
+        <nav class="primary-nav" aria-label="Primary">
+            <a class="nav-link" href="./User-Area.html">Plays</a>
+            <a class="nav-link" href="#">Novel</a>
+            <a class="nav-link" href="#">Grammar</a>
+            <a class="nav-link" href="#">Project</a>
+            <a class="nav-link" href="#">Speech</a>
+        </nav>
+    </div>
+
+    <div class="topbar__right">
+        <button class="icon-btn" aria-label="Help">?</button>
+        <button class="icon-btn" aria-label="Messages">💬</button>
+        <div class="plan-pill">Plans</div>
+        <div class="user-chip">
+            <div class="avatar" aria-hidden="true">J</div>
+            <div class="user-chip__txt">
+                <div class="user-name">Jake Test</div>
+                <div class="user-points">XP: <strong>142</strong></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- =================== LAYOUT =================== -->
+<div class="layout">
+    <!-- ===== Left sidebar (same as index) ===== -->
+    <aside class="sidebar" aria-label="Sidebar">
+        <div class="profile-card">
+            <div class="avatar large" aria-hidden="true">J</div>
+            <div>
+                <div class="profile-name">Jessica</div>
+                <div class="profile-role">Student</div>
+            </div>
+        </div>
+
+        <div class="sidebar-block">
+            <div class="block-title">My Courses:</div>
+            <ul class="course-list">
+                <li><span class="dot bg-green"></span>English</li>
+                <li><span class="dot bg-blue"></span>Math</li>
+                <li><span class="dot bg-purple"></span>Science</li>
+                <li><span class="dot bg-gray"></span>Introduction to Bus...</li>
+            </ul>
+            <button class="btn btn-outline small full">+ Add another course</button>
+        </div>
+
+        <div class="sidebar-block sticky-bottom">
+            <button class="btn btn-muted full">Archive</button>
+            <button class="btn btn-muted full">Profile</button>
+            <button class="btn btn-muted full">Log Out</button>
+        </div>
+    </aside>
+
+    <!-- ===== Main area ===== -->
+    <main class="main">
+
+        <!-- ********** ROW 1 — PLAYS ********** -->
+        <section class="row row-plays" aria-label="Plays row">
+            <button class="tab tab--play">Romeo &amp; Juliet</button>
+            <button class="tab tab--play">Julius Caesar</button>
+            <button class="tab tab--play">Macbeth</button>
+            <button class="tab tab--play">The Crucible</button>
+            <!-- plus stays but we’re already on the add page -->
+            <button class="tab tab--add" title="Add">＋</button>
+        </section>
+
+        <!-- ********** ROW 2 — ACTS ********** -->
+        <section class="row row-acts" aria-label="Acts row">
+            <button class="tab tab--act">Act 1</button>
+            <button class="tab tab--act">Act 2</button>
+            <button class="tab tab--act active">Act 3</button>
+            <button class="tab tab--act">Act 4</button>
+            <button class="tab tab--act">Act 5</button>
+        </section>
+
+        <!-- ********** ROW 3 — SCENES ********** -->
+        <section class="row row-scenes" aria-label="Scenes row">
+            <button class="tab tab--scene">Scene 1</button>
+            <button class="tab tab--scene">Scene 2</button>
+            <button class="tab tab--scene">Scene 3</button>
+            <button class="tab tab--scene active">Scene 4</button>
+            <button class="tab tab--scene">Scene 5</button>
+        </section>
+
+        <!-- ********** ADD NEW PLAY FORM ********** -->
+        <section class="content">
+            <div class="panel-add-play" role="region" aria-labelledby="addPlayHeading">
+                <h2 id="addPlayHeading" class="panel-title">Add New Play</h2>
+
+                <form class="add-play-form" action="#" method="post" novalidate>
+                    <!-- Row 1 -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="title">Play Title:</label>
+                            <input id="title" name="title" type="text" placeholder="Type the play" />
+                            <span class="field-caret" aria-hidden="true">▾</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="author">Author:</label>
+                            <input id="author" name="author" type="text" placeholder="" />
+                            <span class="field-caret" aria-hidden="true">▾</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="year">Publication Year:</label>
+                            <input id="year" name="year" type="number" inputmode="numeric" placeholder="" />
+                            <span class="field-caret" aria-hidden="true">▾</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="language">Language of the Play:</label>
+                            <input id="language" name="language" type="text" placeholder="" />
+                            <span class="field-caret" aria-hidden="true">▾</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-muted" id="btnCancel">Cancel</button>
+                        <button class="btn btn-orange-pill" type="submit">Save Play</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+
+    <script>
+        // Cancel → go back to the stored last page (or fallback)
+        document.getElementById('btnCancel').addEventListener('click', function() {
+        const lastPage = localStorage.getItem('lastPage');
+        if (lastPage) {
+        window.location.href = lastPage;
+    } else if (document.referrer) {
+        window.location.href = document.referrer;
+    } else {
+        window.location.href = './User-Area.html';
+    }
+    });
+</script>
+
+<script>
+    (function () {
+        const btn = document.getElementById('btnCancel');
+        if (!btn) return;
+        const qs = new URLSearchParams(window.location.search);
+        const fromParam = qs.get('from');
+        const fromSession = sessionStorage.getItem('lastPage');
+
+        btn.addEventListener('click', function () {
+            if (fromParam) {
+                window.location.href = fromParam;
+            } else if (fromSession) {
+                window.location.href = fromSession;
+            } else if (document.referrer) {
+                window.location.href = document.referrer;
+            } else {
+                window.location.href = './User-Area.html';
+            }
+        });
+    })();
+</script>
+
+<script>
+    /**
+     * Save form → store new play in localStorage → go back to previous page
+     */
+    (function () {
+        const form = document.querySelector('.add-play-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Gather fields
+            const title    = (document.getElementById('title')    ?.value || '').trim();
+            const author   = (document.getElementById('author')   ?.value || '').trim();
+            const year     = (document.getElementById('year')     ?.value || '').trim();
+            const language = (document.getElementById('language') ?.value || '').trim();
+
+            if (!title) {
+                alert('Please enter a Play Title.');
+                return;
+            }
+
+            // Build a simple play object
+            const newPlay = {
+                id: 'p_' + Date.now(),
+                title,
+                author,
+                year,
+                language,
+            };
+
+            // Append to the existing custom list
+            const list = JSON.parse(localStorage.getItem('customPlays') || '[]');
+            list.push(newPlay);
+            localStorage.setItem('customPlays', JSON.stringify(list));
+
+            // Navigate back to where the user came from
+            const qs   = new URLSearchParams(window.location.search);
+            const from = qs.get('from') || sessionStorage.getItem('lastPage') || './User-Area.html';
+            window.location.href = from;
+        });
+    })();
+</script>
+
+
+</body>
+</html>

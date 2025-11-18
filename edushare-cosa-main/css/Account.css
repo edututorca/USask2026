@@ -1,0 +1,165 @@
+/* ===================== Account page (layout + soft blobs) ===================== */
+
+body { overflow: visible; }
+
+.bg-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;  /* nunca captura clique */
+}
+
+
+.soft-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: none;
+    opacity: 0.95;
+}
+
+/* Top-right blob */
+.soft-blob.tr {
+    position: absolute;
+    right:-50px; top:0;
+    width:320px; height:200px;
+    border-bottom-left-radius:180px;
+    border-bottom-right-radius:60px;
+    background: #f5921c;
+    border: 1px solid #ea7d00;
+}
+
+/* Bottom-left blob */
+.soft-blob.bl {
+    position: fixed; /* stays on scroll */
+    left: -120px;
+    bottom: -90px;
+    width: 400px;
+    height: 240px;
+    border-bottom-left-radius:180px;
+    border-top-right-radius: 200px;
+    background: rgba(245, 146, 28, 0.9);
+    border: 1px solid rgba(234, 125, 0, 0.95);
+}
+
+
+.page {
+    position: relative;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    min-height: 100vh;
+}
+
+
+.topbar,
+.account {
+    position: relative;
+    z-index: 1;
+}
+
+/* -------- Main frame -------- */
+.account {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 16px 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Title */
+.account__title {
+    margin: 72px 0 28px;
+    font-weight: 750;
+    font-size: 20px;
+    color: #1e2b49;
+    text-align: center;
+}
+
+/* -------- Cards grid -------- */
+.account__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 260px);
+    gap: 44px;
+    justify-content: center;
+    align-items: start;
+}
+
+/* One selectable card */
+.acct-card {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+
+/* Top section (image) */
+.acct-card__art {
+    width: 260px;
+    height: 230px;
+    background: #ffffff;
+    border: 1px solid #e8eef8;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 10px 24px rgba(18, 41, 89, 0.06);
+    display: grid;
+    place-items: center;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+/* Image itself */
+.acct-img {
+    width: 165px;
+    height: auto;
+    display: block;
+}
+
+/* Bottom label */
+.acct-card__label {
+    width: 260px;
+    background: #ffffff;
+    border: 1px solid #e8eef8;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 12px 8px 14px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #4d3ea0;
+    box-shadow: 0 8px 20px rgba(18, 41, 89, 0.05);
+}
+
+/* Hover animation */
+.acct-card:hover .acct-card__art,
+.acct-card:focus-visible .acct-card__art {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(18, 41, 89, 0.1);
+}
+
+/* -------- Login link below -------- */
+.account__login {
+    margin-top: 26px;
+    text-align: center;
+    color: #7181a6;
+    font-weight: 600;
+}
+
+.account__login-link {
+    color: #c56a11;
+    text-decoration: none;
+    font-weight: 800;
+}
+.account__login-link:hover { text-decoration: underline; }
+
+/* -------- Responsive -------- */
+@media (max-width: 720px) {
+    .account__grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* Brand image style — smaller and aligned with text */
+.brand__logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 6px;
+    object-fit: cover;
+    vertical-align: middle;
+    background-color: white;
+    padding: 2px;
+}

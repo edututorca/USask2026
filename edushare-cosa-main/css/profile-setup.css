@@ -1,0 +1,214 @@
+/* ===========================================
+   VARIABLES / GLOBAL
+   =========================================== */
+:root {
+    --accent: #ff8a00;
+    --dark-blue: #1a2a63;
+    --ink: #1b2a4a;
+    --muted: #5b6780;
+    --bg: #fff;
+    --card: #fff;
+    --ring: rgba(26, 42, 99, 0.16);
+    --radius: 14px;
+    --shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+
+    --h1: clamp(2.4rem, 3.3vw + 1rem, 3.4rem);
+
+    /* unified max width for all steps */
+    --form-max: 780px;
+}
+
+body { margin: 0; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+
+/* ===========================================
+   TOP BAR
+   =========================================== */
+.topbar{
+    background: var(--dark-blue);
+    color: #fff;
+    padding: 1rem 3rem; /* wider */
+}
+.topbar__inner{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3.25rem;      /* space between brand and Register */
+}
+.brand{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+.brand__mark{
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--dark-blue);
+    display: grid; place-items: center;
+    font-weight: 800;
+}
+.btn-register{
+    background: #fff;
+    color: var(--dark-blue);
+    font-weight: 700;
+    padding: .55rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-left: 56rem; /* your custom spacing from brand */
+}
+
+/* ===========================================
+   HERO SECTION AND BLOBS
+   =========================================== */
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 4.5rem 2rem;
+}
+.hero .blob {
+    position: absolute;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 0;
+}
+.hero .blob--top-right {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 640px;
+    height: 250px;
+    border-bottom-left-radius: 180px;
+    border-bottom-right-radius: 120px;
+}
+.hero .blob--bottom-left {
+    position: fixed;
+    left: -200px;
+    bottom: -200px;
+    width: 540px;
+    height: 390px;
+    border-top-right-radius: 260px;
+}
+/* ===========================================
+   WIZARD LAYOUT
+   =========================================== */
+.wizard { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr 0.95fr; column-gap: 4rem; align-items: start; }
+.wizard__header { grid-column: 1 / -1; margin-bottom: 1.5rem; }
+.wizard__header h1 { font-size: var(--h1); margin: 0 0 0.6rem; color: var(--dark-blue); }
+.wizard__header p { color: var(--muted); margin: 0 0 1rem; }
+
+/* Progress bar */
+.progress { height: 8px; background: #eef0f6; border-radius: 999px; overflow: hidden; }
+.progress__bar { height: 100%; background: var(--dark-blue); width: 0%; transition: width 0.25s ease; }
+.steps { margin-top: 0.5rem; color: var(--muted); font-size: 0.95rem; }
+
+/* ===========================================
+   FORM / STEPS
+   =========================================== */
+form { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr 0.95fr; column-gap: 4rem; }
+.step { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; }
+.step > :where(.form-box, .group, .grid, .review, .role, .field, .check), .wizard__nav { max-width: var(--form-max); width: 100%; }
+.form-box { max-width: var(--form-max); width: 100%; }
+.hidden { display: none !important; }
+
+/* grids */
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+/* fields */
+.group { border: 1px solid var(--ring); padding: 1rem; border-radius: 12px; background: #fff; }
+.group__title { font-weight: 700; margin: 0 0 0.8rem; color: var(--dark-blue); }
+.pill { display: inline-flex; align-items: center; gap: 0.5rem; background: #f6f7fb; padding: 0.6rem 1rem; border-radius: 999px; margin-right: 0.6rem; cursor: pointer; user-select: none; }
+.pill input { accent-color: var(--dark-blue); }
+
+.field { display: grid; gap: 0.4rem; }
+.field__label { color: var(--muted); font-size: 0.95rem; }
+.field__input { height: 44px; padding: 0 0.95rem; border-radius: 12px; border: 1px solid var(--ring); outline: none; background: #fff; }
+.field__input:focus { border-color: var(--dark-blue); box-shadow: 0 0 0 3px rgba(26, 42, 99, 0.12); }
+
+/* error styling */
+.field__error { display: none; color: #b00020; font-size: 0.85rem; margin-top: 0.25rem; }
+.field__input.is-invalid { border-color: #b00020 !important; box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.12) !important; }
+.field__input.is-invalid + .field__error, .field .field__error.show { display: block; }
+
+/* role containers */
+.role { display: none; }
+.role--teacher.is-active, .role--learner.is-active { display: block; }
+
+/* review */
+.review { background: #fff; border: 1px solid var(--ring); border-radius: 12px; padding: 1rem; }
+.review dl { display: grid; grid-template-columns: 160px 1fr; gap: 0.5rem 1rem; margin: 0; }
+.review dt { color: var(--muted); }
+.review dd { margin: 0; }
+
+/* nav buttons */
+.wizard__nav { margin-top: 1.25rem; display: flex; gap: 1rem; }
+.btn { border: 0; border-radius: 999px; padding: 0.9rem 1.4rem; font-weight: 800; cursor: pointer; }
+.btn-primary { background: var(--dark-blue); color: #fff; }
+.btn-secondary { background: #eef0f6; color: #20305f; }
+
+.error { color: #b00020; min-height: 1em; margin-top: 0.5rem; }
+
+/* responsive */
+@media (max-width: 980px) {
+    .wizard, form { grid-template-columns: 1fr; column-gap: 0; }
+    .hero .blob--top-right { right: -280px; width: 560px; height: 360px; }
+    .grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    :root { --form-max: 100%; }
+}
+
+/* ===== Success Modal ===== */
+.modal.hidden { display: none; }
+.modal {
+    position: fixed; inset: 0; z-index: 1000;
+    display: grid; place-items: center;
+}
+.modal__backdrop{
+    position: absolute; inset: 0; background: rgba(10, 18, 40, .55);
+}
+.modal__panel{
+    position: relative;
+    width: min(520px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 22px 60px rgba(0,0,0,.25);
+    padding: 1.5rem 1.25rem 1.25rem;
+    text-align: center;
+    border: 1px solid var(--ring);
+    animation: pop .18s ease-out;
+}
+@keyframes pop { from { transform: scale(.96); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+.modal__icon{
+    width: 44px; height: 44px; margin: 0 auto .5rem;
+    border-radius: 50%; display: grid; place-items: center;
+    background: #ecfdf5; color: #059669; font-weight: 800; font-size: 1.25rem;
+}
+.modal__title{ margin: .25rem 0 .25rem; color: var(--dark-blue); }
+.modal__text{ margin: 0 0 1rem; color: var(--muted); }
+.modal__actions{ display: flex; gap: .75rem; justify-content: center; }
+
+/* Brand image style — smaller and aligned with text */
+.brand__logo {
+    width: 28px;          /* smaller size */
+    height: 28px;
+    border-radius: 50%;   /* keeps circular shape */
+    margin-right: 6px;    /* small space between logo and text */
+    object-fit: cover;    /* prevents stretching */
+    vertical-align: middle;
+    background-color: white; /* optional: adds white padding around the logo */
+    padding: 2px;         /* optional soft padding */
+}
+/* Role blocks in Step 4 */
+.role {
+    display: none;
+}
+
+.role.is-active {
+    display: block;
+}

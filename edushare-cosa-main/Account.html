@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare — Account</title>
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="css/styles.css"/>
+
+    <!-- Page styles -->
+    <link rel="stylesheet" href="css/Account.css"/>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- ====================== DECORATION LAYER (orange blobs) ====================== -->
+    <div class="bg-decor" aria-hidden="true">
+        <div class="soft-blob tr"></div>
+        <div class="soft-blob bl"></div>
+    </div>
+
+    <!-- =========================== TOP BAR =========================== -->
+    <header class="topbar">
+        <div class="topbar__left">
+            <a class="brand" href="home.html" aria-label="Go to EduShare home">
+                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+                <span class="brand__name">EduShare</span>
+            </a>
+        </div>
+        <div class="topbar__right">
+            <a class="btn btn-orange-outline" href="login.html">Log in</a>
+        </div>
+    </header>
+
+    <!-- =========================== MAIN CONTENT =========================== -->
+    <main class="account" role="main">
+
+        <h1 class="account__title">Choose your account type</h1>
+
+        <!-- Account type cards -->
+        <section class="account__grid" aria-label="Account type options">
+
+            <!-- Teacher / Educator -->
+            <a class="acct-card"
+               href="profile-setup.html?role=teacher"
+               aria-label="Create a Teacher or Educator account">
+
+                <div class="acct-card__art" aria-hidden="true">
+                    <img src="./assets/Teacher&Educator.png"
+                         alt="Teacher and books illustration"
+                         class="acct-img"/>
+                </div>
+
+                <div class="acct-card__label">Teacher/Educator</div>
+            </a>
+
+            <!-- Student / Parent -->
+            <a class="acct-card"
+               href="profile-setup.html?role=student"
+               aria-label="Create a Student or Parent account">
+
+                <div class="acct-card__art" aria-hidden="true">
+                    <img src="./assets/student&parent.png"
+                         alt="Graduation cap illustration"
+                         class="acct-img"/>
+                </div>
+
+                <div class="acct-card__label">Student/Parent</div>
+            </a>
+
+        </section>
+
+        <!-- Login link -->
+        <p class="account__login">
+            Already have an account?
+            <a class="account__login-link" href="login.html">Log in</a>
+        </p>
+
+    </main>
+
+</div>
+
+</body>
+</html>
