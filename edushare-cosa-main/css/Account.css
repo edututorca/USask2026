@@ -200,12 +200,12 @@ body {
     filter: brightness(0.97);
 }
 
-/* Push brand to the right a bit */
+/* Push brand to the right or left */
 .topbar__left {
-    margin-left: 80px;   /* adjust value as needed */
+    margin-left: 330px;   /* adjust value as needed */
 }
 
 /* Pull Login button slightly to the left */
 .topbar__right {
-    margin-right: 80px;  /* adjust value as needed */
+    margin-right: 330px;  /* adjust value as needed */
 }

@@ -78,3 +78,7 @@
 /* Utility */
 .hidden{ display:none !important; }
 
+.topbar__left {
+    margin-left: 330px;   /* adjust value as needed */
+}
+
