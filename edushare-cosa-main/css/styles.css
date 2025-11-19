@@ -146,9 +146,9 @@ body{
     gap:0;
     flex-wrap:nowrap;
 }
-.row-plays{  border-bottom:1px solid var(--navy-divider); }
-.row-acts{   border-bottom:1px solid var(--navy-divider); }
-.row-scenes{ border-bottom:1px solid var(--navy-divider); }
+.row-topics{  border-bottom:1px solid var(--navy-divider); }
+.row-subtopics{   border-bottom:1px solid var(--navy-divider); }
+.row-sections{ border-bottom:1px solid var(--navy-divider); }
 
 .tab{
     margin:0;
@@ -160,8 +160,8 @@ body{
 .tab--add{ width:26px; padding:0; }
 .tab-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:#ffd166; margin-left:6px; }
 
-/* =================== Plays row (grid like Acts) =================== */
-.plays-bar{
+/* =================== topics row (grid like subtopics) =================== */
+.topics-bar{
     /* Grid distributes items evenly across full width */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -171,7 +171,7 @@ body{
     overflow: visible;
     scrollbar-width: none;
 }
-.plays-bar .tab--play{
+.topics-bar .tab--play{
     width: 100%;
     justify-content: center;
     white-space: nowrap;
@@ -180,20 +180,20 @@ body{
     display: inline-flex;
     align-items: center;
 }
-.plays-bar .tab--add{
+.topics-bar .tab--add{
     width: auto;
     min-width: 40px;
     padding-inline: 10px;
     justify-self: end;      /* push “＋” to the far right */
     white-space: nowrap;
 }
-/* Compact mode when many plays exist (toggled by JS) */
-.plays-bar.compact{
+/* Compact mode when many topics exist (toggled by JS) */
+.topics-bar.compact{
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 10px;
 }
 @media (max-width: 900px){
-    .plays-bar{
+    .topics-bar{
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }
