@@ -89,7 +89,7 @@
                     <small class="field__error" data-for="email"></small>
                 </label>
 
-
+                <div class="grid grid-4">
                 <label class="field">
                     <span class="field__label">Work phone number </span>
                     <!-- light pattern: 7+ digits and symbols (+ - () space) allowed -->
@@ -97,6 +97,13 @@
                            required pattern="^[0-9+()\-.\s]{7,}$" placeholder="+1 (XXX) XXX-XXXX"/>
                     <small class="field__error" data-for="phone"></small>
                 </label>
+                <label class="field">
+                    <span class="field__label">Ext (optional)</span>
+                    <input class="field__input" type="text" name="ext"
+                           pattern="^[0-9]{1,6}$"  placeholder="1234"/>
+                    <small class="field__error" data-for="ext"></small>
+                </label>
+                </div>
             </section>
 
             <!-- STEP 3: ADDRESS (all required) -->
@@ -154,8 +161,8 @@
                         </div>
 
                         <label class="field">
-                            <span class="field__label">Subjects</span>
-                            <input class="field__input" name="subjects" required placeholder="Math, Science"/>
+                            <span class="field__label">Course Code</span>
+                            <input class="field__input" name="subjects" required placeholder="Math-103, Eng-101"/>
                             <small class="field__error" data-for="subjects"></small>
                         </label>
                     </div>

@@ -13,7 +13,6 @@
 <header class="topbar" aria-label="Top navigation">
     <div class="topbar__left">
         <!-- Brand goes home -->
-
         <a class="brand" href="home.html" aria-label="Go to EduShare home">
             <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
             <span class="brand__name">EduShare</span>
@@ -21,6 +20,7 @@
 
         <!-- Primary app nav -->
         <nav class="primary-nav" aria-label="Primary">
+
             <a class="nav-link" href="./User-Area.html">Plays</a>
             <a class="nav-link" href="#">Novel</a>
             <a class="nav-link" href="#">Grammar</a>
@@ -45,7 +45,7 @@
 
 <!-- =================== LAYOUT =================== -->
 <div class="layout">
-    <!-- ===== Left sidebar (same as index) ===== -->
+    <!-- ===== Left sidebar (same as User-Area) ===== -->
     <aside class="sidebar" aria-label="Sidebar">
         <div class="profile-card">
             <div class="avatar large" aria-hidden="true">J</div>
@@ -115,13 +115,13 @@
                         <div class="form-field">
                             <label for="title">Play Title:</label>
                             <input id="title" name="title" type="text" placeholder="Type the play" />
-                            <span class="field-caret" aria-hidden="true">▾</span>
+<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
 
                         <div class="form-field">
                             <label for="author">Author:</label>
                             <input id="author" name="author" type="text" placeholder="" />
-                            <span class="field-caret" aria-hidden="true">▾</span>
+<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
                     </div>
 
@@ -130,13 +130,13 @@
                         <div class="form-field">
                             <label for="year">Publication Year:</label>
                             <input id="year" name="year" type="number" inputmode="numeric" placeholder="" />
-                            <span class="field-caret" aria-hidden="true">▾</span>
+<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
 
                         <div class="form-field">
                             <label for="language">Language of the Play:</label>
                             <input id="language" name="language" type="text" placeholder="" />
-                            <span class="field-caret" aria-hidden="true">▾</span>
+<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
                     </div>
 
@@ -151,87 +151,8 @@
     </main>
 </div>
 
-
-    <script>
-        // Cancel → go back to the stored last page (or fallback)
-        document.getElementById('btnCancel').addEventListener('click', function() {
-        const lastPage = localStorage.getItem('lastPage');
-        if (lastPage) {
-        window.location.href = lastPage;
-    } else if (document.referrer) {
-        window.location.href = document.referrer;
-    } else {
-        window.location.href = './User-Area.html';
-    }
-    });
-</script>
-
-<script>
-    (function () {
-        const btn = document.getElementById('btnCancel');
-        if (!btn) return;
-        const qs = new URLSearchParams(window.location.search);
-        const fromParam = qs.get('from');
-        const fromSession = sessionStorage.getItem('lastPage');
-
-        btn.addEventListener('click', function () {
-            if (fromParam) {
-                window.location.href = fromParam;
-            } else if (fromSession) {
-                window.location.href = fromSession;
-            } else if (document.referrer) {
-                window.location.href = document.referrer;
-            } else {
-                window.location.href = './User-Area.html';
-            }
-        });
-    })();
-</script>
-
-<script>
-    /**
-     * Save form → store new play in localStorage → go back to previous page
-     */
-    (function () {
-        const form = document.querySelector('.add-play-form');
-        if (!form) return;
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Gather fields
-            const title    = (document.getElementById('title')    ?.value || '').trim();
-            const author   = (document.getElementById('author')   ?.value || '').trim();
-            const year     = (document.getElementById('year')     ?.value || '').trim();
-            const language = (document.getElementById('language') ?.value || '').trim();
-
-            if (!title) {
-                alert('Please enter a Play Title.');
-                return;
-            }
-
-            // Build a simple play object
-            const newPlay = {
-                id: 'p_' + Date.now(),
-                title,
-                author,
-                year,
-                language,
-            };
-
-            // Append to the existing custom list
-            const list = JSON.parse(localStorage.getItem('customPlays') || '[]');
-            list.push(newPlay);
-            localStorage.setItem('customPlays', JSON.stringify(list));
-
-            // Navigate back to where the user came from
-            const qs   = new URLSearchParams(window.location.search);
-            const from = qs.get('from') || sessionStorage.getItem('lastPage') || './User-Area.html';
-            window.location.href = from;
-        });
-    })();
-</script>
-
+<!-- External JS for this page -->
+<script src="js/add-play.js"></script>
 
 </body>
 </html>

@@ -1,14 +1,18 @@
 /* ===================== Account page (layout + soft blobs) ===================== */
 
-body { overflow: visible; }
+/* Allow the page to extend normally; do not clip blobs */
+body {
+    overflow: visible;
+}
 
+/* Layer that holds the orange blobs */
 .bg-decor {
     position: absolute;
     inset: 0;
-    pointer-events: none;  /* nunca captura clique */
+    pointer-events: none;  /* never captures mouse clicks */
 }
 
-
+/* Base style for both blobs */
 .soft-blob {
     position: absolute;
     border-radius: 50%;
@@ -18,14 +22,16 @@ body { overflow: visible; }
 
 /* Top-right blob */
 .soft-blob.tr {
-    position: absolute;
-    right:-50px; top:0;
-    width:320px; height:200px;
-    border-bottom-left-radius:180px;
-    border-bottom-right-radius:60px;
+    right: -50px;
+    top: 0;
+    width: 320px;
+    height: 200px;
+    border-bottom-left-radius: 180px;
+    border-bottom-right-radius: 60px;
     background: #f5921c;
     border: 1px solid #ea7d00;
 }
+
 
 /* Bottom-left blob */
 .soft-blob.bl {
@@ -34,23 +40,23 @@ body { overflow: visible; }
     bottom: -90px;
     width: 400px;
     height: 240px;
-    border-bottom-left-radius:180px;
+    border-bottom-left-radius: 180px;
     border-top-right-radius: 200px;
     background: rgba(245, 146, 28, 0.9);
     border: 1px solid rgba(234, 125, 0, 0.95);
 }
 
-
+/* Main page background */
 .page {
     position: relative;
     background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
     min-height: 100vh;
 }
 
-
+/* Ensure topbar and main content are above blobs */
 .topbar,
 .account {
-    position: relative;
+    position: relative  ;
     z-index: 1;
 }
 
@@ -145,11 +151,17 @@ body { overflow: visible; }
     text-decoration: none;
     font-weight: 800;
 }
-.account__login-link:hover { text-decoration: underline; }
+
+.account__login-link:hover {
+    text-decoration: underline;
+}
 
 /* -------- Responsive -------- */
 @media (max-width: 720px) {
-    .account__grid { grid-template-columns: 1fr; gap: 32px; }
+    .account__grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
 }
 
 /* Brand image style — smaller and aligned with text */
@@ -162,4 +174,38 @@ body { overflow: visible; }
     vertical-align: middle;
     background-color: white;
     padding: 2px;
+}
+
+/* ================= Header "Login" button (same feel as Register) ================= */
+
+/* Top-right CTA button in the header */
+.btn-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 26px;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #152755;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    border: none;
+    box-shadow: 0 8px 20px rgba(10, 29, 74, 0.18);
+    cursor: pointer;
+}
+
+/* Slight hover state for nicer feedback */
+.btn-header:hover {
+    filter: brightness(0.97);
+}
+
+/* Push brand to the right a bit */
+.topbar__left {
+    margin-left: 80px;   /* adjust value as needed */
+}
+
+/* Pull Login button slightly to the left */
+.topbar__right {
+    margin-right: 80px;  /* adjust value as needed */
 }

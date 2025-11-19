@@ -22,15 +22,18 @@
     </div>
 
     <!-- =========================== TOP BAR =========================== -->
-    <header class="topbar">
+    <header class="topbar" aria-label="Top navigation">
+        <!-- Left side: brand (same pattern as other pages) -->
         <div class="topbar__left">
             <a class="brand" href="home.html" aria-label="Go to EduShare home">
                 <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
                 <span class="brand__name">EduShare</span>
             </a>
         </div>
+
+        <!-- Right side: header CTA button (like "Register" on login page) -->
         <div class="topbar__right">
-            <a class="btn btn-orange-outline" href="login.html">Log in</a>
+            <a href="login.html" class="btn-header">Login</a>
         </div>
     </header>
 
@@ -72,10 +75,10 @@
 
         </section>
 
-        <!-- Login link -->
+        <!-- Login link at the bottom -->
         <p class="account__login">
             Already have an account?
-            <a class="account__login-link" href="login.html">Log in</a>
+            <a class="account__login-link" href="login.html">Login</a>
         </p>
 
     </main>

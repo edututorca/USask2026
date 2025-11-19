@@ -44,23 +44,34 @@
 
                 <!-- Standard + Answer Type -->
                 <div class="qb__row2">
-                    <div class="qb__field">
-                        <label for="qStandard">Standard</label>
-                        <select id="qStandard" class="qb__select">
-                            <option value="">Select standard...</option>
-                            <option>ELA 9.1</option>
-                            <option>ELA 9.2</option>
-                            <option>ELA 10.1</option>
-                            <option>Custom...</option>
-                        </select>
-                    </div>
+<!--                    <div class="qb__field">-->
+<!--                        <label for="qStandard">Standard</label>-->
+<!--                        <select id="qStandard" class="qb__select">-->
+<!--                            <option value="">Select standard...</option>-->
+<!--                            <option>ELA 9.1</option>-->
+<!--                            <option>ELA 9.2</option>-->
+<!--                            <option>ELA 10.1</option>-->
+<!--                            <option>Custom...</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
 
                     <div class="qb__field">
                         <label>Answer Type</label>
                         <div class="qb__type">
-                            <label><input type="radio" name="qType" value="MCQ" checked/> MCQ</label>
-                            <label><input type="radio" name="qType" value="TF"/> T/F</label>
-                            <label><input type="radio" name="qType" value="SA"/> S/A</label>
+                            <!-- Hover → "Multiple Choice Question" -->
+                            <label title="Multiple Choice Question">
+                                <input type="radio" name="qType" value="MCQ" checked/> MCQ
+                            </label>
+
+                            <!-- Hover → "True or False" -->
+                            <label title="True or False">
+                                <input type="radio" name="qType" value="TF"/> T/F
+                            </label>
+
+                            <!-- Hover → "Short Answer" -->
+                            <label title="Short Answer">
+                                <input type="radio" name="qType" value="SA"/> S/A
+                            </label>
                         </div>
                     </div>
                 </div>

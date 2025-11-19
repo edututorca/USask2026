@@ -120,6 +120,7 @@ form { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr 0.95fr;
 .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 /* fields */
 .group { border: 1px solid var(--ring); padding: 1rem; border-radius: 12px; background: #fff; }
