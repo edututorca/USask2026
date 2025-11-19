@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>EduShare — Plays</title>
+    <title>EduShare – Learning Hub</title>
     <!-- Main app stylesheet -->
     <link rel="stylesheet" href="css/styles.css"/>
 </head>
@@ -13,19 +13,15 @@
 <header class="topbar">
     <div class="topbar__left">
         <!-- Brand: logo + name, links to Home -->
-
         <a class="brand" href="home.html" aria-label="Go to EduShare home">
             <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
             <span class="brand__name">EduShare</span>
         </a>
 
-        <!-- Primary navigation -->
-        <nav class="primary-nav" aria-label="Primary">
-            <button id="btnOpenPlays" class="nav-link" type="button">Plays</button>
-            <a class="nav-link" href="#">Novel</a>
-            <a class="nav-link" href="#">Grammar</a>
-            <a class="nav-link" href="#">Project</a>
-            <a class="nav-link" href="#">Speech</a>
+        <!-- Primary navigation - populated from Subject table -->
+        <nav id="primaryNav" class="primary-nav" aria-label="Primary">
+            <!-- Subjects will be loaded here dynamically -->
+            <div class="nav-loading">Loading subjects...</div>
         </nav>
     </div>
 
@@ -33,37 +29,36 @@
         <button class="icon-btn" aria-label="Help">?</button>
         <button class="icon-btn" aria-label="Messages">💬</button>
         <div class="plan-pill">Plans</div>
-        <div class="user-chip">
-            <div class="avatar" aria-hidden="true">D</div>
+        <div id="userChip" class="user-chip">
+            <!-- User info will be loaded dynamically -->
+            <div class="avatar" aria-hidden="true">?</div>
             <div class="user-chip__txt">
-                <div class="user-name">Dan Maia</div>
-                <div class="user-points">XP: <strong>142</strong></div>
+                <div class="user-name">Loading...</div>
+                <div class="user-points">XP: <strong>0</strong></div>
             </div>
         </div>
     </div>
 </header>
 
-
 <!--  MAIN LAYOUT  -->
-
 <div class="layout">
     <!-- LEFT SIDEBAR -->
     <aside class="sidebar" aria-label="Sidebar">
-        <div class="profile-card">
-            <div class="avatar large" aria-hidden="true">D</div>
+        <!-- Profile Card - populated from UserProfile table -->
+        <div id="profileCard" class="profile-card">
+            <div class="avatar large" aria-hidden="true">?</div>
             <div class="profile-meta">
-                <div class="profile-name">Daniel</div>
-                <div class="profile-role">Instructor</div>
+                <div class="profile-name">Loading...</div>
+                <div class="profile-role">Teacher</div>
             </div>
         </div>
 
+        <!-- My Courses - populated from Course table (via UserCourse) -->
         <div class="sidebar-block">
             <div class="block-title">My Courses:</div>
-            <ul class="course-list">
-                <li><span class="dot bg-green"></span>English</li>
-                <li><span class="dot bg-blue"></span>Math</li>
-                <li><span class="dot bg-purple"></span>Science</li>
-                <li><span class="dot bg-gray"></span>Introduction to Bus...</li>
+            <ul id="courseList" class="course-list">
+                <!-- Courses will be loaded here dynamically -->
+                <li style="color: #999;">Loading courses...</li>
             </ul>
             <button class="btn btn-outline small full">+ Add another course</button>
         </div>
@@ -71,7 +66,6 @@
         <div class="sidebar-block sticky-bottom">
             <button class="btn btn-muted full">Archive</button>
             <button class="btn btn-muted full">Profile</button>
-            <!-- Add an id so we can wire the logout behavior -->
             <button id="btnLogout" class="btn btn-muted full">Log Out</button>
         </div>
     </aside>
@@ -79,38 +73,29 @@
     <!-- MAIN CONTENT  -->
     <main class="main">
 
-
-        <!--  ROW 1 — PLAYS (dynamic)  -->
-
-        <section id="rowPlays" class="row row-plays" aria-label="Plays row">
-            <!-- JS will render all tabs here (default plays, custom plays, and the ＋) -->
-            <div id="playsBar" class="plays-bar"></div>
+        <!--  ROW 1 – TOPICS (from Topic table, filtered by selected Subject)  -->
+        <section id="rowTopics" class="row row-topics hidden" aria-label="Topics row">
+            <div id="topicsBar" class="topics-bar">
+                <!-- Topics will be loaded here dynamically -->
+            </div>
         </section>
 
-
-        <!-- ROW 2 — ACTS (tabs)  -->
-
-        <section id="rowActs" class="row row-acts" aria-label="Acts row">
-            <button class="tab tab--act" data-act="1">Act 1</button>
-            <button class="tab tab--act" data-act="2">Act 2</button>
-            <button class="tab tab--act active" data-act="3">Act 3</button>
-            <button class="tab tab--act" data-act="4">Act 4</button>
-            <button class="tab tab--act" data-act="5">Act 5</button>
+        <!-- ROW 2 – SUBTOPICS (from SubTopic table, filtered by selected Topic)  -->
+        <section id="rowSubtopics" class="row row-subtopics hidden" aria-label="Subtopics row">
+            <div id="subtopicsBar" class="subtopics-bar">
+                <!-- Subtopics will be loaded here dynamically -->
+            </div>
         </section>
 
-        <!--  ROW 3 — SCENES (tabs)  -->
-
-        <section id="rowScenes" class="row row-scenes" aria-label="Scenes row">
-            <button class="tab tab--scene" data-scene="1">Scene 1</button>
-            <button class="tab tab--scene" data-scene="2">Scene 2</button>
-            <button class="tab tab--scene" data-scene="3">Scene 3</button>
-            <button class="tab tab--scene active" data-scene="4">Scene 4</button>
-            <button class="tab tab--scene" data-scene="5">Scene 5</button>
+        <!--  ROW 3 – SECTIONS (from Section table, filtered by selected SubTopic)  -->
+        <section id="rowSections" class="row row-sections hidden" aria-label="Sections row">
+            <div id="sectionsBar" class="sections-bar">
+                <!-- Sections will be loaded here dynamically -->
+            </div>
         </section>
 
-        <!--  CONTENT AREA (QUESTIONS LIST)  -->
-
-        <section id="contentArea" class="content" aria-label="Questions content">
+        <!--  CONTENT AREA (QUESTIONS LIST from QuestionPool)  -->
+        <section id="contentArea" class="content hidden" aria-label="Questions content">
 
             <!-- Toolbar -->
             <div class="toolbar">
@@ -138,149 +123,15 @@
                 <button class="btn btn-select-all">Select All</button>
             </div>
 
-            <!-- QUESTION LIST (8 items)  -->
-            <div class="q-list">
+            <!-- QUESTION LIST (from QuestionPool table) -->
+            <div class="q-list" id="questionsList">
+                <!-- Questions will be loaded here dynamically -->
+                <div class="loading-state" style="text-align: center; padding: 40px; color: #999;">
+                    <p>Select a section to view questions</p>
+                </div>
+            </div>
 
-                <!-- Q1 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">What does Capulet tell his wife to say to Juliet?</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">M/C</div>
-                        <div class="points">1 point</div>
-                        <div class="progress">
-                            <span class="bar" style="width:65%"></span>
-                            <span class="pval">votes +4</span>
-                        </div>
-                        <div class="icons">
-                            <button class="i check" title="Include">✓</button>
-                            <button class="i cross" title="Exclude">✕</button>
-                            <button class="i flag" title="Favorite">🏳️</button>
-                        </div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q2 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <h3 class="q-title">
-                            As Romeo is preparing to leave Juliet, what argument does she use to convince him to stay?
-                        </h3>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">S/A</div>
-                        <div class="points">2 points</div>
-                        <div class="progress">
-                            <span class="bar" style="width:65%"></span>
-                            <span class="pval">votes +8</span>
-                        </div>
-                        <div class="icons">
-                            <button class="i check" title="Include">✓</button>
-                            <button class="i cross" title="Exclude">✕</button>
-                            <button class="i flag" title="Favorite">🏳️</button>
-                        </div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q3 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">Tybalt and Mercutio fight because Mercutio seeks to protect Romeo’s honour.</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">T/F</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +10</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button></div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q4 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">When Lady Capulet threatens to send someone to Mantua to poison Romeo, what does Juliet say?</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">M/C</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +5</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button></div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q5 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">Lord Capulet believes that tears of grief are pre-arranged marriage will be welcomed by Juliet</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">T/F</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +10</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button></div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q6 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">In Act 3, Scene 4, Capulet informs Paris of what?</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">M/C</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +5</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button></div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q7 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">What does Lady Capulet plan to speak to Juliet about in the morning?</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">M/C</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +8</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button></div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-                <!-- Q8 -->
-                <article class="q-row">
-                    <label class="q-checkbox"><input type="checkbox"/><span class="box"></span></label>
-                    <div class="q-main">
-                        <div class="q-title">Which word best describes the way Lord and Capulet feel about Tybalt’s death?</div>
-                    </div>
-                    <div class="q-side">
-                        <div class="points">M/C</div>
-                        <div class="points">1 point</div>
-                        <div class="progress"><span class="bar" style="width:65%"></span><span class="pval">votes +5</span></div>
-                        <div class="icons"><button class="i check">✓</button><button class="i cross">✕</button><button class="i flag" title="Favorite">🏳️</button>
-                        </div>
-                        <button class="ai">AI ?</button>
-                    </div>
-                </article>
-
-            </div><!-- /q-list -->
-
-            <!-- ===== Content footer CTA: Add Question (navigates to page) ===== -->
+            <!-- Content footer CTA: Add Question -->
             <div style="display:flex; justify-content:flex-end; margin-top:12px;">
                 <a id="btnAddQuestion" class="btn btn-warning" href="javascript:void(0)">Add Question</a>
             </div>
@@ -289,17 +140,27 @@
     </main>
 </div>
 
-<script src="js/plays-bar.js"></script>
-<script src="js/restore-context.js"></script>
-<script src="js/plays-flow.js"></script>
+<!-- Core Scripts -->
+<script src="js/api-config.js"></script>
+<script src="js/auth.js"></script>
+
+<!-- UI Component Loaders -->
+<script src="js/load-user-profile.js"></script>
+<script src="js/load-courses.js"></script>
+<script src="js/load-subjects.js"></script>
+<script src="js/load-topics.js"></script>
+<script src="js/load-subtopics.js"></script>
+<script src="js/load-sections.js"></script>
+<script src="js/load-questions.js"></script>
+
+<!-- Navigation Flow -->
+<script src="js/navigation-flow.js"></script>
+
+<!-- Interaction Scripts -->
+<script src="js/search-questions.js"></script>
 <script src="js/add-question-link.js"></script>
-<script src="js/auto-last-saved.js"></script>
 <script src="js/delete-question.js"></script>
-<script src="js/load-saved-questions.js"></script>
-<script src="js/inject-new-question.js"></script>
-<script src="js/search-question.js"></script>
 <script src="js/logout.js"></script>
 
 </body>
 </html>
-
