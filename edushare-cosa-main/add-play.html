@@ -6,6 +6,52 @@
     <title>EduShare — Add New Play</title>
     <!-- Reuse your app stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        /* --- KEBAB STYLES --- */
+        .kebab-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: relative; /* added this */
+        }
+
+        .kebab-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .kebab-menu {
+            display: none;
+            background: #1f2a44;
+            border-radius: 6px;
+            position: absolute;
+            margin-top: 5px;
+            padding: 10px;
+            width: 120px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 999;
+            right: 0; /* align menu to the right of the button */
+        }
+
+        .kebab-menu.show {
+            display: block;
+        }
+
+        .kebab-item {
+            padding: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .kebab-item:hover {
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,18 +102,32 @@
         </div>
 
         <div class="sidebar-block">
-            <div class="block-title">My Courses:</div>
+
+            <!-- NEW: WRAP TITLE + KEBAB -->
+            <div class="kebab-wrapper">
+                <div class="block-title">My Courses:</div>
+
+                <!-- NEW: KEBAB BUTTON -->
+                <button class="kebab-btn" id="coursesMenuBtn">⋮</button>
+            </div>
+
+            <!-- NEW: DROPDOWN -->
+            <div class="kebab-menu" id="coursesMenu">
+                <div class="kebab-item">Archive</div>
+                <div class="kebab-item">Delete</div>
+            </div>
+
             <ul class="course-list">
                 <li><span class="dot bg-green"></span>English</li>
                 <li><span class="dot bg-blue"></span>Math</li>
                 <li><span class="dot bg-purple"></span>Science</li>
                 <li><span class="dot bg-gray"></span>Introduction to Bus...</li>
             </ul>
+
             <button class="btn btn-outline small full">+ Add another course</button>
         </div>
 
         <div class="sidebar-block sticky-bottom">
-            <button class="btn btn-muted full">Archive</button>
             <button class="btn btn-muted full">Profile</button>
             <button class="btn btn-muted full">Log Out</button>
         </div>
@@ -115,13 +175,11 @@
                         <div class="form-field">
                             <label for="title">Play Title:</label>
                             <input id="title" name="title" type="text" placeholder="Type the play" />
-<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
 
                         <div class="form-field">
                             <label for="author">Author:</label>
                             <input id="author" name="author" type="text" placeholder="" />
-<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
                     </div>
 
@@ -130,13 +188,11 @@
                         <div class="form-field">
                             <label for="year">Publication Year:</label>
                             <input id="year" name="year" type="number" inputmode="numeric" placeholder="" />
-<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
 
                         <div class="form-field">
                             <label for="language">Language of the Play:</label>
                             <input id="language" name="language" type="text" placeholder="" />
-<!--                            <span class="field-caret" aria-hidden="true">▾</span>-->
                         </div>
                     </div>
 
@@ -153,6 +209,22 @@
 
 <!-- External JS for this page -->
 <script src="js/add-play.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const kebabBtn = document.getElementById('coursesMenuBtn');
+        const kebabMenu = document.getElementById('coursesMenu');
+
+        kebabBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent immediate close
+            kebabMenu.classList.toggle('show');
+        });
+
+        // Close menu on outside click
+        document.addEventListener('click', () => {
+            kebabMenu.classList.remove('show');
+        });
+    });
+</script>
 
 </body>
 </html>
