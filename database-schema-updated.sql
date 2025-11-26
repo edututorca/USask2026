@@ -1,8 +1,4 @@
--- ===================================================== --
--- ========== EDUSHARE DATABASE SCHEMA (UPDATED) ======= --
--- ===================================================== --
--- Based on your latest ERD diagram
--- Recommended: MySQL 8.0+ or PostgreSQL 13+
+
 
 CREATE DATABASE IF NOT EXISTS edushare_db;
 USE edushare_db;

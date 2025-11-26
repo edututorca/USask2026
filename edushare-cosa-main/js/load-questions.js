@@ -47,15 +47,20 @@
         const questionText = question.QuestionText || question.questionText || 'No question text';
         const difficulty = question.Difficulty || question.difficulty || 1;
         
-        // Calculate votes
-        const upvotes = question.Upvotes || question.upvotes || 0;
-        const downvotes = question.Downvotes || question.downvotes || 0;
-        const totalVotes = upvotes - downvotes;
-        const voteDisplay = totalVotes >= 0 ? `votes +${totalVotes}` : `votes ${totalVotes}`;
         
-        // Progress bar width (percentage based on upvotes)
-        const progressWidth = Math.min(Math.max(upvotes * 10, 20), 100);
+        //CHANGED: replace votes with usage count 
+        // const upvotes = question.Upvotes || question.upvotes || 0;
+        // const downvotes = question.Downvotes || question.downvotes || 0;
+        // const totalVotes = upvotes - downvotes;
+        // const voteDisplay = totalVotes >= 0 ? `votes +${totalVotes}` : `votes ${totalVotes}`;
+        
+        const usageCount = question.UsageCount || question.usageCount || 0; // number of users who used question
+        const voteDisplay = `<span class="usage-count" title="Number of users who used this question">${usageCount}</span>
+                             <span class="point-value">/1</span>`; // default point value /1 with tooltip on usage-count
 
+        // Progress bar width can be kept or repurposed, optional
+        const progressWidth = Math.min(Math.max(usageCount * 10, 20), 100); // using usageCount for width
+        
         return `
             <article class="q-row" data-question-id="${questionId}">
                 <label class="q-checkbox">
@@ -70,7 +75,7 @@
                     <div class="points">${difficulty} point${difficulty !== 1 ? 's' : ''}</div>
                     <div class="progress">
                         <span class="bar" style="width:${progressWidth}%"></span>
-                        <span class="pval">${voteDisplay}</span>
+                        <span class="pval">${voteDisplay}</span> <!-- UPDATED: usage count + /1 -->
                     </div>
                     <div class="icons">
                         <button class="i check" title="Include" data-action="include">✓</button>
