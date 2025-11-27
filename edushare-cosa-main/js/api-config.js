@@ -6,8 +6,8 @@
  */
 
 const API_CONFIG = {
-    // Change this to your actual API URL when deployed
-    BASE_URL: '/api',
+    // Changeed this to your actual URL
+    BASE_URL: 'https://172.16.1.70',
     
     // Endpoints
     ENDPOINTS: {
