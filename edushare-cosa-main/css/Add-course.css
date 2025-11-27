@@ -1,0 +1,334 @@
+
+
+/* Layer that holds the orange blobs */
+.bg-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;  /* never captures mouse clicks */
+}
+
+/* Base style for both blobs */
+.soft-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: none;
+    opacity: 0.95;
+}
+
+/* Top-right blob */
+.soft-blob.tr {
+    right: -50px;
+    top: 0;
+    width: 320px;
+    height: 200px;
+    border-bottom-left-radius: 180px;
+    border-bottom-right-radius: 60px;
+    background: #f5921c;
+    border: 1px solid #ea7d00;
+}
+
+
+/* Bottom-left blob */
+.soft-blob.bl {
+    position: fixed; /* stays on scroll */
+    left: -120px;
+    bottom: -90px;
+    width: 400px;
+    height: 240px;
+    border-bottom-left-radius: 180px;
+    border-top-right-radius: 200px;
+    background: rgba(245, 146, 28, 0.9);
+    border: 1px solid rgba(234, 125, 0, 0.95);
+}
+
+/* Ensure topbar and main content are above blobs */
+.topbar,
+.account {
+    position: relative  ;
+    z-index: 1;
+}
+
+
+/* Bottom label */
+.acct-card__label {
+    width: 260px;
+    background: #ffffff;
+    border: 1px solid #e8eef8;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 12px 8px 14px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #4d3ea0;
+    box-shadow: 0 8px 20px rgba(18, 41, 89, 0.05);
+}
+
+/* -------- Responsive -------- */
+@media (max-width: 720px) {
+    .account__grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+/* Brand image style — smaller and aligned with text */
+.brand__logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 6px;
+    object-fit: cover;
+    vertical-align: middle;
+    background-color: white;
+    padding: 2px;
+}
+
+/* ================= Header "Login" button (same feel as Register) ================= */
+
+/* Top-right CTA button in the header */
+.btn-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 26px;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #152755;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    border: none;
+    box-shadow: 0 8px 20px rgba(10, 29, 74, 0.18);
+    cursor: pointer;
+}
+
+/* Slight hover state for nicer feedback */
+.btn-header:hover {
+    filter: brightness(0.97);
+}
+
+/* Push brand to the right or left */
+.topbar__left {
+    margin-left: 330px;   /* adjust value as needed */
+}
+
+/* Pull Login button slightly to the left */
+.topbar__right {
+    margin-right: 330px;  /* adjust value as needed */
+}
+
+/* Reset default browser spacing and ensure consistent box model */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base body styling */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+}
+
+/* Header bar at the top */
+header {
+    background-color: #2d3561;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Logo container */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+/* Outer logo circle */
+.logo-circle {
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Inner logo dot */
+.logo-inner {
+    width: 20px;
+    height: 20px;
+    background-color: #2d3561;
+    border-radius: 50%;
+}
+
+/* Main content container */
+.container {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+/* Card that holds the form */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Main title */
+h1 {
+    color: #2d3561;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Subtitle below the main title */
+.subtitle {
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+/* Wrapper for each form control */
+.form-group {
+    margin-bottom: 2rem;
+}
+
+/* Label styling */
+label {
+    display: block;
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+/* Select dropdown styling */
+select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+/* Hover effect for select */
+select:hover {
+    border-color: #d1d5db;
+}
+
+/* Focus state for select */
+select:focus {
+    outline: none;
+    border-color: #ff9d42;
+    box-shadow: 0 0 0 3px rgba(255, 157, 66, 0.1);
+}
+
+/* Options inside the select dropdown */
+select option {
+    padding: 0.5rem;
+}
+
+/* Box displaying the selected course path */
+.selection-path {
+    background: linear-gradient(135deg, #2d3561 0%, #3d4578 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    display: none; /* Hidden by default; shown via JS */
+}
+
+/* Class to show the selection path */
+.selection-path.show {
+    display: block;
+}
+
+/* Title inside the selection path box */
+.path-title {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+/* Content of the selected path */
+.path-content {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Breadcrumb container */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Individual breadcrumb item */
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Utility class to hide elements */
+.hidden {
+    display: none;
+}
+
+/* Submit button styling */
+button {
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: #ff9d42;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 2rem;
+}
+
+/* Button hover effect */
+button:hover {
+    background-color: #ff8c1f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 157, 66, 0.3);
+}
+
+/* Disabled button state */
+button:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/*!* Responsive adjustments for smaller screens *!*/
+/*@media (max-width: 768px) {*/
+/*    .card {*/
+/*        padding: 2rem 1.5rem;*/
+/*    }*/
+
+/*    h1 {*/
+/*        font-size: 1.5rem;*/
+/*    }*/
+/*}*/

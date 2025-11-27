@@ -373,4 +373,30 @@ body{
     background-color: white; /* optional: adds white padding around the logo */
     padding: 2px;         /* optional soft padding */
 }
+.course-item {
+    list-style: none;
+    margin-bottom: 8px;
+}
+
+.course-btn {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #2d3561;
+    background-color: #1f2a44;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.course-btn:hover {
+    background-color: #2d3b66;
+}
+
+.course-btn.active {
+    background-color: #ff9d42;
+    border-color: #ff9d42;
+    color: #1f2a44;
+}
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>EduShare – Learning Hub</title>
     <!-- Main app stylesheet -->
-    <link rel="stylesheet" href="css/styles.css"/>
+    <link rel="stylesheet" href="css/user-area.css"/>
 
     <style>
         /* --- KEBAB STYLES --- */
@@ -124,7 +124,7 @@
           
             </ul>
 
-            <button class="btn btn-outline small full">+ Add another course</button>
+             <button id="btnAddCourse" class="btn btn-muted full"> + Add Course</button>
         </div>
 
         <div class="sidebar-block sticky-bottom">
@@ -237,7 +237,7 @@
 <script src="js/auth.js"></script>
 
 <!-- UI Component Loaders -->
-<script src="js/load-user-profile.js"></script>
+<script src="js/load-user-profiles.js"></script>
 <script src="js/load-courses.js"></script>
 <script src="js/load-subjects.js"></script>
 <script src="js/load-topics.js"></script>
@@ -249,13 +249,17 @@
 <script src="js/navigation-flow.js"></script>
 
 <!-- Interaction Scripts -->
-<script src="js/search-questions.js"></script>
+<script src="js/search-question.js"></script>
 <script src="js/add-question-link.js"></script>
 <script src="js/delete-question.js"></script>
 <script src="js/logout.js"></script>
 
+<!-- Add Course button handler -->
+<script src="js/Add-course-link.js"></script>
+
+<!-- New: read the course created on Add-Course page -->
+<script src="js/add-course-return.js"></script>
+
 </body>
-
-
 </html>
 

@@ -6,6 +6,6 @@
     if (!btn) return;
     btn.addEventListener('click', function () {
         try { sessionStorage.removeItem('playsOpen'); } catch {}
-        window.location.href = 'home.html';
+        window.location.href = 'Login.html';
     });
 })();
