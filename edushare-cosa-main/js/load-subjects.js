@@ -18,7 +18,7 @@
         if (!nav) return;
 
         // For now, just show empty state on initial load
-        nav.innerHTML = '<div class="nav-empty" style="color: #999; padding: 20px; text-align: center;">👈 Select a course from the left sidebar</div>';
+        nav.innerHTML = '<div class="nav-empty" style="color: #999; padding: 20px; text-align: center;"> Select a course from the left sidebar</div>';
     }
 
     /**
