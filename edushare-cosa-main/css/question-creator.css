@@ -81,4 +81,41 @@
 .topbar__left {
     margin-left: 330px;   /* adjust value as needed */
 }
+/* ===================== Question suggestions (auto-fill) ===================== */
+.q-suggestions {
+    margin-top: 4px;
+    background: #ffffff;
+    border: 1px solid #d6e1f2;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(15, 35, 70, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.q-suggestion-item {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eef3ff;
+}
+
+.q-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.q-suggestion-item:hover {
+    background: #f5f7ff;
+}
+
+.q-suggestion-title {
+    font-weight: 600;
+    color: #0d2a57;
+}
+
+.q-suggestion-meta {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 2px;
+}
 

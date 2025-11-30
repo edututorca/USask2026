@@ -36,24 +36,20 @@
 
             <!-- Form -->
             <form id="questionForm" class="qb__form" autocomplete="off">
+
+
                 <!-- Question -->
                 <div class="qb__field">
                     <label for="qText">Question</label>
                     <textarea id="qText" class="qb__textarea" placeholder="Type your question here..."></textarea>
+
+                    <!-- NEW: suggestions dropdown -->
+                    <div id="qSuggestions" class="q-suggestions hidden"></div>
                 </div>
+
 
                 <!-- Standard + Answer Type -->
                 <div class="qb__row2">
-<!--                    <div class="qb__field">-->
-<!--                        <label for="qStandard">Standard</label>-->
-<!--                        <select id="qStandard" class="qb__select">-->
-<!--                            <option value="">Select standard...</option>-->
-<!--                            <option>ELA 9.1</option>-->
-<!--                            <option>ELA 9.2</option>-->
-<!--                            <option>ELA 10.1</option>-->
-<!--                            <option>Custom...</option>-->
-<!--                        </select>-->
-<!--                    </div>-->
 
                     <div class="qb__field">
                         <label>Answer Type</label>
@@ -118,5 +114,10 @@
 </div>
 
 <script src="js/question-creator.js"></script>
+<!-- Auto-suggest existing questions -->
+<script src="js/question-suggestions.js"></script>
+</body>
+</html>
+
 </body>
 </html>
