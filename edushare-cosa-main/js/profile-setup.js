@@ -204,10 +204,20 @@ function validate() {
 
     // Step 2: Contact
     if (step === 2) {
-        if (!form.email.value.trim() || !form.email.checkValidity())
-            setError("Work email", "Please enter a valid email.");
-        if (!form.phone.value.trim() || !form.phone.checkValidity())
-            setError("Work phone number", "Please enter a valid phone.");
+        // Work email
+        if (!form.email.value.trim() || !form.email.checkValidity()) {
+            setError("email", "Please enter a valid work email.");
+        }
+        // Password
+        if (!form.password.value.trim()) {
+            setError("password", "Password is required.");
+        } else if (form.password.value.length < 8) {
+            setError("password", "Password must be at least 8 characters.");
+        }
+        // Work phone
+        if (!form.phone.value.trim() || !form.phone.checkValidity()) {
+            setError("phone", "Please enter a valid work phone number.");
+        }
         if (form.querySelector(".is-invalid")) return "Please correct the highlighted fields.";
     }
 
