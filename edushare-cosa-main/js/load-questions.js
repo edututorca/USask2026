@@ -45,21 +45,12 @@
         
         const questionId = question.QuestionID || question.questionID;
         const questionText = question.QuestionText || question.questionText || 'No question text';
-        const difficulty = question.Difficulty || question.difficulty || 1;
         
-        
-        //CHANGED: replace votes with usage count 
-        // const upvotes = question.Upvotes || question.upvotes || 0;
-        // const downvotes = question.Downvotes || question.downvotes || 0;
-        // const totalVotes = upvotes - downvotes;
-        // const voteDisplay = totalVotes >= 0 ? `votes +${totalVotes}` : `votes ${totalVotes}`;
-        
-        const usageCount = question.UsageCount || question.usageCount || 0; // number of users who used question
-        const voteDisplay = `<span class="usage-count" title="Number of users who used this question">${usageCount}</span>
-                             <span class="point-value">/1</span>`; // default point value /1 with tooltip on usage-count
+        // Get usage count - number of users who have used this question
+        const usageCount = question.UsageCount || question.usageCount || 0;
 
-        // Progress bar width can be kept or repurposed, optional
-        const progressWidth = Math.min(Math.max(usageCount * 10, 20), 100); // using usageCount for width
+        // Progress bar width (optional - can be adjusted or removed)
+        const progressWidth = Math.min(Math.max(usageCount * 10, 20), 100);
         
         return `
             <article class="q-row" data-question-id="${questionId}">
@@ -72,11 +63,11 @@
                 </div>
                 <div class="q-side">
                     <div class="points">${typeLabel}</div>
-                    <div class="points">${difficulty} point${difficulty !== 1 ? 's' : ''}</div>
                     <div class="progress">
                         <span class="bar" style="width:${progressWidth}%"></span>
-                        <span class="pval">${voteDisplay}</span> <!-- UPDATED: usage count + /1 -->
+                        <span class="pval">0 /1</span>
                     </div>
+                    <div class="usage-count" title="Number of users who used this question">${usageCount}</div>
                     <div class="icons">
                         <button class="i check" title="Include" data-action="include">✓</button>
                         <button class="i cross" title="Delete" data-action="delete">✕</button>

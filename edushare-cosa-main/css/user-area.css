@@ -400,3 +400,23 @@ body{
     color: #1f2a44;
 }
 
+
+/* ===================================================== */
+/* ======= USAGE COUNT STYLES (ADD TO user-area.css) = */
+/* ===================================================== */
+
+/* Usage count number display */
+.q-side .usage-count {
+    color: #999;
+    font-size: 14px;
+    padding: 4px 8px;
+    cursor: help;
+    min-width: 25px;
+    text-align: center;
+}
+
+.q-side .usage-count:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
