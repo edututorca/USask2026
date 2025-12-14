@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare – Profile</title>
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="css/user-area.css"/>
+
+    <!-- Main profile stylesheet -->
+    <link rel="stylesheet" href="css/profile.css"/>
+</head>
+<body>
+
+<div class="page">
+<!-- ====================== DECORATION LAYER (orange blobs) ====================== -->
+<div class="bg-decor" aria-hidden="true">
+    <div class="soft-blob tr"></div>
+    <div class="soft-blob bl"></div>
+</div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+    <div class="topbar__left">
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo"/>
+            <span class="brand__name">EduShare</span>
+        </a>
+        <span class="topbar__page-title">Profile</span>
+    </div>
+
+    <div class="topbar__right">
+        <button class="icon-btn" aria-label="Help">?</button>
+        <button class="icon-btn" aria-label="Messages">💬</button>
+        <div class="plan-pill">Plans</div>
+        <div id="userChip" class="user-chip">
+            <div class="avatar" aria-hidden="true">DM</div>
+            <div class="user-chip__txt">
+                <div class="user-name">Loading...</div>
+                <div class="user-points">XP: <strong>0</strong></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="profile-layout">
+    <!-- LEFT: PHOTO + NAME -->
+    <aside class="profile-sidebar">
+        <section class="card card--photo">
+            <div class="photo-wrapper">
+                <img id="photoPreview" src="assets/EduShare_Logo.png"
+                     alt="Profile photo" class="photo-img"/>
+
+            </div>
+
+            <label class="btn btn-secondary btn-full btn-photo-main" for="photoInput">
+                Change photo
+            </label>
+            <input id="photoInput" type="file" accept="image/*" class="hidden-input"/>
+
+            <button id="btnRemovePhoto" class="btn btn-ghost btn-full btn-photo-secondary">
+                Remove photo
+            </button>
+
+            <hr class="card-divider"/>
+
+            <div class="profile-basic-info">
+                <h1 id="profileName" class="profile-name">Your Name</h1>
+                <p id="profileRole" class="profile-role">Teacher</p>
+                <p id="profileEmail" class="profile-email">email@example.com</p>
+            </div>
+        </section>
+
+
+    </aside>
+
+    <!-- RIGHT: TABS + SECTIONS -->
+    <section class="profile-main">
+        <!-- Tabs -->
+        <nav class="profile-tabs" aria-label="Profile sections">
+            <button class="tab-btn active" data-target="section-personal">Personal Info</button>
+            <button class="tab-btn" data-target="section-account">Account</button>
+            <button class="tab-btn" data-target="section-school">School</button>
+            <button class="tab-btn" data-target="section-preferences">Preferences</button>
+            <button class="tab-btn" data-target="section-security">Security</button>
+        </nav>
+
+        <!-- Personal Info -->
+        <section id="section-personal" class="card profile-section active">
+            <h2 class="section-title">Personal Information</h2>
+            <form id="formPersonal" class="section-form">
+                <div class="form-grid">
+                    <label class="field">
+                        <span class="field__label">First Name</span>
+                        <input class="field__input" type="text" name="firstName" required/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Last Name</span>
+                        <input class="field__input" type="text" name="lastName" required/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Preferred Name (optional)</span>
+                        <input class="field__input" type="text" name="preferredName"/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Language</span>
+                        <select class="field__input" name="language">
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Timezone</span>
+                        <input class="field__input" type="text" name="timezone" placeholder="America/Regina"/>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" data-save="personal">Save Personal Info</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Account -->
+        <section id="section-account" class="card profile-section">
+            <h2 class="section-title">Account Settings</h2>
+            <form id="formAccount" class="section-form">
+                <div class="form-grid">
+                    <label class="field">
+                        <span class="field__label">Work Email</span>
+                        <input class="field__input" type="email" name="email" required/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Alternate Email (optional)</span>
+                        <input class="field__input" type="email" name="altEmail"/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Current Password</span>
+                        <input class="field__input" type="password" name="currentPassword" placeholder="For security validation"/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">New Password</span>
+                        <input class="field__input" type="password" name="newPassword" minlength="8" placeholder="Min. 8 characters"/>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" data-save="account">Save Account Settings</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- School -->
+        <section id="section-school" class="card profile-section">
+            <h2 class="section-title">School / Teaching Information</h2>
+            <form id="formSchool" class="section-form">
+                <div class="form-grid">
+                    <label class="field">
+                        <span class="field__label">Role</span>
+                        <input class="field__input" type="text" name="role" id="roleDisplay" readonly />
+
+                    </label>
+
+
+                    <label class="field">
+                        <span class="field__label">School Name</span>
+                        <input class="field__input" type="text" name="schoolName"/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Subjects / Areas</span>
+                        <input class="field__input" type="text" name="subjects" placeholder="Math, English, Computer Science"/>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Grades / Levels</span>
+                        <input class="field__input" type="text" name="grades" placeholder="Grade 7–9, College, etc."/>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" data-save="school">Save School Info</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Preferences -->
+        <section id="section-preferences" class="card profile-section">
+            <h2 class="section-title">Preferences</h2>
+            <form id="formPreferences" class="section-form">
+                <div class="form-grid">
+                    <label class="field">
+                        <span class="field__label">Default Subject on Login</span>
+                        <input class="field__input" type="text" name="defaultSubject" placeholder="e.g., English, Mathematics"/>
+                    </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" name="showTooltips" checked/>
+                        <span>Show tooltips and helper tips</span>
+                    </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" name="emailNotifications" checked/>
+                        <span>Enable email notifications</span>
+                    </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" name="quizReminders" checked/>
+                        <span>Receive reminders for quizzes and assignments</span>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" data-save="preferences">Save Preferences</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Security -->
+        <section id="section-security" class="card profile-section">
+            <h2 class="section-title">Security & Sessions</h2>
+            <div class="section-body">
+                <p class="hint">
+                    This will show login history,active sessions, 2FA status, etc.
+                </p>
+
+                <div class="danger-zone">
+                    <h3>Danger Zone</h3>
+                    <p>These actions are sensitive. Use them carefully.</p>
+                    <button class="btn btn-danger" type="button">Log out from all devices</button>
+                    <button class="btn btn-outline-danger" type="button">Delete my account (future)</button>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+
+<!-- Profile page logic -->
+<script src="js/profile.js"></script>
+
+</div>
+</body>
+</html>
