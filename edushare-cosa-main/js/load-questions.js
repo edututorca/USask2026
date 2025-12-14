@@ -33,16 +33,20 @@
 
     /**
      * Build HTML for a single question row
+     * Fixed to handle snake_case field names from MySQL
      */
     function buildQuestionRow(question) {
-        // Map question types to display labels
+        // Map question types to display labels (supports multiple naming conventions)
         const typeMap = {
             'Multiple Choice': 'M/C',
+            'multiple_choice': 'M/C',  // MySQL uses snake_case
             'True/False': 'T/F',
-            'Short Answer': 'S/A'
+            'true_false': 'T/F',       // MySQL uses snake_case
+            'Short Answer': 'S/A',
+            'short_answer': 'S/A'      // MySQL uses snake_case
         };
-        const typeLabel = typeMap[question.QuestionType] || typeMap[question.questionType] || 'M/C';
         
+<<<<<<< Updated upstream
         const questionId = question.QuestionID || question.questionID;
         const questionText = question.QuestionText || question.questionText || 'No question text';
         const difficulty = question.Difficulty || question.difficulty || 1;
@@ -57,6 +61,28 @@
         const usageCount = question.UsageCount || question.usageCount || 0; // number of users who used question
         const voteDisplay = `<span class="usage-count" title="Number of users who used this question">${usageCount}</span>
                              <span class="point-value">/1</span>`; // default point value /1 with tooltip on usage-count
+=======
+        // Try all naming conventions: PascalCase, camelCase, snake_case
+        const typeLabel = typeMap[question.QuestionType] || 
+                          typeMap[question.questionType] || 
+                          typeMap[question.question_type] || 
+                          'M/C';
+        
+        const questionId = question.QuestionID || 
+                           question.questionID || 
+                           question.question_id;
+        
+        const questionText = question.QuestionText || 
+                             question.questionText || 
+                             question.question_text || 
+                             'No question text';
+        
+        // Get usage count - number of users who have used this question
+        const usageCount = question.UsageCount || 
+                           question.usageCount || 
+                           question.usage_count || 
+                           0;
+>>>>>>> Stashed changes
 
         // Progress bar width can be kept or repurposed, optional
         const progressWidth = Math.min(Math.max(usageCount * 10, 20), 100); // using usageCount for width
