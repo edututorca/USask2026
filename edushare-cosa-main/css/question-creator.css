@@ -10,6 +10,13 @@
 }
 
 .qb__header{ margin-bottom:12px; }
+
+.qb__header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
 .qb__title{
     margin:0 0 6px 0; font-size:20px; font-weight:900; color:#1f2f57;
 }
@@ -79,7 +86,7 @@
 .hidden{ display:none !important; }
 
 .topbar__left {
-    margin-left: 330px;   /* adjust value as needed */
+    margin-left: 130px;   /* adjust value as needed */
 }
 /* ===================== Question suggestions (auto-fill) ===================== */
 .q-suggestions {
@@ -117,5 +124,27 @@
     font-size: 0.78rem;
     color: #6b7280;
     margin-top: 2px;
+}
+.page-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.ai-btn{
+    border:1px solid #1f3a66;
+    background:#0b2f5b;
+    color:#fff;
+    font-weight:700;
+    border-radius:10px;
+    padding:8px 34px;
+    cursor:pointer;
+    transition:transform .08s ease, opacity .2s ease;
+}
+
+.ai-btn:hover{
+    opacity:.92;
+    transform:translateY(-1px);
 }
 

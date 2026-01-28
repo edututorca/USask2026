@@ -18,53 +18,68 @@
     <div class="topbar__left">
         <!-- Brand -->
         <a class="brand" href="home.html" aria-label="Go to EduShare home">
-            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo"/>
             <span class="brand__name">EduShare</span>
         </a>
     </div>
-
 </header>
 
 <div class="layout" style="grid-template-columns:1fr;">
     <main class="main" style="padding:24px 18px;">
+
         <!-- Card -->
         <section class="qb">
+
+            <!-- Card Header -->
             <header class="qb__header">
-                <h2 class="qb__title">Question Creation</h2>
+                <div class="qb__header-row">
+                    <h2 class="qb__title">Question Creation</h2>
+
+                    <!-- AI Button -->
+                    <button
+                            id="btnAI"
+                            class="ai-btn"
+                            href="ai-question-creator.html"
+                            type="button"
+                            title="Create questions with AI — MCQ, T/F, SA, LA"
+                            aria-label="AI Assisted Creation"
+                    >
+                        AI
+                    </button>
+                </div>
+
                 <div class="qb__context" id="contextInfo"></div>
             </header>
 
             <!-- Form -->
             <form id="questionForm" class="qb__form" autocomplete="off">
 
-
                 <!-- Question -->
                 <div class="qb__field">
                     <label for="qText">Question</label>
-                    <textarea id="qText" class="qb__textarea" placeholder="Type your question here..."></textarea>
+                    <textarea
+                            id="qText"
+                            class="qb__textarea"
+                            placeholder="Type your question here..."
+                    ></textarea>
 
-                    <!-- NEW: suggestions dropdown -->
+                    <!-- Suggestions dropdown -->
                     <div id="qSuggestions" class="q-suggestions hidden"></div>
                 </div>
 
-
-                <!-- Standard + Answer Type -->
+                <!-- Answer Type -->
                 <div class="qb__row2">
-
                     <div class="qb__field">
                         <label>Answer Type</label>
                         <div class="qb__type">
-                            <!-- Hover → "Multiple Choice Question" -->
                             <label title="Multiple Choice Question">
                                 <input type="radio" name="qType" value="MCQ" checked/> MCQ
                             </label>
 
-                            <!-- Hover → "True or False" -->
                             <label title="True or False">
                                 <input type="radio" name="qType" value="TF"/> T/F
                             </label>
 
-                            <!-- Hover → "Short Answer" -->
                             <label title="Short Answer">
                                 <input type="radio" name="qType" value="SA"/> S/A
                             </label>
@@ -72,7 +87,7 @@
                     </div>
                 </div>
 
-                <!-- MCQ block (starts with only Option 1) -->
+                <!-- MCQ block -->
                 <div id="mcqPanel" class="qb__block">
                     <div id="choicesList" class="qb__choices">
                         <div class="qb__choice">
@@ -81,43 +96,62 @@
                             <button type="button" class="qb__remove" title="Remove">×</button>
                         </div>
                     </div>
+
                     <div class="qb__choice-actions">
-                        <button type="button" id="btnAddChoice" class="btn btn-orange-pill">+ Add Option</button>
-                        <small class="qb__hint">Mark the correct one with the circle</small>
+                        <button
+                                type="button"
+                                id="btnAddChoice"
+                                class="btn btn-orange-pill"
+                        >
+                            + Add Option
+                        </button>
+                        <small class="qb__hint">
+                            Mark the correct one with the circle
+                        </small>
                     </div>
                 </div>
 
-                <!-- True/False -->
+                <!-- True / False -->
                 <div id="tfPanel" class="qb__block hidden">
                     <div class="qb__type">
-                        <label><input type="radio" name="tfCorrect" value="True" checked/> True</label>
-                        <label><input type="radio" name="tfCorrect" value="False"/> False</label>
+                        <label>
+                            <input type="radio" name="tfCorrect" value="True" checked/> True
+                        </label>
+                        <label>
+                            <input type="radio" name="tfCorrect" value="False"/> False
+                        </label>
                     </div>
                 </div>
 
                 <!-- Short Answer -->
                 <div id="saPanel" class="qb__block hidden">
-                    <small class="qb__hint">Students will type a short free-form answer.</small>
+                    <small class="qb__hint">
+                        Students will type a short free-form answer.
+                    </small>
                 </div>
 
                 <!-- Actions -->
                 <div class="qb__actions">
-                    <button type="button" id="btnCancel" class="btn btn-muted">Cancel</button>
-                    <button type="submit" class="btn btn-warning">Save Question</button>
+                    <button type="button" id="btnCancel" class="btn btn-muted">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        Save Question
+                    </button>
                 </div>
+
             </form>
         </section>
 
-        <!-- Optional compact list (unused on this page, saved to localStorage) -->
+        <!-- Optional saved list -->
         <div id="savedQuestionsList" class="qb__list"></div>
+
     </main>
 </div>
 
+<!-- Scripts -->
 <script src="js/question-creator.js"></script>
-<!-- Auto-suggest existing questions -->
 <script src="js/question-suggestions.js"></script>
-</body>
-</html>
 
 </body>
 </html>
