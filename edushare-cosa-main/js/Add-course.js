@@ -1,72 +1,8 @@
-// Course data structure containing all available options
-const courseData = {
-    english: [
-        { code: 'ENG 010', name: 'English Fundamentals' },
-        { code: 'ENG 101', name: 'English I (Grade 9)' },
-        { code: 'ENG 102', name: 'English II (Grade 10)' },
-        { code: 'ENG 201', name: 'English III (Grade 11)' },
-        { code: 'ENG 202', name: 'English IV (Grade 12)' },
-        { code: 'ENG 110', name: 'Creative Writing' },
-        { code: 'ENG 120', name: 'Literature & Composition' },
-        { code: 'ENG 130', name: 'English for Academic Purposes' },
-        { code: 'ENG 140', name: 'Business English' }
-    ],
-    math: [
-        { code: 'MATH 010', name: 'Basic Mathematics' },
-        { code: 'MATH 101', name: 'Algebra I (Grade 9)' },
-        { code: 'MATH 102', name: 'Geometry (Grade 10)' },
-        { code: 'MATH 201', name: 'Algebra II (Grade 11)' },
-        { code: 'MATH 202', name: 'Pre-Calculus (Grade 12)' },
-        { code: 'MATH 301', name: 'Calculus I' },
-        { code: 'MATH 302', name: 'Calculus II' },
-        { code: 'MATH 110', name: 'Statistics & Probability' },
-        { code: 'MATH 120', name: 'Trigonometry' },
-        { code: 'MATH 150', name: 'Applied Mathematics' }
-    ],
-    computer: {
-        programming: [
-            { code: 'CS-PROG-101', name: 'Java Programming' },
-            { code: 'CS-PROG-102', name: 'Python Programming' },
-            { code: 'CS-PROG-103', name: 'C++ Programming' },
-            { code: 'CS-PROG-104', name: 'C# Programming' },
-            { code: 'CS-PROG-105', name: 'JavaScript' },
-            { code: 'CS-PROG-106', name: 'HTML & CSS' },
-            { code: 'CS-PROG-107', name: 'PHP Programming' },
-            { code: 'CS-PROG-108', name: 'Ruby Programming' }
-        ],
-        networking: [
-            { code: 'CS-NET-101', name: 'Network Fundamentals' },
-            { code: 'CS-NET-102', name: 'Network Security' },
-            { code: 'CS-NET-103', name: 'Cisco CCNA' },
-            { code: 'CS-NET-104', name: 'Network Administration' },
-            { code: 'CS-NET-105', name: 'Wireless Networks' },
-            { code: 'CS-NET-106', name: 'Cloud Networking' }
-        ],
-        database: [
-            { code: 'CS-DB-101', name: 'SQL Fundamentals' },
-            { code: 'CS-DB-102', name: 'MySQL Database' },
-            { code: 'CS-DB-103', name: 'PostgreSQL' },
-            { code: 'CS-DB-104', name: 'MongoDB (NoSQL)' },
-            { code: 'CS-DB-105', name: 'Database Design' },
-            { code: 'CS-DB-106', name: 'Database Administration' }
-        ],
-        web: [
-            { code: 'CS-WEB-101', name: 'Web Development Fundamentals' },
-            { code: 'CS-WEB-102', name: 'Frontend Development' },
-            { code: 'CS-WEB-103', name: 'Backend Development' },
-            { code: 'CS-WEB-104', name: 'Full Stack Development' },
-            { code: 'CS-WEB-105', name: 'React.js' },
-            { code: 'CS-WEB-106', name: 'Node.js' }
-        ],
-        security: [
-            { code: 'CS-SEC-101', name: 'Cybersecurity Fundamentals' },
-            { code: 'CS-SEC-102', name: 'Ethical Hacking' },
-            { code: 'CS-SEC-103', name: 'Penetration Testing' },
-            { code: 'CS-SEC-104', name: 'Security Architecture' },
-            { code: 'CS-SEC-105', name: 'Cryptography' }
-        ]
-    }
-};
+// Add-course.js - Database-connected version
+// This replaces the hardcoded courseData with real API calls
+
+// Load API config
+const API_BASE_URL = 'http://localhost:3000/api';
 
 // Get references to DOM elements
 const mainCategory = document.getElementById('mainCategory');
@@ -80,15 +16,82 @@ const breadcrumb = document.getElementById('breadcrumb');
 const submitBtn = document.getElementById('submitBtn');
 const courseForm = document.getElementById('courseForm');
 
-// Object to store the current selected path (main, sub1, sub2)
+// Object to store the current selected path
 let selectedPath = {};
 
-// Handle change on main category select
-mainCategory.addEventListener('change', function () {
-    const category = this.value;
+// Store fetched course data
+let coursesByCategory = {};
+let allCourses = [];
 
-    // Save selected main category text (e.g., "English", "Mathematics")
-    selectedPath = { main: this.options[this.selectedIndex].text };
+// ============================================
+// INITIALIZE: Load courses from database
+// ============================================
+async function loadCoursesFromDatabase() {
+    try {
+        // Show loading state
+        mainCategory.disabled = true;
+        
+        // Fetch all courses from API
+        const response = await fetch(`${API_BASE_URL}/user/courses?userId=1`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        allCourses = data.courses || [];
+        
+        // Organize courses by category
+        coursesByCategory = {};
+        allCourses.forEach(course => {
+            const categoryName = course.category_name;
+            if (!coursesByCategory[categoryName]) {
+                coursesByCategory[categoryName] = [];
+            }
+            coursesByCategory[categoryName].push(course);
+        });
+        
+        // Populate main category dropdown
+        populateMainCategories();
+        
+        // Enable the dropdown
+        mainCategory.disabled = false;
+        
+        console.log('✅ Loaded courses from database:', coursesByCategory);
+        
+    } catch (error) {
+        console.error('❌ Failed to load courses:', error);
+        alert('Failed to load courses from database. Please make sure the backend server is running on http://localhost:3000');
+        mainCategory.disabled = false;
+    }
+}
+
+// ============================================
+// Populate main category dropdown
+// ============================================
+function populateMainCategories() {
+    // Clear existing options except the first one
+    mainCategory.innerHTML = '<option value="">-- Select Category --</option>';
+    
+    // Add categories from database
+    Object.keys(coursesByCategory).forEach(categoryName => {
+        const option = document.createElement('option');
+        option.value = categoryName.toLowerCase().replace(/\s+/g, '_');
+        option.textContent = categoryName;
+        option.dataset.categoryName = categoryName;
+        mainCategory.appendChild(option);
+    });
+}
+
+// ============================================
+// Handle main category change
+// ============================================
+mainCategory.addEventListener('change', function () {
+    const categoryValue = this.value;
+    const categoryName = this.options[this.selectedIndex].dataset.categoryName;
+
+    // Save selected main category text
+    selectedPath = { main: categoryName || this.options[this.selectedIndex].text };
 
     // Reset subcategory groups and options
     subCategory1Group.classList.add('hidden');
@@ -97,33 +100,22 @@ mainCategory.addEventListener('change', function () {
     subCategory2.innerHTML = '<option value="">-- Select --</option>';
     submitBtn.disabled = true;
 
-    // If English or Math, show list of course codes directly
-    if (category === 'english' || category === 'math') {
-        subCategory1Label.textContent = 'Select Course Code';
-        courseData[category].forEach(course => {
+    if (categoryValue && categoryName) {
+        // Get courses for this category
+        const courses = coursesByCategory[categoryName] || [];
+        
+        // Populate course dropdown
+        subCategory1Label.textContent = 'Select Course';
+        courses.forEach(course => {
             const option = document.createElement('option');
-            option.value = course.code;
-            option.textContent = `${course.code} - ${course.name}`;
+            option.value = course.course_id;
+            option.textContent = `${course.course_name} - ${course.description || ''}`;
+            option.dataset.courseId = course.course_id;
+            option.dataset.courseName = course.course_name;
+            option.dataset.courseDescription = course.description;
             subCategory1.appendChild(option);
         });
-        subCategory1Group.classList.remove('hidden');
-    }
-    // If Computer Science, first show specializations (programming, networking, etc.)
-    else if (category === 'computer') {
-        subCategory1Label.textContent = 'Select Specialization';
-        const specializations = [
-            { value: 'programming', text: 'Programming' },
-            { value: 'networking', text: 'Networking' },
-            { value: 'database', text: 'Database Management' },
-            { value: 'web', text: 'Web Development' },
-            { value: 'security', text: 'Cybersecurity' }
-        ];
-        specializations.forEach(spec => {
-            const option = document.createElement('option');
-            option.value = spec.value;
-            option.textContent = spec.text;
-            subCategory1.appendChild(option);
-        });
+        
         subCategory1Group.classList.remove('hidden');
     }
 
@@ -131,49 +123,29 @@ mainCategory.addEventListener('change', function () {
     updateBreadcrumb();
 });
 
-// Handle change on subCategory1 select
+// ============================================
+// Handle course selection (subCategory1)
+// ============================================
 subCategory1.addEventListener('change', function () {
-    const mainCat = mainCategory.value;
-    const subCat = this.value;
+    const courseId = this.value;
 
-    // Hide second subcategory and reset its options
+    // Hide second subcategory (not needed for basic setup)
     subCategory2Group.classList.add('hidden');
     subCategory2.innerHTML = '<option value="">-- Select --</option>';
 
-    // For English and Math, this select contains the final course code
-    if (mainCat === 'english' || mainCat === 'math') {
-        selectedPath.sub1 = this.options[this.selectedIndex].text;
-        submitBtn.disabled = false;
-    }
-    // For Computer Science, this select contains specializations
-    else if (mainCat === 'computer' && subCat) {
-        selectedPath.sub1 = this.options[this.selectedIndex].text;
-
-        // Populate second subcategory with courses for the chosen specialization
-        courseData.computer[subCat].forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.code;
-            option.textContent = `${course.code} - ${course.name}`;
-            subCategory2.appendChild(option);
-        });
-
-        subCategory2Group.classList.remove('hidden');
-        submitBtn.disabled = true;
-    }
-
-    // Update the visual breadcrumb path
-    updateBreadcrumb();
-});
-
-// Handle change on subCategory2 select (only used for Computer Science)
-subCategory2.addEventListener('change', function () {
-    if (this.value) {
-        // Save the full course code and name chosen
-        selectedPath.sub2 = this.options[this.selectedIndex].text;
+    if (courseId) {
+        // Save the selected course info
+        const selectedOption = this.options[this.selectedIndex];
+        selectedPath.sub1 = selectedOption.textContent;
+        selectedPath.courseId = courseId;
+        selectedPath.courseName = selectedOption.dataset.courseName;
+        
+        // Enable submit button
         submitBtn.disabled = false;
     } else {
-        // If user clears the selection, remove it from the path and disable submit
-        delete selectedPath.sub2;
+        delete selectedPath.sub1;
+        delete selectedPath.courseId;
+        delete selectedPath.courseName;
         submitBtn.disabled = true;
     }
 
@@ -181,32 +153,27 @@ subCategory2.addEventListener('change', function () {
     updateBreadcrumb();
 });
 
-// Function to update the breadcrumb UI showing current selection
+// ============================================
+// Update breadcrumb display
+// ============================================
 function updateBreadcrumb() {
-    // Clear previous breadcrumb items
     breadcrumb.innerHTML = '';
 
-    // If there is no selection at all, hide the selection path box
     if (Object.keys(selectedPath).length === 0) {
         selectionPath.classList.remove('show');
         return;
     }
 
-    // Show the selection path box
     selectionPath.classList.add('show');
 
-    // Build an array from the selected path in correct order
     const items = [];
     if (selectedPath.main) items.push(selectedPath.main);
     if (selectedPath.sub1) items.push(selectedPath.sub1);
-    if (selectedPath.sub2) items.push(selectedPath.sub2);
 
-    // Create elements for each breadcrumb item
     items.forEach((item, index) => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'breadcrumb-item';
 
-        // Add arrow before all items except the first one
         if (index > 0) {
             const arrow = document.createElement('span');
             arrow.textContent = '→';
@@ -221,33 +188,21 @@ function updateBreadcrumb() {
     });
 }
 
+// ============================================
 // Handle form submission
+// ============================================
 courseForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Build final path string (for display, if needed)
-    const finalPath = Object.values(selectedPath).join(' → ');
-
-    // Main category text (e.g., "English", "Mathematics", "Computer Science")
-    const courseCategory = selectedPath.main || '';
-
-    // Full label from select, like "ENG 010 - English Fundamentals"
-    const fullCourseLabel =
-        selectedPath.sub2      // Computer Science case
-        || selectedPath.sub1   // English / Math case
-        || '';
-
-    // Extract only the course code part before " - "
-    const courseCode = fullCourseLabel.split(' - ')[0].trim();
-
-    // Object representing the new course
+    // Build the course object to save
     const newCourse = {
-        category: courseCategory, // e.g., "English"
-        code: courseCode,         // e.g., "ENG 010"
-        fullPath: finalPath
+        category: selectedPath.main || '',
+        code: selectedPath.courseName || '',
+        courseId: selectedPath.courseId || '',
+        fullPath: Object.values(selectedPath).filter(v => typeof v === 'string').join(' → ')
     };
 
-    // Read existing course list from sessionStorage (or start empty)
+    // Read existing course list from sessionStorage
     let courseList = [];
     try {
         const stored = sessionStorage.getItem('myCourses');
@@ -258,13 +213,16 @@ courseForm.addEventListener('submit', function (e) {
         console.warn('Could not read myCourses from sessionStorage:', err);
     }
 
-    // Optional: avoid duplicates (same category + code)
+    // Avoid duplicates
     const exists = courseList.some(
-        c => c.category === newCourse.category && c.code === newCourse.code
+        c => c.courseId === newCourse.courseId
     );
 
     if (!exists) {
         courseList.push(newCourse);
+        console.log('✅ Added course:', newCourse);
+    } else {
+        console.log('ℹ️ Course already exists');
     }
 
     // Save updated list back to sessionStorage
@@ -274,6 +232,14 @@ courseForm.addEventListener('submit', function (e) {
         console.warn('Could not save myCourses to sessionStorage:', err);
     }
 
-    // Redirect back to user-area page
+    // Redirect back to user area
     window.location.href = 'User-Area.html';
+});
+
+// ============================================
+// Initialize on page load
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Loading courses from database...');
+    loadCoursesFromDatabase();
 });

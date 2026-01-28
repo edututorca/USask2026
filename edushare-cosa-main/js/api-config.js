@@ -7,7 +7,7 @@
 
 const API_CONFIG = {
     // Changeed this to your actual URL
-    BASE_URL: 'https://172.16.1.70',
+   BASE_URL: 'http://localhost:3000/api',
     
     // Endpoints
     ENDPOINTS: {

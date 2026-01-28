@@ -4,28 +4,40 @@
 /**
  * Loads topics from Topic table filtered by selected Subject
  * Example: If "Plays" is selected, shows "Romeo & Juliet", "Macbeth", etc.
+ * 
+ * UPDATED: Now uses RESTful API endpoints
  */
 (function () {
     async function loadTopicsForSubject(subjectId) {
         const bar = document.getElementById('topicsBar');
         if (!bar) return;
 
-        showLoading(bar, 'Loading topics...');
+        bar.innerHTML = '<div style="color: #999; padding: 10px; text-align: center;">Loading topics...</div>';
 
         try {
-            // Fetch topics for this subject
-            const data = await apiRequest(`${API_CONFIG.ENDPOINTS.TOPICS}?subjectId=${subjectId}`);
-            const topics = data.topics || data || [];
+            // NEW: Use RESTful endpoint
+            const url = `http://localhost:3000/api/subjects/${subjectId}/topics`;
+            console.log('📚 Fetching topics from:', url);
+
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const topics = await response.json();
+            console.log('✅ Received topics:', topics);
 
             if (topics.length === 0) {
-                showEmpty(bar, 'No topics available');
+                bar.innerHTML = '<div style="color: #999; padding: 10px; text-align: center;">No topics available</div>';
                 return;
             }
 
             // Build topic tabs
             const html = topics.map((topic, index) => {
-                const topicName = topic.TopicName || topic.topicName || 'Untitled';
-                const topicId = topic.TopicID || topic.topicID;
+                // API returns topic_name (snake_case)
+                const topicName = topic.topic_name || 'Untitled';
+                const topicId = topic.topic_id;
                 
                 // First topic is active by default
                 const activeClass = index === 0 ? ' active' : '';
@@ -53,12 +65,27 @@
             // Auto-load subtopics for first topic
             if (topics.length > 0) {
                 const firstTopic = topics[0];
-                loadSubtopicsForTopic(firstTopic.TopicID || firstTopic.topicID);
+                const firstTopicId = firstTopic.topic_id;
+                
+                // Show subtopics row
+                const subtopicsRow = document.getElementById('rowSubtopics');
+                if (subtopicsRow) {
+                    subtopicsRow.classList.remove('hidden');
+                }
+                
+                if (window.loadSubtopicsForTopic) {
+                    window.loadSubtopicsForTopic(firstTopicId);
+                }
             }
 
         } catch (error) {
-            console.error('Failed to load topics:', error);
-            showError(bar, 'Failed to load topics');
+            console.error('❌ Failed to load topics:', error);
+            bar.innerHTML = `
+                <div style="color: #c33; padding: 10px; text-align: center;">
+                    Failed to load topics<br>
+                    <small>Check console for details</small>
+                </div>
+            `;
         }
     }
 
@@ -79,7 +106,9 @@
         try {
             sessionStorage.setItem('currentTopicId', topicId);
             sessionStorage.setItem('currentTopicName', btn.dataset.topicName);
-        } catch {}
+        } catch (e) {
+            console.warn('Could not save to sessionStorage:', e);
+        }
 
         // Show subtopics row
         const subtopicsRow = document.getElementById('rowSubtopics');
@@ -95,6 +124,13 @@
         if (window.loadSubtopicsForTopic) {
             window.loadSubtopicsForTopic(topicId);
         }
+    }
+
+    // Helper function to escape HTML (if not already defined)
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     // Make functions available globally
