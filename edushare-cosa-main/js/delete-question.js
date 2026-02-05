@@ -1,50 +1,42 @@
 /* ===================================================== */
 /* ============== DELETE (X) QUESTION HANDLER =========== */
 /* ===================================================== */
+/**
+ * Soft-delete (hide) handler.
+ * Adds the question ID to localStorage['hiddenQuestionIds'] so it won't be rendered,
+ * but remains in the database.
+ */
 (function () {
-    const list = document.querySelector('.q-list');
+    const list = document.getElementById('questionsList');
     if (!list) return;
 
-    // Helpers to read the current Play/Act/Scene from active tabs
-    const getActiveText = sel => (document.querySelector(sel + '.active')?.textContent.trim()) || '';
-    function getContext() {
-        const play  = getActiveText('.tab--play') || 'Unknown Play';
-        const act   = (getActiveText('.tab--act')   || '1').replace(/[^0-9]/g,'') || '1';
-        const scene = (getActiveText('.tab--scene') || '1').replace(/[^0-9]/g,'') || '1';
-        return { play, act, scene };
-    }
-
-    // Clicks inside the question list
     list.addEventListener('click', (e) => {
-        const btn = e.target.closest('.i.cross');         // only handle the X button
+        const btn = e.target.closest('.i.cross');         // handle the X button
         if (!btn) return;
 
         const row = btn.closest('.q-row');
         if (!row) return;
 
+        const qid = row.dataset.questionId;
+        if (!qid) return;
+
         // Ask for confirmation
-        if (!confirm('Delete this question?')) return;
+        if (!confirm('Hide this question? It will remain in the database but won\'t be shown here.')) return;
 
-        // Remove from localStorage if it exists there
-        const { play, act, scene } = getContext();
-        const key = `questions::${play}::A${act}::S${scene}`;
-
-        let items = [];
-        try { items = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
-
-        const qid = row.dataset.qid;                      // present for items added from our creator
-        const titleEl = row.querySelector('.q-title');
-        if (qid) {
-            items = items.filter(q => q.id !== qid);
-        } else if (titleEl) {
-            // Fallback: match by text (useful for hard-coded seed items)
-            const txt = titleEl.textContent.trim();
-            const i = items.findIndex(q => (q.text || '').trim() === txt);
-            if (i > -1) items.splice(i, 1);
+        // Add to hidden list in localStorage
+        let hiddenIds = [];
+        try {
+            hiddenIds = JSON.parse(localStorage.getItem('hiddenQuestionIds') || '[]');
+        } catch (err) {
+            console.warn('Failed to parse hiddenIds:', err);
         }
-        localStorage.setItem(key, JSON.stringify(items));
 
-        // Remove from DOM
+        if (!hiddenIds.includes(String(qid))) {
+            hiddenIds.push(String(qid));
+            localStorage.setItem('hiddenQuestionIds', JSON.stringify(hiddenIds));
+        }
+
+        // Remove from DOM immediately
         row.remove();
     });
 })();

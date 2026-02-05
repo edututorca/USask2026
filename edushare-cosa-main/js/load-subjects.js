@@ -7,8 +7,10 @@
      * @param {Object} [options]
      * @param {string} [options.courseCategory] - e.g. "English"
      * @param {string} [options.courseCode]     - e.g. "ENG 010"
+     * @param {string} [options.initialSubjectId] - Subject ID to auto-select
      */
     async function loadSubjects(options = {}) {
+        console.log('[load-subjects] loadSubjects called with options:', options);
         const userId = getCurrentUserId();
         const nav = document.getElementById('primaryNav');
         if (!nav) return;
@@ -75,6 +77,21 @@
         nav.querySelectorAll('.nav-link').forEach(btn => {
             btn.addEventListener('click', handleSubjectClick);
         });
+
+        // Auto-select initial subject if provided
+        if (options.initialSubjectId) {
+            const initialBtn = nav.querySelector(`.nav-link[data-subject-id="${options.initialSubjectId}"]`);
+            if (initialBtn) {
+                console.log('[load-subjects] Auto-selecting subject:', options.initialSubjectId);
+                // We need to pass the initialTopicId etc. down. 
+                // Let's store them temporarily or pass them to handleSubjectClick.
+                initialBtn.dataset.initialTopicId = options.initialTopicId || '';
+                initialBtn.dataset.initialSubtopicId = options.initialSubtopicId || '';
+                initialBtn.dataset.initialSectionId = options.initialSectionId || '';
+                initialBtn.dataset.newQuestionIds = options.newQuestionIds || '';
+                initialBtn.click();
+            }
+        }
     }
 
     /**
@@ -104,27 +121,39 @@
         document.getElementById('questionsList').innerHTML = '';
 
         if (window.loadTopicsForSubject) {
-            window.loadTopicsForSubject(subjectId);
+            window.loadTopicsForSubject(subjectId, {
+                initialTopicId: btn.dataset.initialTopicId,
+                initialSubtopicId: btn.dataset.initialSubtopicId,
+                initialSectionId: btn.dataset.initialSectionId,
+                newQuestionIds: btn.dataset.newQuestionIds
+            });
         }
     }
 
     /**
      * Public helper for courses
      */
-    function loadSubjectsForCourse(category, code) {
+    function loadSubjectsForCourse(category, code, autoNavOptions = {}) {
+        console.log('[load-subjects] loadSubjectsForCourse called:', category, code, autoNavOptions);
         console.log('[MANUAL] Course clicked, resetting flow:', category, code);
 
         // 1. Clear any saved act/scene context to prevent auto-highlights
-        sessionStorage.removeItem('ctx:last');
-        sessionStorage.removeItem('currentSubjectId');
-        sessionStorage.removeItem('currentTopicId');
-        sessionStorage.removeItem('currentSectionId');
+        if (!autoNavOptions.initialSubjectId) {
+            sessionStorage.removeItem('ctx:last');
+            sessionStorage.removeItem('currentSubjectId');
+            sessionStorage.removeItem('currentTopicId');
+            sessionStorage.removeItem('currentSectionId');
+        }
 
         // 2. Hide all rows before we even start
         document.querySelectorAll('.row').forEach(r => r.classList.add('hidden'));
         document.getElementById('contentArea')?.classList.add('hidden');
 
-        loadSubjects({ courseCategory: category, courseCode: code });
+        loadSubjects({
+            courseCategory: category,
+            courseCode: code,
+            ...autoNavOptions
+        });
     }
 
     // Initial load (removed - subjects should only load after course selection)

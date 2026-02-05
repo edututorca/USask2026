@@ -5,7 +5,7 @@
  * Loads questions from QuestionPool table for the selected Section
  */
 (function () {
-    async function loadQuestionsForSection(sectionId) {
+    async function loadQuestionsForSection(sectionId, newQuestionIdsParam) {
         const list = document.getElementById('questionsList');
         if (!list) return;
 
@@ -17,13 +17,40 @@
             let questions = data.questions || data || [];
 
             // Build questions HTML
-            const html = questions.map(q => buildQuestionRow(q)).join('');
+            let hiddenIds = [];
+            try {
+                hiddenIds = JSON.parse(localStorage.getItem('hiddenQuestionIds') || '[]');
+            } catch (e) {
+                console.warn('Failed to parse hiddenQuestionIds:', e);
+            }
+
+            // Filter out hidden questions
+            const visibleQuestions = questions.filter(q => {
+                const qid = String(q.QuestionID || q.questionID);
+                return !hiddenIds.includes(qid);
+            });
+
+            const html = visibleQuestions.map(q => buildQuestionRow(q)).join('');
             list.innerHTML = html;
 
             // Add click handlers for AI buttons
             list.querySelectorAll('[data-action="ai"]').forEach(btn => {
                 btn.addEventListener('click', handleAiButtonClick);
             });
+
+            // Auto-select (check) new questions
+            const params = new URLSearchParams(window.location.search);
+            const newIdsParam = newQuestionIdsParam || params.get('newQuestionIds');
+            if (newIdsParam) {
+                const newIds = newIdsParam.split(',');
+                newIds.forEach(id => {
+                    const row = list.querySelector(`.q-row[data-question-id="${id}"]`);
+                    if (row) {
+                        const cb = row.querySelector('input[type="checkbox"]');
+                        if (cb) cb.checked = true;
+                    }
+                });
+            }
 
         } catch (error) {
             console.error('Failed to load questions:', error);
@@ -36,7 +63,12 @@
         const row = btn.closest('.q-row');
         const qText = row.querySelector('.q-title')?.textContent || '';
 
-        // Get context from tabs
+        // Get context from tabs/session
+        const subjectId = sessionStorage.getItem('currentSubjectId') || '';
+        const topicId = sessionStorage.getItem('currentTopicId') || '';
+        const subtopicId = sessionStorage.getItem('currentSubtopicId') || '';
+        const sectionId = sessionStorage.getItem('currentSectionId') || '';
+
         const play = getTabText('.tab--topic') || 'Romeo & Juliet';
         const actRaw = getTabText('.tab--subtopic') || 'Act 1';
         const scnRaw = getTabText('.tab--section') || 'Scene 1';
@@ -48,7 +80,19 @@
         url.searchParams.set('play', play);
         url.searchParams.set('act', act);
         url.searchParams.set('scene', scene);
-        // url.searchParams.set('seed', qText); // Could pass the question text as a seed
+
+        // Pass IDs for returning
+        url.searchParams.set('subjectId', subjectId);
+        url.searchParams.set('topicId', topicId);
+        url.searchParams.set('subtopicId', subtopicId);
+        url.searchParams.set('sectionId', sectionId);
+
+        // Get Course Info from session
+        const courseCode = sessionStorage.getItem('currentCourseCode') || '';
+        const courseCategory = sessionStorage.getItem('currentCourseCategory') || '';
+
+        if (courseCode) url.searchParams.set('courseCode', courseCode);
+        if (courseCategory) url.searchParams.set('courseCategory', courseCategory);
 
         window.location.href = url.toString();
     }

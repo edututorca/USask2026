@@ -2,7 +2,8 @@
 /* ========= LOAD SUBTOPICS (ACTS / CHAPTERS) ========= */
 /* ===================================================== */
 (function () {
-    async function loadSubtopicsForTopic(topicId) {
+    async function loadSubtopicsForTopic(topicId, autoNavOptions = {}) {
+        console.log('[load-subtopics] loadSubtopicsForTopic called:', topicId, autoNavOptions);
         const bar = document.getElementById('subtopicsBar');
         if (!bar) return;
 
@@ -47,6 +48,17 @@
         bar.querySelectorAll('.tab--subtopic').forEach(btn => {
             btn.addEventListener('click', handleSubtopicClick);
         });
+
+        // Auto-select initial subtopic
+        if (autoNavOptions.initialSubtopicId) {
+            const initialBtn = bar.querySelector(`.tab--subtopic[data-subtopic-id="${autoNavOptions.initialSubtopicId}"]`);
+            if (initialBtn) {
+                console.log('[load-subtopics] Auto-selecting subtopic:', autoNavOptions.initialSubtopicId);
+                initialBtn.dataset.initialSectionId = autoNavOptions.initialSectionId || '';
+                initialBtn.dataset.newQuestionIds = autoNavOptions.newQuestionIds || '';
+                initialBtn.click();
+            }
+        }
     }
 
     function handleSubtopicClick(e) {
@@ -69,7 +81,10 @@
         document.getElementById('questionsList').innerHTML = '';
 
         if (window.loadSectionsForSubtopic) {
-            window.loadSectionsForSubtopic(id);
+            window.loadSectionsForSubtopic(id, {
+                initialSectionId: btn.dataset.initialSectionId,
+                newQuestionIds: btn.dataset.newQuestionIds
+            });
         }
     }
 

@@ -7,6 +7,34 @@
     const actFromUrl = params.get('act') || '1';
     const sceneFromUrl = params.get('scene') || '1';
 
+    // Hierarchy IDs for return trip
+    const subjectId = params.get('subjectId') || '';
+    const topicId = params.get('topicId') || '';
+    const subtopicId = params.get('subtopicId') || '';
+    const sectionId = params.get('sectionId') || '';
+    const courseCode = params.get('courseCode') || '';
+    const courseCategory = params.get('courseCategory') || '';
+    let newQuestionIds = [];
+
+    function getReturnUrl() {
+        const url = new URL(BACK_URL, window.location.href);
+        if (subjectId) url.searchParams.set('subjectId', subjectId);
+        if (topicId) url.searchParams.set('topicId', topicId);
+        if (subtopicId) url.searchParams.set('subtopicId', subtopicId);
+        if (sectionId) url.searchParams.set('sectionId', sectionId);
+        if (courseCode) url.searchParams.set('courseCode', courseCode);
+        if (courseCategory) url.searchParams.set('courseCategory', courseCategory);
+        if (newQuestionIds.length > 0) url.searchParams.set('newQuestionIds', newQuestionIds.join(','));
+
+        // Also keep the play/act/scene for legacy or reference
+        url.searchParams.set('play', play);
+        url.searchParams.set('act', actSelect.value);
+        url.searchParams.set('scene', sceneSelect.value);
+
+        console.log('[ai-question-creator] Generated return URL:', url.toString());
+        return url.toString();
+    }
+
     // Elements
     const ctxEl = document.getElementById('aiContextInfo');
     const btnBack = document.getElementById('btnBack');
@@ -28,7 +56,7 @@
     sceneSelect.value = sceneFromUrl;
 
     btnBack.addEventListener('click', () => {
-        window.location.href = `${BACK_URL}?play=${encodeURIComponent(play)}&act=${encodeURIComponent(actSelect.value)}&scene=${encodeURIComponent(sceneSelect.value)}`;
+        window.location.href = getReturnUrl();
     });
 
     // Toggle quantity inputs based on checkbox
@@ -332,7 +360,7 @@
         try {
             // Save each question to the database
             for (const q of kept) {
-                await apiRequest(API_CONFIG.ENDPOINTS.QUESTIONS, {
+                const res = await apiRequest(API_CONFIG.ENDPOINTS.QUESTIONS, {
                     method: 'POST',
                     body: JSON.stringify({
                         text: q.text,
@@ -342,10 +370,13 @@
                         options: q.options
                     })
                 });
+                if (res && res.questionId) {
+                    newQuestionIds.push(res.questionId);
+                }
             }
 
             alert(`Saved ${kept.length} question(s) to database.`);
-            window.location.href = `${BACK_URL}?play=${encodeURIComponent(play)}&act=${encodeURIComponent(act)}&scene=${encodeURIComponent(scene)}`;
+            window.location.href = getReturnUrl();
         } catch (e) {
             alert('Failed to save some questions.');
             console.error(e);

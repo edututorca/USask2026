@@ -66,6 +66,7 @@
                     if (changed) {
                         console.log('[load-courses] API load successful, re-rendering list');
                         renderCourseList(allCourses, list);
+                        performAutoSelection(); // Try auto-selection again after API results
                     }
                 }
             } catch (e) {
@@ -73,6 +74,43 @@
             }
         } else {
             console.log('[load-courses] No userId found, skipping API load.');
+        }
+
+        // Trigger auto-selection
+        performAutoSelection();
+    }
+
+    let hasSelectionOccurred = false;
+    function performAutoSelection() {
+        const params = new URLSearchParams(window.location.search);
+        let autoCode = params.get('courseCode');
+        if (!autoCode || hasSelectionOccurred) return;
+
+        // Clean up the code (handle spaces encoded as + or %20)
+        autoCode = decodeURIComponent(autoCode.replace(/\+/g, ' ')).trim();
+
+        const list = document.getElementById('courseList');
+        const buttons = Array.from(list.querySelectorAll('.course-btn'));
+
+        // Try exact match or includes match
+        const target = buttons.find(b => {
+            // The button has a dot span and a text span. We want the text span.
+            const btnText = b.querySelector('span:last-child')?.textContent.trim() || b.textContent.trim();
+            return btnText === autoCode || btnText.includes(autoCode) || autoCode.includes(btnText);
+        });
+
+        if (target) {
+            console.log('[load-courses] Auto-selecting target course:', target.textContent.trim());
+            hasSelectionOccurred = true;
+            target.click();
+        } else {
+            console.log('[load-courses] Course code in URL:', autoCode, 'but not found in list. Retrying...');
+            // Stop retrying after 5 seconds to prevent infinite loop
+            if (!window._autoSelectRetryCount) window._autoSelectRetryCount = 0;
+            if (window._autoSelectRetryCount < 25) {
+                window._autoSelectRetryCount++;
+                setTimeout(performAutoSelection, 200);
+            }
         }
     }
 
@@ -135,8 +173,21 @@
                 btn.classList.add('active');
                 btn.style.background = 'rgba(255, 255, 255, 0.1)';
 
+                // Store Course Info for Return Trips (e.g. from AI Creator)
+                sessionStorage.setItem('currentCourseCode', code);
+                sessionStorage.setItem('currentCourseCategory', cat);
+
                 if (window.loadSubjectsForCourse) {
-                    window.loadSubjectsForCourse(cat, code);
+                    // Pass along any hierarchy IDs from URL for auto-navigation
+                    const params = new URLSearchParams(window.location.search);
+                    const autoNavOptions = {
+                        initialSubjectId: params.get('subjectId'),
+                        initialTopicId: params.get('topicId'),
+                        initialSubtopicId: params.get('subtopicId'),
+                        initialSectionId: params.get('sectionId'),
+                        newQuestionIds: params.get('newQuestionIds')
+                    };
+                    window.loadSubjectsForCourse(cat, code, autoNavOptions);
                 } else {
                     console.error('[load-courses] window.loadSubjectsForCourse not found!');
                 }

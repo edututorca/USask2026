@@ -2,7 +2,8 @@
 /* ============ LOAD TOPICS (PLAYS / NOVELS) ========== */
 /* ===================================================== */
 (function () {
-    async function loadTopicsForSubject(subjectId) {
+    async function loadTopicsForSubject(subjectId, autoNavOptions = {}) {
+        console.log('[load-topics] loadTopicsForSubject called:', subjectId, autoNavOptions);
         const bar = document.getElementById('topicsBar');
         if (!bar) return;
 
@@ -50,6 +51,29 @@
         bar.querySelectorAll('.tab--topic').forEach(btn => {
             btn.addEventListener('click', handleTopicClick);
         });
+
+        // NEW: Hook up the add button
+        const addBtn = bar.querySelector('.tab--add');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                const url = new URL('add-play.html', window.location.href);
+                url.searchParams.set('subjectId', subjectId);
+                url.searchParams.set('from', window.location.href);
+                window.location.href = url.toString();
+            });
+        }
+
+        // Auto-select initial topic
+        if (autoNavOptions.initialTopicId) {
+            const initialBtn = bar.querySelector(`.tab--topic[data-topic-id="${autoNavOptions.initialTopicId}"]`);
+            if (initialBtn) {
+                console.log('[load-topics] Auto-selecting topic:', autoNavOptions.initialTopicId);
+                initialBtn.dataset.initialSubtopicId = autoNavOptions.initialSubtopicId || '';
+                initialBtn.dataset.initialSectionId = autoNavOptions.initialSectionId || '';
+                initialBtn.dataset.newQuestionIds = autoNavOptions.newQuestionIds || '';
+                initialBtn.click();
+            }
+        }
     }
 
     function handleTopicClick(e) {
@@ -74,7 +98,11 @@
         document.getElementById('questionsList').innerHTML = '';
 
         if (window.loadSubtopicsForTopic) {
-            window.loadSubtopicsForTopic(topicId);
+            window.loadSubtopicsForTopic(topicId, {
+                initialSubtopicId: btn.dataset.initialSubtopicId,
+                initialSectionId: btn.dataset.initialSectionId,
+                newQuestionIds: btn.dataset.newQuestionIds
+            });
         }
     }
 

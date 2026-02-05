@@ -2,7 +2,8 @@
 /* ========= LOAD SECTIONS (SCENES / LESSONS) ========= */
 /* ===================================================== */
 (function () {
-    async function loadSectionsForSubtopic(subtopicId) {
+    async function loadSectionsForSubtopic(subtopicId, autoNavOptions = {}) {
+        console.log('[load-sections] loadSectionsForSubtopic called:', subtopicId, autoNavOptions);
         const bar = document.getElementById('sectionsBar');
         if (!bar) return;
 
@@ -46,6 +47,16 @@
             btn.addEventListener('click', handleSectionClick);
         });
 
+        // Auto-select initial section
+        if (autoNavOptions.initialSectionId) {
+            const initialBtn = bar.querySelector(`.tab--section[data-section-id="${autoNavOptions.initialSectionId}"]`);
+            if (initialBtn) {
+                console.log('[load-sections] Auto-selecting section:', autoNavOptions.initialSectionId);
+                initialBtn.dataset.newQuestionIds = autoNavOptions.newQuestionIds || '';
+                initialBtn.click();
+            }
+        }
+
     }
 
     function handleSectionClick(e) {
@@ -62,7 +73,7 @@
         document.getElementById('contentArea')?.classList.remove('hidden');
 
         if (window.loadQuestionsForSection) {
-            window.loadQuestionsForSection(id);
+            window.loadQuestionsForSection(id, btn.dataset.newQuestionIds);
         }
     }
 
