@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduShare – Learning Hub</title>
+    <!-- Main app stylesheet -->
+    <link rel="stylesheet" href="css/user-area.css" />
+
+    <style>
+        /* --- KEBAB STYLES --- */
+        .kebab-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .kebab-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .kebab-menu {
+            display: none;
+            background: #1f2a44;
+            border-radius: 6px;
+            position: absolute;
+            margin-top: 5px;
+            padding: 10px;
+            width: 120px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        .kebab-menu.show {
+            display: block;
+        }
+
+        .kebab-item {
+            padding: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .kebab-item:hover {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--  TOP BAR  -->
+    <header class="topbar">
+        <div class="topbar__left">
+            <!-- Brand: logo + name, links to Home -->
+            <a class="brand" href="home.html" aria-label="Go to EduShare home">
+                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+                <span class="brand__name">EduShare</span>
+            </a>
+
+            <!-- Primary navigation - populated from Subject table -->
+            <nav id="primaryNav" class="primary-nav" aria-label="Primary">
+                <!-- Subjects will be loaded here dynamically after course selection -->
+            </nav>
+        </div>
+
+        <div class="topbar__right">
+            <button class="icon-btn" aria-label="Help">?</button>
+            <button class="icon-btn" aria-label="Messages">💬</button>
+            <div class="plan-pill">Plans</div>
+            <div id="userChip" class="user-chip">
+                <!-- User info will be loaded dynamically -->
+                <div class="avatar" aria-hidden="true">?</div>
+                <div class="user-chip__txt">
+                    <div class="user-name">Loading...</div>
+                    <div class="user-points">XP: <strong>0</strong></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!--  MAIN LAYOUT  -->
+    <div class="layout">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar" aria-label="Sidebar">
+            <!-- Profile Card - populated from UserProfile table -->
+            <div id="profileCard" class="profile-card">
+                <div class="avatar large" aria-hidden="true">?</div>
+                <div class="profile-meta">
+                    <div class="profile-name">Loading...</div>
+                    <div class="profile-role">Teacher</div>
+                </div>
+            </div>
+
+            <!-- My Courses - populated from Course table (via UserCourse) -->
+            <div class="sidebar-block">
+
+
+                <!-- NEW: WRAP TITLE + KEBAB -->
+                <div class="kebab-wrapper">
+                    <div class="block-title">My Courses:</div>
+
+                    <!-- NEW: KEBAB BUTTON -->
+                    <button class="kebab-btn" id="coursesMenuBtn">⋮</button>
+                </div>
+
+                <!-- NEW: DROPDOWN -->
+                <div class="kebab-menu" id="coursesMenu">
+                    <div class="kebab-item">Archive</div>
+                    <div class="kebab-item">Delete</div>
+                </div>
+
+                <ul id="courseList" class="course-list">
+                    <!-- Courses will be loaded here dynamically -->
+                    <li style="color: #999;">Loading courses...</li>
+
+
+                </ul>
+
+                <button id="btnAddCourse" class="btn btn-muted full"> + Add Course</button>
+            </div>
+
+            <div class="sidebar-block sticky-bottom">
+                <!-- REMOVED ARCHIVE HERE -->
+                <button id="btnProfile" class="btn btn-muted full">Profile</button>
+                <button id="btnLogout" class="btn btn-muted full">Log Out</button>
+            </div>
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+
+
+            <!--  ROW 1 – TOPICS (from Topic table, filtered by selected Subject)  -->
+            <section id="rowTopics" class="row row-topics hidden" aria-label="Topics row">
+                <div id="topicsBar" class="topics-bar">
+                    <!-- Topics will be loaded here dynamically -->
+                </div>
+            </section>
+
+            <!-- ROW 2 – SUBTOPICS (from SubTopic table, filtered by selected Topic)  -->
+            <section id="rowSubtopics" class="row row-subtopics hidden" aria-label="Subtopics row">
+                <div id="subtopicsBar" class="subtopics-bar">
+                    <!-- Subtopics will be loaded here dynamically -->
+                </div>
+            </section>
+
+            <!--  ROW 3 – SECTIONS (from Section table, filtered by selected SubTopic)  -->
+            <section id="rowSections" class="row row-sections hidden" aria-label="Sections row">
+                <div id="sectionsBar" class="sections-bar">
+                    <!-- Sections will be loaded here dynamically -->
+                </div>
+            </section>
+
+            <!--  CONTENT AREA (QUESTIONS LIST from QuestionPool)  -->
+            <section id="contentArea" class="content hidden" aria-label="Questions content">
+
+
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="left">
+                        <button class="btn btn-orange-pill">Randomize</button>
+                        <button class="btn btn-orange-outline">Filter</button>
+                    </div>
+
+                    <div class="center">
+                        <div class="search">
+                            <input id="searchInput" type="text" placeholder="Search Content" />
+                            <button id="btnSearch" type="button" class="magnifier">🔍</button>
+                        </div>
+                    </div>
+
+                    <div class="right">
+                        <button class="btn btn-warning">Worksheet</button>
+                        <button class="btn btn-warning">Quiz</button>
+                        <button class="btn btn-warning">Games</button>
+                    </div>
+                </div>
+
+                <!-- Select all -->
+                <div class="select-strip">
+                    <button class="btn btn-select-all">Select All</button>
+                </div>
+
+
+
+                <!-- QUESTION LIST (from QuestionPool table) -->
+                <div class="q-list" id="questionsList">
+                    <!-- Questions will be loaded here dynamically -->
+                    <div class="loading-state" style="text-align: center; padding: 40px; color: #999;">
+                        <p>Select a section to view questions</p>
+                    </div>
+                </div>
+
+                <!-- Content footer CTA: Add Question -->
+                <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+                    <a id="btnAddQuestion" class="btn btn-warning" href="javascript:void(0)">Add Question</a>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+
+    <script>
+        // TOGGLE MENU
+        document.getElementById("coursesMenuBtn").addEventListener("click", () => {
+            document.getElementById("coursesMenu").classList.toggle("show");
+        });
+
+        // CLOSE MENU WHEN CLICKING OUTSIDE
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("coursesMenu");
+            const btn = document.getElementById("coursesMenuBtn");
+
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove("show");
+            }
+        });
+    </script>
+
+    <!-- Core Scripts -->
+    <script src="js/api-config.js"></script>
+    <script src="js/restore-context.js"></script>
+
+    <!-- UI Component Loaders -->
+    <script src="js/load-user-profiles.js"></script>
+    <script src="js/load-courses.js"></script>
+    <script src="js/load-subjects.js"></script>
+    <script src="js/load-topics.js"></script>
+    <script src="js/load-subtopics.js"></script>
+    <script src="js/load-sections.js"></script>
+    <script src="js/load-questions.js"></script>
+
+    <!-- Navigation & Flow Control -->
+    <script src="js/navigation-flow.js"></script>
+
+    <!-- Interaction Scripts -->
+    <script src="js/search-question.js"></script>
+    <script src="js/add-question-link.js"></script>
+    <script src="js/delete-question.js"></script>
+    <script src="js/logout.js"></script>
+
+    <!-- Support Scripts -->
+    <script src="js/Add-course-link.js"></script>
+    <script src="js/profile-link.js"></script>
+
+
+</body>
+
+</html>

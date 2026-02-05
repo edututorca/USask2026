@@ -1,0 +1,275 @@
+
+/* =========================================================
+   EduShare — Home page (pixel-aligned to your mock)
+   - No overlap between content and orange blobs
+   - Safe zones left/right on desktop
+   ========================================================= */
+
+/* ---------- Theme tokens ---------- */
+:root{
+    --navy:#243a6b;
+    --navy-ink:#eaf0ff;
+    --ink:#1f2f57;
+    --ink-strong:#1e2b51;
+    --muted:#6879a1;
+    --bg:#ffffff;
+    --accent:#ff8f14;
+    --accent-deep:#ff7a00;
+    --pill-bg:#2f416e;
+    --radius:14px;
+    --shadow: 0 8px 24px rgba(0,0,0,.06);
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue";
+
+    /* Desktop “safe areas” to keep content away from blobs */
+    --safe-left: 96px;   /* keeps pills/text clear of bottom-left blob */
+    --safe-right: 140px; /* keeps illustration clear of top-right blob */
+}
+
+/* ---------- Base ---------- */
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+    height: 100%;
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+/* =========================================================
+   Top bar (fixed)
+   ========================================================= */
+.topbar{
+    position:fixed; inset:0 0 auto 0; height:64px;
+    background:var(--navy); color:var(--navy-ink);
+    z-index:1000; box-shadow:0 1px 0 rgba(255,255,255,.06) inset;
+}
+.topbar__inner{
+    height:100%;
+    max-width:1200px;
+    margin:0 auto; padding:0 16px;
+    display:flex; align-items:center; justify-content:space-between;
+}
+.brand{
+    display:flex; align-items:center; gap:10px;
+    color:var(--navy-ink); text-decoration:none; font-weight:800;
+}
+.brand__mark{
+    width:28px; height:28px; border-radius:50%;
+    display:grid; place-items:center; background:#fff; color:#2a75ff;
+    font-weight:900; font-size:0.95rem;
+}
+.brand__name{ letter-spacing:.2px; }
+
+.topbar__nav{ display:flex; align-items:center; gap:10px; }
+
+.btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    height:36px; padding:0 14px; border-radius:10px; text-decoration:none;
+    font-weight:800; letter-spacing:.2px;
+}
+.btn-login{
+    background:#fff; color:#20325f; border:1px solid #dbe3f6;
+}
+.btn-login:hover{ filter:brightness(0.98); }
+
+/* Spacer so content sits below the fixed bar */
+.topbar-spacer{ height:64px; }
+
+/* =========================================================
+   Hero
+   ========================================================= */
+.hero{
+    position:relative;
+    overflow:hidden;               /* clip decorative blobs to section */
+}
+.hero__inner{
+    display: flex;
+    max-width:1200px;
+    margin:0 auto;
+    padding: 38px 10px 26px;
+    display:grid;
+    grid-template-columns: 1.05fr 1fr; /* copy | art */
+    gap:4rem;
+    align-items:flex-start;
+    position:relative;
+    z-index:1;                      /* content above blobs */
+}
+.hero__copy{
+    min-width:0;
+    padding-left: var(--safe-left); /* ✅ keep text/pills away from left blob */
+}
+.hero__title{
+    margin:0 0 12px 0;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height:1.05;
+    font-weight:900;
+    color:var(--ink-strong);
+}
+.hero__subtitle{
+    margin:0 0 22px 0;
+    max-width:540px;
+    color:var(--muted);
+    font-size:clamp(15px, 1.6vw, 16.5px);
+    line-height:1.55;
+}
+.hero__cta{ display:flex; gap:12px; flex-wrap:wrap; }
+.pill{
+    display:inline-flex; align-items:center; justify-content:center;
+    height:38px; padding:0 16px;
+    border-radius:999px; text-decoration:none; font-weight:800;
+}
+.pill--primary{
+    background:var(--accent); color:#1e1e2b; border:1px solid rgba(0,0,0,.06);
+}
+.pill--primary:hover{ background:var(--accent-deep); color:#1e1e2b; }
+.pill--secondary{
+    background:var(--pill-bg); color:#fff; border:1px solid #40558c;
+}
+.pill--secondary:hover{ filter:brightness(1.06); }
+
+/* ---------- Illustration on the right ---------- */
+.hero__art{
+    width:100%;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    max-width:100%;
+    overflow:hidden;
+    padding-right: var(--safe-right); /* ✅ keep image clear of right blob */
+}
+.hero__art img{
+    width:100%;
+    max-width:400px;               /* desktop image size */
+    object-fit:contain;
+    filter: drop-shadow(var(--shadow));
+    user-select:none; -webkit-user-drag:none;
+}
+
+/* ---------- Decorative orange blobs (always BEHIND content) ---------- */
+.blob{
+    position:absolute; background:var(--accent);
+    pointer-events:none; opacity:1;
+    z-index:-1;                     /* ✅ force behind the content */
+}
+.blob--top-right{
+    right:-80px; top:0;
+    width:320px; height:220px;
+    border-bottom-left-radius:120px;
+    border-bottom-right-radius:120px;
+}
+.blob--bottom-left{
+    left:-120px; bottom:-60px;
+    width:340px; height:200px;
+    border-top-right-radius:160px;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 1100px){
+    :root{
+        --safe-left: 64px;    /* slightly smaller safe zones */
+        --safe-right: 110px;
+    }
+    .hero__art img{ max-width: 400px; }
+}
+
+@media (max-width: 980px){
+    :root{
+        --safe-left: 0px;     /* remove safe zones on stack layout */
+        --safe-right: 0px;
+    }
+    .hero__inner{
+        grid-template-columns: 1fr;  /* stack */
+        gap:28px;
+        padding:36px 16px 52px;
+    }
+    .hero__copy{ padding-left: 0; }
+    .hero__art{ justify-content:center; padding-right:0; }
+    .hero__art img{ max-width:360px; }
+}
+
+@media (max-width: 560px){
+    .hero__title{ font-size: clamp(28px, 7vw, 36px); }
+    .hero__subtitle{ font-size: 15px; }
+    .pill{ height:36px; padding:0 14px; }
+    .hero__art img{ max-width:260px; }
+}
+/* Hero still full-height */
+.hero{
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;           /* full page height */
+    overflow: hidden;            /* clip blobs */
+    background: var(--bg);
+}
+
+/* Keep real content above blobs */
+.hero__inner{ position: relative; z-index: 1; }
+
+/* ---------- ORANGE BLOBS (decor) ---------- */
+.hero .blob{
+    position: absolute;
+    background: var(--accent);   /* your orange */
+    pointer-events: none;
+    z-index: 0;                   /* stay behind content */
+}
+
+/* top-right pill */
+.hero .blob--top-right{
+    position: fixed;
+    top: 0;
+    right: -110px;               /* push slightly off canvas */
+    width: 420px;
+    height: 280px;
+    border-bottom-left-radius: 180px;
+}
+
+/* bottom-left arc */
+.hero .blob--bottom-left{
+    position: fixed;
+    left: -140px;                /* push slightly off canvas */
+    bottom: -120px;
+    width: 440px;
+    height: 300px;
+    border-top-right-radius: 220px;
+}
+
+/* Tweak sizes/offsets on smaller screens */
+@media (max-width: 980px){
+    .hero .blob--top-right{
+        right: -90px;
+        width: 340px; height: 230px;
+    }
+    .hero .blob--bottom-left{
+        left: -120px; bottom: -100px;
+        width: 360px; height: 240px;
+    }
+}
+@media (max-width: 560px){
+    .hero .blob--top-right{
+        right: -70px; width: 280px; height: 190px;
+    }
+    .hero .blob--bottom-left{
+        left: -100px; bottom: -80px; width: 300px; height: 200px;
+    }
+}
+
+/* Brand image style — smaller and aligned with text */
+.brand__logo {
+    width: 28px;          /* smaller size */
+    height: 28px;
+    border-radius: 50%;   /* keeps circular shape */
+    margin-right: 6px;    /* small space between logo and text */
+    object-fit: cover;    /* prevents stretching */
+    vertical-align: middle;
+    background-color: white; /* optional: adds white padding around the logo */
+    padding: 2px;         /* optional soft padding */
+}
+
+
+

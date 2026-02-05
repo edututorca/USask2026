@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare — Add New Play</title>
+    <!-- Reuse your app stylesheet -->
+    <link rel="stylesheet" href="css/user-area.css" />
+    <style>
+        /* --- KEBAB STYLES --- */
+        .kebab-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: relative; /* added this */
+        }
+
+        .kebab-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .kebab-menu {
+            display: none;
+            background: #1f2a44;
+            border-radius: 6px;
+            position: absolute;
+            margin-top: 5px;
+            padding: 10px;
+            width: 120px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 999;
+            right: 0; /* align menu to the right of the button */
+        }
+
+        .kebab-menu.show {
+            display: block;
+        }
+
+        .kebab-item {
+            padding: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .kebab-item:hover {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar" aria-label="Top navigation">
+    <div class="topbar__left">
+        <!-- Brand goes home -->
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+
+        <!-- Primary app nav -->
+        <nav class="primary-nav" aria-label="Primary">
+
+            <a class="nav-link" href="./User-Area.html">Plays</a>
+            <a class="nav-link" href="#">Novel</a>
+            <a class="nav-link" href="#">Grammar</a>
+            <a class="nav-link" href="#">Project</a>
+            <a class="nav-link" href="#">Speech</a>
+        </nav>
+    </div>
+
+    <div class="topbar__right">
+        <button class="icon-btn" aria-label="Help">?</button>
+        <button class="icon-btn" aria-label="Messages">💬</button>
+        <div class="plan-pill">Plans</div>
+        <div class="user-chip">
+            <div class="avatar" aria-hidden="true">J</div>
+            <div class="user-chip__txt">
+                <div class="user-name">Jake Test</div>
+                <div class="user-points">XP: <strong>142</strong></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- =================== LAYOUT =================== -->
+<div class="layout">
+    <!-- ===== Left sidebar (same as User-Area) ===== -->
+    <aside class="sidebar" aria-label="Sidebar">
+        <div class="profile-card">
+            <div class="avatar large" aria-hidden="true">J</div>
+            <div>
+                <div class="profile-name">Jessica</div>
+                <div class="profile-role">Student</div>
+            </div>
+        </div>
+
+        <div class="sidebar-block">
+
+            <!-- NEW: WRAP TITLE + KEBAB -->
+            <div class="kebab-wrapper">
+                <div class="block-title">My Courses:</div>
+
+                <!-- NEW: KEBAB BUTTON -->
+                <button class="kebab-btn" id="coursesMenuBtn">⋮</button>
+            </div>
+
+            <!-- NEW: DROPDOWN -->
+            <div class="kebab-menu" id="coursesMenu">
+                <div class="kebab-item">Archive</div>
+                <div class="kebab-item">Delete</div>
+            </div>
+
+            <ul class="course-list">
+                <li><span class="dot bg-green"></span>English</li>
+                <li><span class="dot bg-blue"></span>Math</li>
+                <li><span class="dot bg-purple"></span>Science</li>
+                <li><span class="dot bg-gray"></span>Introduction to Bus...</li>
+            </ul>
+
+            <button class="btn btn-outline small full">+ Add another course</button>
+        </div>
+
+        <div class="sidebar-block sticky-bottom">
+            <button class="btn btn-muted full">Profile</button>
+            <button class="btn btn-muted full">Log Out</button>
+        </div>
+    </aside>
+
+    <!-- ===== Main area ===== -->
+    <main class="main">
+
+        <!-- ********** ROW 1 — PLAYS ********** -->
+        <section class="row row-plays" aria-label="Plays row">
+            <button class="tab tab--play">Romeo &amp; Juliet</button>
+            <button class="tab tab--play">Julius Caesar</button>
+            <button class="tab tab--play">Macbeth</button>
+            <button class="tab tab--play">The Crucible</button>
+            <!-- plus stays but we’re already on the add page -->
+            <button class="tab tab--add" title="Add">＋</button>
+        </section>
+
+        <!-- ********** ROW 2 — ACTS ********** -->
+        <section class="row row-acts" aria-label="Acts row">
+            <button class="tab tab--act">Act 1</button>
+            <button class="tab tab--act">Act 2</button>
+            <button class="tab tab--act active">Act 3</button>
+            <button class="tab tab--act">Act 4</button>
+            <button class="tab tab--act">Act 5</button>
+        </section>
+
+        <!-- ********** ROW 3 — SCENES ********** -->
+        <section class="row row-scenes" aria-label="Scenes row">
+            <button class="tab tab--scene">Scene 1</button>
+            <button class="tab tab--scene">Scene 2</button>
+            <button class="tab tab--scene">Scene 3</button>
+            <button class="tab tab--scene active">Scene 4</button>
+            <button class="tab tab--scene">Scene 5</button>
+        </section>
+
+        <!-- ********** ADD NEW PLAY FORM ********** -->
+        <section class="content">
+            <div class="panel-add-play" role="region" aria-labelledby="addPlayHeading">
+                <h2 id="addPlayHeading" class="panel-title">Add New Play</h2>
+
+                <form class="add-play-form" action="#" method="post" novalidate>
+                    <!-- Row 1 -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="title">Play Title:</label>
+                            <input id="title" name="title" type="text" placeholder="Type the play" />
+                        </div>
+
+                        <div class="form-field">
+                            <label for="author">Author:</label>
+                            <input id="author" name="author" type="text" placeholder="" />
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="year">Publication Year:</label>
+                            <input id="year" name="year" type="number" inputmode="numeric" placeholder="" />
+                        </div>
+
+                        <div class="form-field">
+                            <label for="language">Language of the Play:</label>
+                            <input id="language" name="language" type="text" placeholder="" />
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-muted" id="btnCancel">Cancel</button>
+                        <button class="btn btn-orange-pill" type="submit">Save Play</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- External JS for this page -->
+<script src="js/add-play.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const kebabBtn = document.getElementById('coursesMenuBtn');
+        const kebabMenu = document.getElementById('coursesMenu');
+
+        kebabBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent immediate close
+            kebabMenu.classList.toggle('show');
+        });
+
+        // Close menu on outside click
+        document.addEventListener('click', () => {
+            kebabMenu.classList.remove('show');
+        });
+    });
+</script>
+
+</body>
+</html>

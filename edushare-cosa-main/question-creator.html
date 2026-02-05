@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduShare — Question Creator</title>
+
+  <!-- Global styles (topbar/layout/buttons) -->
+  <link rel="stylesheet" href="css/user-area.css" />
+
+  <!-- Page-specific styles -->
+  <link rel="stylesheet" href="css/question-creator.css" />
+</head>
+
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <!-- Brand -->
+      <a class="brand" href="home.html" aria-label="Go to EduShare home">
+        <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+        <span class="brand__name">EduShare</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="layout" style="grid-template-columns:1fr;">
+    <main class="main" style="padding:24px 18px;">
+
+      <!-- Card -->
+      <section class="qb">
+
+        <!-- Card Header -->
+        <header class="qb__header">
+          <div class="qb__header-row">
+            <h2 class="qb__title">Question Creation</h2>
+
+            <!-- AI Button -->
+            <button id="btnAI" class="ai-btn" type="button" title="Create questions with AI — MCQ, T/F, SA, LA"
+              aria-label="AI Assisted Creation">
+              AI
+            </button>
+          </div>
+
+          <div class="qb__context" id="contextInfo"></div>
+        </header>
+
+        <!-- Form -->
+        <form id="questionForm" class="qb__form" autocomplete="off">
+
+          <!-- Question -->
+          <div class="qb__field">
+            <label for="qText">Question</label>
+            <textarea id="qText" class="qb__textarea" placeholder="Type your question here..."></textarea>
+
+            <!-- Suggestions dropdown -->
+            <div id="qSuggestions" class="q-suggestions hidden"></div>
+          </div>
+
+          <!-- Answer Type -->
+          <div class="qb__row2">
+            <div class="qb__field">
+              <label>Answer Type</label>
+              <div class="qb__type">
+                <label title="Multiple Choice Question">
+                  <input type="radio" name="qType" value="MCQ" checked /> MCQ
+                </label>
+
+                <label title="True or False">
+                  <input type="radio" name="qType" value="TF" /> T/F
+                </label>
+
+                <label title="Short Answer">
+                  <input type="radio" name="qType" value="SA" /> S/A
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================== Load Doc (PDF/PPT) ===================== -->
+          <div class="qb__field">
+            <label>Load Doc (PDF/PPT)</label>
+
+            <div class="doc-upload">
+              <input id="docTitle" class="qb__input" type="text"
+                placeholder="Document title (e.g., Romeo & Juliet Act 3 notes)" />
+
+              <input id="docFile" type="file"
+                accept="application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+
+              <button type="button" id="btnUploadDoc" class="btn btn-warning">
+                Upload Document
+              </button>
+            </div>
+
+            <small id="docStatus" class="qb__hint"></small>
+          </div>
+          <!-- ========================================================== -->
+
+          <!-- MCQ block -->
+          <div id="mcqPanel" class="qb__block">
+            <div id="choicesList" class="qb__choices">
+              <div class="qb__choice">
+                <input type="radio" name="correct" class="qb__correct" title="Correct?" />
+                <input type="text" class="qb__choice-text" placeholder="Option 1" />
+                <button type="button" class="qb__remove" title="Remove">×</button>
+              </div>
+            </div>
+
+            <div class="qb__choice-actions">
+              <button type="button" id="btnAddChoice" class="btn btn-orange-pill">
+                + Add Option
+              </button>
+              <small class="qb__hint">Mark the correct one with the circle</small>
+            </div>
+          </div>
+
+          <!-- True / False -->
+          <div id="tfPanel" class="qb__block hidden">
+            <div class="qb__type">
+              <label><input type="radio" name="tfCorrect" value="True" checked /> True</label>
+              <label><input type="radio" name="tfCorrect" value="False" /> False</label>
+            </div>
+          </div>
+
+          <!-- Short Answer -->
+          <div id="saPanel" class="qb__block hidden">
+            <small class="qb__hint">Students will type a short free-form answer.</small>
+          </div>
+
+          <!-- Actions -->
+          <div class="qb__actions">
+            <button type="button" id="btnCancel" class="btn btn-muted">Cancel</button>
+            <button type="submit" class="btn btn-warning">Save Question</button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Optional saved list -->
+      <div id="savedQuestionsList" class="qb__list"></div>
+
+    </main>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="js/api-config.js"></script>
+  <script src="js/restore-context.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/question-creator.js"></script>
+  <script src="js/question-suggestions.js"></script>
+  <script src="js/document-upload.js"></script>
+
+</body>
+
+</html>

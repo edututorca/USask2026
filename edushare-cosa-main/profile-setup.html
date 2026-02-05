@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>EduShare — Profile Setup</title>
+
+    <!-- Base site styles (optional) -->
+    <link rel="stylesheet" href="css/user-area.css"/>
+
+    <!-- Page styles -->
+    <link rel="stylesheet" href="css/profile-setup.css"/>
+</head>
+<body>
+
+<header class="topbar" aria-label="Top navigation">
+    <div class="topbar__inner">
+        <!-- Brand -->
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+        <a href="login.html" class="btn-register">Login</a>
+    </div>
+</header>
+
+<section class="hero">
+    <!-- Decorative shapes -->
+    <div class="blob blob--top-right" aria-hidden="true"></div>
+    <div class="blob blob--bottom-left" aria-hidden="true"></div>
+
+    <div class="wizard">
+        <div class="wizard__header">
+            <h1>Complete your profile</h1>
+            <p>Tell us a bit about you so we can personalize your experience.</p>
+
+            <div class="progress">
+                <div class="progress__bar" id="progressBar" style="width: 16.6%"></div>
+            </div>
+            <div class="steps">
+                <span id="stepLabel">Step 1 of 5 · Role</span>
+            </div>
+        </div>
+
+        <!-- Steps -->
+        <form id="formProfile" novalidate>
+            <!-- MADE OBSOLETE AS IS PASSED IN BY QUERY STRING
+             STEP 1: ROLE (required)
+            <section class="step" data-step="1">
+                <fieldset class="group">
+                    <legend class="group__title">Select your role</legend>
+                    <label class="pill">
+                        <input type="radio" name="role" value="learner" required> Learner/Student
+                    </label>
+                    <label class="pill">
+                        <input type="radio" name="role" value="teacher" required> Teacher/Educator
+                    </label>
+                    <small class="field__error" data-for="role"></small>
+                </fieldset>
+            </section> -->
+
+            <!-- STEP 1: PERSONAL INFO (all required) -->
+            <section class="step hidden" data-step="1">
+                <div class="grid grid-2">
+                    <label class="field">
+                        <span class="field__label">First name</span>
+                        <input class="field__input" name="firstName" required/>
+                        <small class="field__error" data-for="firstName"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Last name</span>
+                        <input class="field__input" name="lastName" required/>
+                        <small class="field__error" data-for="lastName"></small>
+                    </label>
+                </div>
+
+            </section>
+
+            <!-- STEP 2: CONTACT (all required) -->
+            <section class="step hidden" data-step="2">
+                <label class="field">
+                    <span class="field__label">Work Email</span>
+                    <input class="field__input"
+                           type="email"
+                           name="email"
+                           required
+                           placeholder="example@school.ca"/>
+                    <small class="field__error" data-for="email"></small>
+                </label>
+
+                <!-- Password (new) -->
+                <label class="field">
+                    <span class="field__label">Password</span>
+                    <input class="field__input"
+                           type="password"
+                           name="password"
+                           required
+                           minlength="8"
+                           placeholder="Create a password"/>
+                    <small class="field__error" data-for="password"></small>
+                </label>
+
+                <div class="grid grid-4">
+                <label class="field">
+                    <span class="field__label">Work phone number </span>
+                    <!-- light pattern: 7+ digits and symbols (+ - () space) allowed -->
+                    <input class="field__input" type="tel" name="phone"
+                           required pattern="^[0-9+()\-.\s]{7,}$" placeholder="+1 (XXX) XXX-XXXX"/>
+                    <small class="field__error" data-for="phone"></small>
+                </label>
+                <label class="field">
+                    <span class="field__label">Ext (optional)</span>
+                    <input class="field__input" type="text" name="ext"
+                           pattern="^[0-9]{1,6}$"  placeholder="1234"/>
+                    <small class="field__error" data-for="ext"></small>
+                </label>
+                </div>
+            </section>
+
+            <!-- STEP 3: ADDRESS (all required) -->
+            <section class="step hidden" data-step="3">
+                <label class="field">
+                    <span class="field__label">Street address</span>
+                    <input class="field__input" name="street" required/>
+                    <small class="field__error" data-for="street"></small>
+                </label>
+
+                <div class="grid grid-3">
+                    <label class="field">
+                        <span class="field__label">City</span>
+                        <input class="field__input" name="city" required/>
+                        <small class="field__error" data-for="city"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Province/State</span>
+                        <input class="field__input" name="state" required/>
+                        <small class="field__error" data-for="state"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Postal/ZIP</span>
+                        <input class="field__input" name="zip" required/>
+                        <small class="field__error" data-for="zip"></small>
+                    </label>
+                </div>
+            </section>
+
+            <!-- STEP 4: ROLE-SPECIFIC (all required in both branches) -->
+            <section class="step hidden" data-step="4">
+                <div class="form-box">
+                    <!-- Teacher -->
+                    <div class="role role--Teacher">
+                        <label class="field">
+                            <span class="field__label">School / Institution</span>
+                            <input class="field__input" name="school" required/>
+                            <small class="field__error" data-for="school"></small>
+                        </label>
+
+                        <div class="grid grid-2">
+                            <label class="field">
+                                <span class="field__label">School city</span>
+                                <input class="field__input" name="schoolCity" required/>
+                                <small class="field__error" data-for="schoolCity"></small>
+                            </label>
+
+                            <label class="field">
+                                <span class="field__label">School country</span>
+                                <input class="field__input" name="schoolCountry" required/>
+                                <small class="field__error" data-for="schoolCountry"></small>
+                            </label>
+                        </div>
+
+                        <label class="field">
+                            <span class="field__label">Course Code</span>
+                            <input class="field__input" name="subjects" required placeholder="Math-103, Eng-101"/>
+                            <small class="field__error" data-for="subjects"></small>
+                        </label>
+                    </div>
+
+                    <!-- Learner -->
+                    <div class="role role--Learner">
+                        <label class="field">
+                            <span class="field__label">Grade / Level</span>
+                            <input class="field__input" name="grade" required placeholder="e.g., Grade 10"/>
+                            <small class="field__error" data-for="grade"></small>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Interests</span>
+                            <input class="field__input" name="interests" required placeholder="e.g., Algebra, Chemistry"/>
+                            <small class="field__error" data-for="interests"></small>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STEP 5: REVIEW & CONSENT (checkbox required) -->
+            <section class="step hidden" data-step="5">
+                <div class="review" id="reviewBox"></div>
+                <label class="check">
+                    <input type="checkbox" name="agree" required/>
+                    <span>I agree to the Terms of Service and Privacy Policy.</span>
+                </label>
+            </section>
+
+            <!-- Wizard nav -->
+            <nav class="wizard__nav">
+                <button type="button" class="btn btn-secondary" id="btnBack">Back</button>
+                <button type="button" class="btn btn-primary" id="btnNext">Next</button>
+                <button type="submit" class="btn btn-primary hidden" id="btnSubmit">Create profile</button>
+            </nav>
+
+            <!-- Banner error line -->
+            <p class="error" id="errorLine" aria-live="polite"></p>
+        </form>
+    </div>
+</section>
+
+<script src="js/profile-setup.js"></script>
+
+<!-- Success Modal (hidden by default) -->
+<div id="successModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="document">
+        <div class="modal__icon" aria-hidden="true">✓</div>
+        <h2 class="modal__title">Profile created</h2>
+        <p class="modal__text">Your profile was created successfully.</p>
+        <div class="modal__actions">
+            <button type="button" class="btn btn-secondary" id="modalStayBtn">Back</button>
+            <button type="button" class="btn btn-primary" id="modalGoBtn">Go to Login</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

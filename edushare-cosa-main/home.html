@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EduShare — Home</title>
+
+    <!-- App stylesheet -->
+    <link rel="stylesheet" href="css/home.css" />
+
+</head>
+<body>
+
+<!-- =================== FIXED TOP BAR =================== -->
+<header class="topbar" aria-label="Top navigation">
+    <div class="topbar__inner">
+        <!-- Brand / logo -->
+        <a class="brand" href="#" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+
+
+        <!-- Right aligned actions -->
+        <nav class="topbar__nav">
+            <!-- Register now points to the Account page -->
+            <a class="btn btn-login" href="Login.html" aria-label="Login">
+                Login
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- Spacer so content sits below the fixed topbar -->
+<div class="topbar-spacer" aria-hidden="true"></div>
+
+<!-- =================== HERO SECTION =================== -->
+<main class="hero" role="main">
+    <section class="hero__inner">
+        <!-- Left column: headline, paragraph, CTAs -->
+        <div class="hero__copy">
+            <h1 class="hero__title">
+                Education through<br />
+                collaboration.
+            </h1>
+
+            <p class="hero__subtitle">
+                We’re building a collaborative community where teachers share
+                resources with fellow educators, and students unite to create and
+                curate a vast bank of questions. Together, we foster a richer, more
+                personalized learning experience for everyone.
+            </p>
+
+            <!-- Both CTAs now navigate to the same Account page -->
+            <div class="hero__cta">
+                <a href="Account.html" class="pill pill--primary" aria-label="Explore for learners">
+                    Learners
+                </a>
+                <a href="Account.html" class="pill pill--secondary" aria-label="Explore for teachers">
+                    Teachers
+                </a>
+            </div>
+        </div>
+
+        <!-- Right column: illustration -->
+        <div class="hero__art" aria-hidden="true">
+            <img src="assets/home_image.v1.png" alt="" />
+        </div>
+    </section>
+
+    <!-- Optional decorative corner shapes (match mock) -->
+    <div class="blob blob--top-right" aria-hidden="true"></div>
+    <div class="blob blob--bottom-left" aria-hidden="true"></div>
+</main>
+
+</body>
+</html>

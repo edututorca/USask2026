@@ -1,0 +1,327 @@
+/* ===========================================
+   VARIABLES / GLOBAL (kept close to home)
+   =========================================== */
+:root{
+    --accent: #ff8a00;             /* brand orange */
+    --dark-blue: #1a2a63;          /* header + CTA */
+    --ink: #1b2a4a;                /* body text (slightly bluish like home) */
+    --muted: #5b6780;              /* secondary text */
+    --bg: #ffffff;                 /* page background */
+    --card: #ffffff;               /* card background */
+    --ring: rgba(26,42,99,0.16);   /* subtle borders */
+    --radius: 14px;                /* rounded corners */
+    --shadow: 0 8px 24px rgba(0,0,0,.06);
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue";
+
+    /* typographic scale to mirror home */
+    --h1-size: clamp(2.4rem, 3.5vw + 1rem, 3.8rem);  /* ~38–60px */
+    --p-size: 1.05rem;
+
+    /* knob to shift the login card left (tweak as needed) */
+    --form-left-shift: 56px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body{
+    margin: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+}
+
+/* ===========================================
+   TOP BAR (more spacing like home)
+   =========================================== */
+.topbar{
+    background: var(--dark-blue);
+    color: #fff;
+    padding: 1rem 3rem; /* wider */
+}
+.topbar__inner{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.25rem;      /* space between brand and Register */
+}
+.brand{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+.brand__mark{
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--dark-blue);
+    display: grid; place-items: center;
+    font-weight: 800;
+}
+.btn-register{
+    background: #fff;
+    color: var(--dark-blue);
+    font-weight: 700;
+    padding: .55rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-left: 56rem; /* your custom spacing from brand */
+}
+
+/* ===========================================
+   HERO (match home spacing + composition)
+   =========================================== */
+.hero{
+    position: relative;         /* stacking context for blobs */
+    overflow: hidden;
+    padding: 5.5rem 2rem;       /* deeper top/bottom like home */
+}
+
+/* Grid: text at left, form at right (mirrors home text+image) */
+.hero__grid{
+    max-width: 1080px;          /* same visual width as home */
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;  /* left | right balance like home */
+    column-gap: 2rem;
+    align-items: center;
+
+    /* nudge left so the right edge aligns with the orange curve like home */
+    transform: translateX(-40px);
+}
+
+.hero__intro {
+    position: relative;
+    top: -30px;  /* move all text (h1 + paragraph) upward */
+}
+
+/* Left-side copy styles (mirror home’s tone) */
+.hero__intro h1{
+    margin: 0 0 1rem;
+    font-size: var(--h1-size);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--dark-blue);
+}
+.hero__intro p{
+    margin: 0 0 2rem;
+    font-size: var(--p-size);
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 620px;           /* similar readable line width as home */
+}
+
+/* ===========================================
+   DECORATIVE BLOBS (Option B, placed like home)
+   =========================================== */
+.hero .blob{
+    position: absolute;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 0;                 /* behind content */
+}
+
+/* Right blob: same corner cut as home, pulled outside edge */
+.hero .blob--top-right{
+    position: fixed;
+    right:-50px; top:0;
+    width:360px; height:250px;
+    border-bottom-left-radius:180px;
+    border-bottom-right-radius:60px;
+
+}
+
+/* Bottom-left blob: pinned to viewport like home’s sweeping arc */
+.hero .blob--bottom-left {
+    position: fixed; /* stays on scroll */
+    left: -120px;
+    bottom: -60px;
+    width: 400px;
+    height: 240px;
+    border-bottom-left-radius:180px;
+    border-top-right-radius: 200px;
+}
+
+/* Ensure content sits above blobs */
+.hero__intro,
+.login-card { position: relative; z-index: 1; }
+
+/* ===========================================
+   LOGIN CARD (styled to feel like the home art)
+   =========================================== */
+.login-card{
+    margin-top: 35px; /* move the login box  */
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2.25rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--ring);
+    max-width: 480px;           /* tight like an illustration box on home */
+    margin-left: auto;          /* base alignment at right */
+
+    /* === new: pull the card left without touching the grid === */
+    justify-self: start;                                /* align to start of its column */
+    margin-left: calc(-1 * var(--form-left-shift));     /* slide left into the gap */
+}
+.login-card__title{
+    margin: 0 0 1.2rem;
+    color: var(--dark-blue);
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -.01em;
+}
+.field{
+    display: grid;
+    gap: .45rem;
+    margin-bottom: 1rem;
+}
+.field__label{
+    font-size: .95rem;
+    color: var(--muted);
+}
+.field__input{
+    height: 44px;
+    padding: 0 .95rem;
+    border-radius: 12px;
+    border: 1px solid var(--ring);
+    outline: none;
+    background: #fff;
+}
+.field__input:focus{
+    border-color: var(--dark-blue);
+    box-shadow: 0 0 0 3px rgba(26,42,99,0.12);
+}
+
+.login-card__row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: .2rem 0 1.2rem;
+    gap: 1rem;
+}
+.check{
+    display: inline-flex; align-items: center; gap: .55rem;
+    color: var(--muted);
+}
+.link{
+    color: var(--dark-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+.link:hover{ text-decoration: underline; }
+
+.btn{
+    display: inline-block;
+    border: 0;
+    border-radius: 999px;
+    padding: .9rem 1.4rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-primary{
+    background: var(--dark-blue);
+    color: #fff;
+    width: 100%;
+}
+.login-card__hint{
+    margin: 1rem 0 0;
+    color: var(--muted);
+    text-align: center;
+}
+
+/* ===========================================
+   RESPONSIVE (keeps the “home” look gracefully)
+   =========================================== */
+@media (max-width: 1200px){
+    .hero__grid {
+        transform: translateX(-20px); /* smaller nudge on mid screens */
+        column-gap: 3rem;
+    }
+    .hero .blob--top-right{
+        right: -210px; width: 580px; height: 380px;
+    }
+
+    /* reduce the left shift so it doesn't overshoot on mid screens */
+    :root{ --form-left-shift: 36px; }
+}
+
+@media (max-width: 980px){
+    .hero{
+        padding: 4rem 1.25rem;
+    }
+    .hero__grid{
+        grid-template-columns: 1fr; /* stack like a mobile home hero */
+        transform: none;
+        text-align: center;
+        row-gap: 2.25rem;
+    }
+    .login-card{
+        margin-left: 0;           /* reset left shift when stacked */
+        justify-self: center;     /* center card on small screens */
+    }
+    .hero .blob--top-right{
+        right: -260px; width: 520px; height: 340px;
+    }
+}
+
+@media (max-width: 560px){
+    .hero__intro h1{ font-size: clamp(2.1rem, 6vw, 2.6rem); }
+    .hero__intro p{ font-size: 1rem; }
+
+    .hero .blob--top-right{
+        right: -300px; width: 460px; height: 300px;
+    }
+    .hero .blob--bottom-left{
+        left: -180px; bottom: -170px; width: 460px; height: 300px;
+    }
+}
+
+/* ===== Success Modal ===== */
+.modal.hidden { display: none; }
+.modal {
+    position: fixed; inset: 0; z-index: 1000;
+    display: grid; place-items: center;
+}
+.modal__backdrop{
+    position: absolute; inset: 0; background: rgba(10, 18, 40, .55);
+}
+.modal__panel{
+    position: relative;
+    width: min(520px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 22px 60px rgba(0,0,0,.25);
+    padding: 1.5rem 1.25rem 1.25rem;
+    text-align: center;
+    border: 1px solid var(--ring);
+    animation: pop .18s ease-out;
+}
+@keyframes pop { from { transform: scale(.96); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+.modal__icon{
+    width: 44px; height: 44px; margin: 0 auto .5rem;
+    border-radius: 50%; display: grid; place-items: center;
+    background: #ecfdf5; color: #059669; font-weight: 800; font-size: 1.25rem;
+}
+.modal__title{ margin: .25rem 0 .25rem; color: var(--dark-blue); }
+.modal__text{ margin: 0 0 1rem; color: var(--muted); }
+.modal__actions{ display: flex; gap: .75rem; justify-content: center; }
+
+/* Brand image style — smaller and aligned with text */
+.brand__logo {
+    width: 28px;          /* smaller size */
+    height: 28px;
+    border-radius: 50%;   /* keeps circular shape */
+    margin-right: 6px;    /* small space between logo and text */
+    object-fit: cover;    /* prevents stretching */
+    vertical-align: middle;
+    background-color: white; /* optional: adds white padding around the logo */
+    padding: 2px;         /* optional soft padding */
+}

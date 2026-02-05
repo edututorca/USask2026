@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduShare — Login</title>
+
+    <!-- Base app stylesheet (optional if you already have it) -->
+    <link rel="stylesheet" href="css/user-area.css" />
+
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar" aria-label="Top navigation">
+    <div class="topbar__inner">
+        <!-- Brand -->
+        <a class="brand" href="home.html" aria-label="Go to EduShare home">
+            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+            <span class="brand__name">EduShare</span>
+        </a>
+
+        <!-- Optional: link back to register -->
+        <a href="Account.html" class="btn-register">Register</a>
+    </div>
+</header>
+
+<!-- =================== HERO (decor + login card) =================== -->
+<section class="hero">
+    <!-- Decorative orange shapes -->
+    <div class="blob blob--top-right" aria-hidden="true"></div>
+    <div class="blob blob--bottom-left" aria-hidden="true"></div>
+
+    <div class="hero__grid">
+        <div class="hero__intro">
+            <h1>Welcome back</h1>
+            <p>Log in to continue collaborating with teachers and learners.</p>
+        </div>
+
+        <!-- Login Card -->
+
+            <form id="loginForm" class="login-card" aria-label="Login form">
+
+            <h2 class="login-card__title">Sign in</h2>
+
+            <label class="field">
+                <span class="field__label">Email</span>
+                <input class="field__input" type="email" name="email" placeholder="you@example.com" required />
+            </label>
+
+            <label class="field">
+                <span class="field__label">Password</span>
+                <input class="field__input" type="password" name="password" placeholder="••••••••" required />
+            </label>
+
+            <div class="login-card__row">
+                <label class="check">
+                    <input type="checkbox" name="remember" />
+                    <span>Remember me</span>
+                </label>
+                <a href="forgot-password.html" class="link">Forgot password?</a>
+            </div>
+
+            <button type="submit"  class="btn btn-primary">Login</button>
+
+
+            <p class="login-card__hint">
+                Don’t have an account?
+                <a class="link" href="Account.html">Create one</a>
+            </p>
+        </form>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('loginForm');
+        if (!form) return;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // prevent actual form submission
+
+            const email = form.querySelector('input[name="email"]').value.trim();
+            const password = form.querySelector('input[name="password"]').value.trim();
+
+            if (!email || !password) {
+                alert('Please fill in both email and password.');
+                return;
+            }
+
+            // we should verify credentials here before redirecting
+            window.location.href = 'User-Area.html';
+        });
+    });
+</script>
+
+
+</body>
+</html>

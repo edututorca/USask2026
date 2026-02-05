@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add Course</title>
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="css/user-area.css"/>
+
+    <!-- Page styles -->
+    <link rel="stylesheet" href="css/Add-course.css"/>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- ====================== DECORATION LAYER (orange blobs) ====================== -->
+    <div class="bg-decor" aria-hidden="true">
+        <div class="soft-blob tr"></div>
+        <div class="soft-blob bl"></div>
+    </div>
+
+    <!-- =========================== TOP BAR =========================== -->
+    <header class="topbar" aria-label="Top navigation">
+        <!-- Left side: brand (same pattern as other pages) -->
+        <div class="topbar__left">
+            <a class="brand" href="home.html" aria-label="Go to EduShare home">
+                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+                <span class="brand__name">EduShare</span>
+            </a>
+        </div>
+
+        <!-- Right side: header CTA button (like "Register" on login page) -->
+        <div class="topbar__right">
+            <a href="login.html" class="btn-header">Logout</a>
+        </div>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h1>Create New Course</h1>
+            <p class="subtitle">Select course category and specific class</p>
+
+            <form id="courseForm">
+                <!-- Main Category -->
+                <div class="form-group">
+                    <label for="mainCategory">Course Category</label>
+                    <select id="mainCategory">
+                        <option value="">-- Select Category --</option>
+                        <option value="english">English</option>
+                        <option value="math">Mathematics</option>
+                        <option value="computer">Computer Science</option>
+                    </select>
+                </div>
+
+                <!-- Sub Category 1 (English/Math codes OR Computer subcategories) -->
+                <div class="form-group hidden" id="subCategory1Group">
+                    <label for="subCategory1" id="subCategory1Label">Select Course</label>
+                    <select id="subCategory1">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <!-- Sub Category 2 (For Computer -> Programming languages, etc.) -->
+                <div class="form-group hidden" id="subCategory2Group">
+                    <label for="subCategory2">Select Language/Technology</label>
+                    <select id="subCategory2">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <!-- Selection Path Display -->
+                <div class="selection-path" id="selectionPath">
+                    <div class="path-title">Selected Course:</div>
+                    <div class="path-content">
+                        <div class="breadcrumb" id="breadcrumb"></div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" disabled>Create Course</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- External JS file -->
+    <script src="js/Add-course.js"></script>
+
+</div>
+</body>
+</html>
