@@ -7,26 +7,26 @@
 
 const API_CONFIG = {
     // Changeed this to your actual URL
-   BASE_URL: 'http://localhost:3000/api',
-    
+    BASE_URL: 'http://localhost:3000/api',
+
     // Endpoints
     ENDPOINTS: {
         // User endpoints
         USER_PROFILE: '/user/profile',
         USER_COURSES: '/user/courses',
-        
+
         // Subject/Topic hierarchy
         SUBJECTS: '/subjects',
         TOPICS: '/topics',
         SUBTOPICS: '/subtopics',
         SECTIONS: '/sections',
-        
+
         // Questions
         QUESTIONS: '/questions',
         QUESTION_CREATE: '/questions',
         QUESTION_DELETE: '/questions',
         QUESTION_VOTE: '/questions/vote',
-        
+
         // Auth
         LOGIN: '/auth/login',
         LOGOUT: '/auth/logout'
@@ -38,41 +38,41 @@ const API_CONFIG = {
  */
 async function apiRequest(endpoint, options = {}) {
     const url = `${API_CONFIG.BASE_URL}${endpoint}`;
-    
+
     // Default options
     const defaultOptions = {
         headers: {
             'Content-Type': 'application/json',
         }
     };
-    
+
     // Add auth token if available
     const token = getAuthToken();
     if (token) {
         defaultOptions.headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     // Merge options
     const fetchOptions = { ...defaultOptions, ...options };
     if (options.headers) {
         fetchOptions.headers = { ...defaultOptions.headers, ...options.headers };
     }
-    
+
     try {
         const response = await fetch(url, fetchOptions);
-        
+
         // Handle non-JSON responses
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             throw new Error(`Server returned non-JSON response: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.message || data.error || `HTTP ${response.status}`);
         }
-        
+
         return data;
     } catch (error) {
         console.error(`API request failed [${endpoint}]:`, error);
@@ -111,7 +111,7 @@ function showError(container, message) {
         container = document.getElementById(container) || document.querySelector(container);
     }
     if (!container) return;
-    
+
     container.innerHTML = `
         <div class="error-state" style="text-align: center; padding: 40px; color: #c33;">
             <p>${escapeHtml(message)}</p>
@@ -128,7 +128,7 @@ function showLoading(container, message = 'Loading...') {
         container = document.getElementById(container) || document.querySelector(container);
     }
     if (!container) return;
-    
+
     container.innerHTML = `
         <div class="loading-state" style="text-align: center; padding: 40px; color: #999;">
             <p>${escapeHtml(message)}</p>
@@ -144,7 +144,7 @@ function showEmpty(container, message = 'No items found') {
         container = document.getElementById(container) || document.querySelector(container);
     }
     if (!container) return;
-    
+
     container.innerHTML = `
         <div class="empty-state" style="text-align: center; padding: 40px; color: #999;">
             <p>${escapeHtml(message)}</p>

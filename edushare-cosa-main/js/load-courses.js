@@ -1,65 +1,212 @@
 /* ===================================================== */
-/* ========= LOAD USER'S COURSES FROM DATABASE ======== */
+/* ========= LOAD USER'S COURSES (ROBUST) ============== */
 /* ===================================================== */
-/**
- * Loads courses from Course table via UserCourse junction table
- * Shows only courses the logged-in teacher has selected
- */
 (function () {
-    // Color palette for course dots
     const COLORS = ['bg-green', 'bg-blue', 'bg-purple', 'bg-orange', 'bg-red', 'bg-teal'];
 
     async function loadCourses() {
-        const userId = getCurrentUserId();
-        if (!userId) {
-            console.warn('No user ID found');
+        console.log('[load-courses] Starting loadCourses...');
+        const list = document.getElementById('courseList');
+        if (!list) {
+            console.error('[load-courses] #courseList element not found!');
             return;
         }
 
-        const list = document.getElementById('courseList');
-        if (!list) return;
+        let allCourses = [];
 
-        showLoading(list, 'Loading courses...');
-
+        // 1. LOAD FROM SESSION STORAGE (LOCAL ADDS)
         try {
-            // Fetch user's courses
-            const data = await apiRequest(`${API_CONFIG.ENDPOINTS.USER_COURSES}?userId=${userId}`);
-            const courses = data.courses || data || [];
+            const stored = sessionStorage.getItem('myCourses');
+            if (stored) {
+                const localCourses = JSON.parse(stored);
+                console.log('[load-courses] Found local courses in session:', localCourses);
 
-            if (courses.length === 0) {
-                list.innerHTML = '<li style="color: #999;">No courses added yet</li>';
-                return;
+                localCourses.forEach(lc => {
+                    const code = lc.code || lc.courseCode || 'UNTITLED';
+                    const name = lc.name || lc.courseName || lc.category || lc.fullPath || 'New Course';
+                    const category = lc.category || lc.courseCategory || 'General';
+
+                    const exists = allCourses.some(c => (c.code || c.courseCode || c.CourseCode) === code);
+                    if (!exists) {
+                        allCourses.push({ code, name, category, isLocal: true });
+                    }
+                });
             }
+        } catch (e) {
+            console.warn('[load-courses] Failed to load local courses:', e);
+        }
 
-            // Build course list HTML
-            const html = courses.map((course, index) => {
-                const color = COLORS[index % COLORS.length];
-                const courseName = course.CourseName || course.courseName || 'Untitled Course';
-                
-                // Truncate long course names
-                const displayName = courseName.length > 25 
-                    ? courseName.substring(0, 22) + '...' 
-                    : courseName;
+        // INITIAL RENDER (DEMO + LOCAL)
+        renderCourseList(allCourses, list);
 
-                return `
-                    <li>
-                        <span class="dot ${color}"></span>
-                        ${escapeHtml(displayName)}
-                    </li>
-                `;
-            }).join('');
+        // 3. TRY API IN BACKGROUND
+        const userId = getCurrentUserId();
+        if (userId) {
+            console.log('[load-courses] Attempting API load for user:', userId);
+            try {
+                const data = await apiRequest(`${API_CONFIG.ENDPOINTS.USER_COURSES}?userId=${userId}`);
+                const apiCourses = data.courses || data || [];
 
-            list.innerHTML = html;
+                if (Array.isArray(apiCourses)) {
+                    let changed = false;
+                    apiCourses.forEach(ac => {
+                        const code = ac.CourseCode || ac.courseCode || ac.code;
+                        if (!code) return;
 
-        } catch (error) {
-            console.error('Failed to load courses:', error);
-            list.innerHTML = '<li style="color: #c33;">Failed to load courses</li>';
+                        const exists = allCourses.some(c => (c.code || c.courseCode || c.CourseCode) === code);
+                        if (!exists) {
+                            allCourses.push({
+                                code: code,
+                                name: ac.CourseName || ac.courseName || ac.name || 'API Course',
+                                category: ac.CourseCategory || ac.courseCategory || ac.category || 'General'
+                            });
+                            changed = true;
+                        }
+                    });
+                    if (changed) {
+                        console.log('[load-courses] API load successful, re-rendering list');
+                        renderCourseList(allCourses, list);
+                        performAutoSelection(); // Try auto-selection again after API results
+                    }
+                }
+            } catch (e) {
+                console.warn('[load-courses] API block failed (ignoring):', e);
+            }
+        } else {
+            console.log('[load-courses] No userId found, skipping API load.');
+        }
+
+        // Trigger auto-selection
+        performAutoSelection();
+    }
+
+    let hasSelectionOccurred = false;
+    function performAutoSelection() {
+        const params = new URLSearchParams(window.location.search);
+        let autoCode = params.get('courseCode');
+        if (!autoCode || hasSelectionOccurred) return;
+
+        // Clean up the code (handle spaces encoded as + or %20)
+        autoCode = decodeURIComponent(autoCode.replace(/\+/g, ' ')).trim();
+
+        const list = document.getElementById('courseList');
+        const buttons = Array.from(list.querySelectorAll('.course-btn'));
+
+        // Try exact match or includes match
+        const target = buttons.find(b => {
+            // The button has a dot span and a text span. We want the text span.
+            const btnText = b.querySelector('span:last-child')?.textContent.trim() || b.textContent.trim();
+            return btnText === autoCode || btnText.includes(autoCode) || autoCode.includes(btnText);
+        });
+
+        if (target) {
+            console.log('[load-courses] Auto-selecting target course:', target.textContent.trim());
+            hasSelectionOccurred = true;
+            target.click();
+        } else {
+            console.log('[load-courses] Course code in URL:', autoCode, 'but not found in list. Retrying...');
+            // Stop retrying after 5 seconds to prevent infinite loop
+            if (!window._autoSelectRetryCount) window._autoSelectRetryCount = 0;
+            if (window._autoSelectRetryCount < 25) {
+                window._autoSelectRetryCount++;
+                setTimeout(performAutoSelection, 200);
+            }
         }
     }
 
-    // Load courses when page loads
-    document.addEventListener('DOMContentLoaded', loadCourses);
-    
-    // Make function available globally
+    function renderCourseList(courses, container) {
+        console.log('[load-courses] Rendering courses:', courses.length);
+
+        container.innerHTML = '';
+        if (courses.length === 0) {
+            container.innerHTML = '<li style="color: #999; padding: 10px;">No courses found</li>';
+            return;
+        }
+
+        courses.forEach((course, index) => {
+            const color = COLORS[index % COLORS.length];
+            const code = course.code || course.courseCode || course.CourseCode || '';
+            const name = course.name || course.courseName || course.CourseName || 'Untitled';
+            const cat = course.category || course.courseCategory || course.CourseCategory || '';
+
+            const li = document.createElement('li');
+            li.className = 'course-item';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'course-btn';
+
+            // Inline styles to ensure it looks good even if CSS classes are missing/changed
+            btn.style.width = '100%';
+            btn.style.textAlign = 'left';
+            btn.style.display = 'flex';
+            btn.style.alignItems = 'center';
+            btn.style.gap = '10px';
+            btn.style.padding = '8px 12px';
+            btn.style.borderRadius = '8px';
+            btn.style.background = 'transparent';
+            btn.style.border = 'none';
+            btn.style.color = '#fff';
+            btn.style.cursor = 'pointer';
+            btn.style.fontSize = '14px';
+            btn.style.transition = 'background 0.2s';
+
+            const dot = document.createElement('span');
+            dot.className = `dot ${color}`;
+            dot.style.flexShrink = '0';
+
+            const txt = document.createElement('span');
+            txt.textContent = code; // USER REQ: Only show the code
+            txt.style.whiteSpace = 'nowrap';
+            txt.style.overflow = 'hidden';
+            txt.style.textOverflow = 'ellipsis';
+
+            btn.appendChild(dot);
+            btn.appendChild(txt);
+
+            btn.addEventListener('click', () => {
+                console.log('[load-courses] Course clicked:', code);
+                document.querySelectorAll('.course-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                });
+                btn.classList.add('active');
+                btn.style.background = 'rgba(255, 255, 255, 0.1)';
+
+                // Store Course Info for Return Trips (e.g. from AI Creator)
+                sessionStorage.setItem('currentCourseCode', code);
+                sessionStorage.setItem('currentCourseCategory', cat);
+
+                if (window.loadSubjectsForCourse) {
+                    // Pass along any hierarchy IDs from URL for auto-navigation
+                    const params = new URLSearchParams(window.location.search);
+                    const autoNavOptions = {
+                        initialSubjectId: params.get('subjectId'),
+                        initialTopicId: params.get('topicId'),
+                        initialSubtopicId: params.get('subtopicId'),
+                        initialSectionId: params.get('sectionId'),
+                        newQuestionIds: params.get('newQuestionIds')
+                    };
+                    window.loadSubjectsForCourse(cat, code, autoNavOptions);
+                } else {
+                    console.error('[load-courses] window.loadSubjectsForCourse not found!');
+                }
+            });
+
+            btn.onmouseover = () => { if (!btn.classList.contains('active')) btn.style.background = 'rgba(255,255,255,0.05)'; };
+            btn.onmouseout = () => { if (!btn.classList.contains('active')) btn.style.background = 'transparent'; };
+
+            li.appendChild(btn);
+            container.appendChild(li);
+        });
+    }
+
+    // Initialize
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCourses);
+    } else {
+        loadCourses();
+    }
+
     window.loadCourses = loadCourses;
 })();

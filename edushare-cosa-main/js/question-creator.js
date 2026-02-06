@@ -7,8 +7,8 @@
 
     // -------- Context (play/act/scene) - still shown for clarity
     const params = new URLSearchParams(location.search);
-    const play  = params.get('play')  || 'Unknown Play';
-    const act   = params.get('act')   || '1';
+    const play = params.get('play') || 'Unknown Play';
+    const act = params.get('act') || '1';
     const scene = params.get('scene') || '1';
     const STORAGE_KEY = `questions::${play}::A${act}::S${scene}`;
 
@@ -38,23 +38,23 @@
     }
 
     // -------- Elements
-    const form        = document.getElementById('questionForm');
-    const qText       = document.getElementById('qText');
-    const qStandard   = document.getElementById('qStandard');
+    const form = document.getElementById('questionForm');
+    const qText = document.getElementById('qText');
+    const qStandard = document.getElementById('qStandard');
     const choicesList = document.getElementById('choicesList');
-    const btnAdd      = document.getElementById('btnAddChoice');
+    const btnAdd = document.getElementById('btnAddChoice');
 
     const mcqPanel = document.getElementById('mcqPanel');
-    const tfPanel  = document.getElementById('tfPanel');
-    const saPanel  = document.getElementById('saPanel');
+    const tfPanel = document.getElementById('tfPanel');
+    const saPanel = document.getElementById('saPanel');
 
     // -------- Answer-type toggling
     const currentType = () => (form?.querySelector('input[name="qType"]:checked') || {}).value || 'MCQ';
     function toggleBlocks() {
         const t = currentType();
         if (mcqPanel) mcqPanel.classList.toggle('hidden', t !== 'MCQ');
-        if (tfPanel)  tfPanel .classList.toggle('hidden', t !== 'TF');
-        if (saPanel)  saPanel .classList.toggle('hidden', t !== 'SA');
+        if (tfPanel) tfPanel.classList.toggle('hidden', t !== 'TF');
+        if (saPanel) saPanel.classList.toggle('hidden', t !== 'SA');
     }
     form?.querySelectorAll('input[name="qType"]')?.forEach(r => r.addEventListener('change', toggleBlocks));
     toggleBlocks();
@@ -118,7 +118,7 @@
                 correct: r.querySelector('.qb__correct').checked
             })).filter(o => o.text.length);
 
-            if (options.length < 2)  { alert('Add at least two options.'); return; }
+            if (options.length < 2) { alert('Add at least two options.'); return; }
             if (!options.some(o => o.correct)) { alert('Mark one option as correct.'); return; }
 
             payload.options = options;
@@ -126,24 +126,35 @@
         } else if (type === 'TF') {
             const tfVal = (form.querySelector('input[name="tfCorrect"]:checked') || {}).value || 'True';
             payload.options = [
-                { text: 'True',  correct: tfVal === 'True'  },
+                { text: 'True', correct: tfVal === 'True' },
                 { text: 'False', correct: tfVal === 'False' }
             ];
         }
         // S/A stores no options
 
-        // 1) Persist to localStorage under the scene key
-        let all = [];
-        try { all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch {}
-        all.push(payload);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        // 1) Persist to database via API
+        apiRequest(API_CONFIG.ENDPOINTS.QUESTIONS, {
+            method: 'POST',
+            body: JSON.stringify({
+                text: payload.text,
+                type: payload.type === 'TF' ? 'True/False' : (payload.type === 'MCQ' ? 'Multiple Choice' : 'Short Answer'),
+                sectionId: sessionStorage.getItem('currentSectionId'), // Get current context
+                difficulty: 1,
+                options: payload.options
+            })
+        }).then(data => {
+            console.log('Question saved to DB:', data);
 
-        // 2) Also put a copy in sessionStorage so the list page can inject immediately
-        sessionStorage.setItem('NEW_QUESTION', JSON.stringify({
-            key: STORAGE_KEY, play, act, scene, item: payload
-        }));
+            // 2) Also put a copy in sessionStorage so the list page can inject immediately (optional UX)
+            sessionStorage.setItem('NEW_QUESTION', JSON.stringify({
+                key: STORAGE_KEY, play, act, scene, item: payload
+            }));
 
-        // 3) Navigate back to the list page
-        goBack();
+            // 3) Navigate back to the list page
+            goBack();
+        }).catch(err => {
+            alert('Failed to save question to database.');
+            console.error(err);
+        });
     });
 })();

@@ -1,112 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EduShare — AI Question Creator</title>
 
-    <link rel="stylesheet" href="css/user-area.css"/>
-    <link rel="stylesheet" href="css/ai-question-creator.css"/>
+    <link rel="stylesheet" href="css/user-area.css" />
+    <link rel="stylesheet" href="css/ai-question-creator.css?v=15" />
 </head>
+
 <body>
 
-<header class="topbar">
-    <div class="topbar__left">
-        <a class="brand" href="home.html" aria-label="Go to EduShare home">
-            <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo"/>
-            <span class="brand__name">EduShare</span>
-        </a>
-    </div>
-</header>
+    <header class="topbar">
+        <div class="topbar__left">
+            <a class="brand" href="home.html" aria-label="Go to EduShare home">
+                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
+                <span class="brand__name">EduShare</span>
+            </a>
+        </div>
+    </header>
 
-<div class="layout" style="grid-template-columns:1fr;">
-    <main class="main" style="padding:24px 18px;">
+    <div class="layout" style="grid-template-columns:1fr;">
+        <main class="main" style="padding:24px 18px;">
 
-        <section class="aiqb">
-            <header class="aiqb__header">
-                <div class="aiqb__header-row">
-                    <h2 class="aiqb__title">AI Assisted Creation</h2>
-                    <button type="button" id="btnBack" class="btn btn-muted">Back</button>
-                </div>
-                <div class="aiqb__context" id="aiContextInfo"></div>
-            </header>
+            <section class="aiqb">
+                <header class="aiqb__header">
+                    <div class="aiqb__header-row">
+                        <h2 class="aiqb__title">AI Assisted Creation</h2>
+                        <button type="button" id="btnBack" class="btn btn-muted">Back</button>
+                    </div>
+                    <div class="aiqb__context" id="aiContextInfo"></div>
+                </header>
 
-            <!-- Config Form -->
-            <form id="aiForm" class="aiqb__form" autocomplete="off">
+                <!-- Config Form -->
+                <form id="aiForm" class="aiqb__form" autocomplete="off">
 
-                <div class="aiqb__grid">
-                    <!-- Types -->
-                    <div class="aiqb__field">
-                        <label>Question Type(s)</label>
-                        <div class="aiqb__types">
-                            <label title="Multiple Choice">
-                                <input type="checkbox" name="types" value="MCQ" checked/> MCQ
-                            </label>
-                            <label title="True / False">
-                                <input type="checkbox" name="types" value="TF" checked/> T/F
-                            </label>
-                            <label title="Short Answer">
-                                <input type="checkbox" name="types" value="SA"/> SA
-                            </label>
-                            <label title="Long Answer">
-                                <input type="checkbox" name="types" value="LA"/> LA
-                            </label>
+                    <div class="aiqb__grid">
+                        <!-- Question Types & Counts -->
+                        <div class="aiqb__field" style="grid-column: 1 / -1;">
+                            <label>Question Types & Counts</label>
+                            <div class="aiqb__type-rows">
+                                <!-- MCQ -->
+                                <div class="aiqb__type-row">
+                                    <label class="aiqb__check-label" title="Multiple Choice">
+                                        <input type="checkbox" name="types" value="MCQ" />
+                                        <span>Multiple Choice (MCQ)</span>
+                                    </label>
+                                    <input type="number" class="aiqb__count-input" data-type="MCQ" value="0" min="1"
+                                        max="10" placeholder="Qty" disabled />
+                                </div>
+
+                                <!-- Short Answer -->
+                                <div class="aiqb__type-row">
+                                    <label class="aiqb__check-label" title="Short Answer">
+                                        <input type="checkbox" name="types" value="SA" />
+                                        <span>Short Answer (SA)</span>
+                                    </label>
+                                    <input type="number" class="aiqb__count-input" data-type="SA" value="0" min="1"
+                                        max="10" placeholder="Qty" disabled />
+                                </div>
+
+                                <!-- True/False -->
+                                <div class="aiqb__type-row">
+                                    <label class="aiqb__check-label" title="True / False">
+                                        <input type="checkbox" name="types" value="TF" />
+                                        <span>True / False (T/F)</span>
+                                    </label>
+                                    <input type="number" class="aiqb__count-input" data-type="TF" value="0" min="1"
+                                        max="10" placeholder="Qty" disabled />
+                                </div>
+
+                                <!-- Long Answer -->
+                                <div class="aiqb__type-row">
+                                    <label class="aiqb__check-label" title="Long Answer">
+                                        <input type="checkbox" name="types" value="LA" />
+                                        <span>Long Answer (LA)</span>
+                                    </label>
+                                    <input type="number" class="aiqb__count-input" data-type="LA" value="0" min="1"
+                                        max="5" placeholder="Qty" disabled />
+                                </div>
+                            </div>
                         </div>
-                        <small class="aiqb__hint">Tip: you can select more than one type.</small>
+
+                        <!-- Act -->
+                        <div class="aiqb__field">
+                            <label for="actSelect">Act</label>
+                            <select id="actSelect" class="aiqb__select">
+                                <option value="1">Act 1</option>
+                                <option value="2">Act 2</option>
+                                <option value="3">Act 3</option>
+                                <option value="4">Act 4</option>
+                                <option value="5">Act 5</option>
+                            </select>
+                        </div>
+
+                        <!-- Scene -->
+                        <div class="aiqb__field">
+                            <label for="sceneSelect">Scene</label>
+                            <select id="sceneSelect" class="aiqb__select">
+                                <option value="1">Scene 1</option>
+                                <option value="2">Scene 2</option>
+                                <option value="3">Scene 3</option>
+                                <option value="4">Scene 4</option>
+                                <option value="5">Scene 5</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Count -->
-                    <div class="aiqb__field">
-                        <label for="qCount">Number of questions</label>
-                        <input id="qCount" class="aiqb__input" type="number" min="1" max="20" value="5"/>
-                        <small class="aiqb__hint">Recommended: 3–10</small>
+                    <div class="aiqb__actions">
+                        <button type="button" id="btnGenerate" class="btn btn-warning">Generate</button>
+                        <div class="aiqb__spacer"></div>
+                        <button type="button" id="btnClear" class="btn btn-muted">Clear</button>
+                        <button type="button" id="btnSaveSelected" class="btn btn-orange-pill" disabled>Save
+                            Selected</button>
                     </div>
+                </form>
 
-                    <!-- Act/Scene -->
-                    <div class="aiqb__field">
-                        <label for="actSelect">Act</label>
-                        <select id="actSelect" class="aiqb__select">
-                            <option value="1">Act 1</option>
-                            <option value="2">Act 2</option>
-                            <option value="3">Act 3</option>
-                            <option value="4">Act 4</option>
-                            <option value="5">Act 5</option>
-                        </select>
+                <!-- Results -->
+                <section class="aiqb__results">
+                    <div class="aiqb__results-head">
+                        <h3 class="aiqb__results-title">Generated Questions</h3>
+                        <small class="aiqb__hint" id="resultsMeta">Nothing generated yet.</small>
                     </div>
-
-                    <div class="aiqb__field">
-                        <label for="sceneSelect">Scene</label>
-                        <select id="sceneSelect" class="aiqb__select">
-                            <option value="1">Scene 1</option>
-                            <option value="2">Scene 2</option>
-                            <option value="3">Scene 3</option>
-                            <option value="4">Scene 4</option>
-                            <option value="5">Scene 5</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="aiqb__actions">
-                    <button type="button" id="btnGenerate" class="btn btn-warning">Generate</button>
-                    <div class="aiqb__spacer"></div>
-                    <button type="button" id="btnClear" class="btn btn-muted">Clear</button>
-                    <button type="button" id="btnSaveSelected" class="btn btn-orange-pill" disabled>Save Selected</button>
-                </div>
-            </form>
-
-            <!-- Results -->
-            <section class="aiqb__results">
-                <div class="aiqb__results-head">
-                    <h3 class="aiqb__results-title">Generated Questions</h3>
-                    <small class="aiqb__hint" id="resultsMeta">Nothing generated yet.</small>
-                </div>
-                <div id="resultsList" class="aiqb__list"></div>
+                    <div id="resultsList" class="aiqb__list"></div>
+                </section>
             </section>
-        </section>
 
-    </main>
-</div>
+        </main>
+    </div>
 
-<script src="js/ai-question-creator.js"></script>
+    <!-- Core Scripts -->
+    <script src="js/api-config.js"></script>
+    <script src="js/restore-context.js"></script>
+
+    <script src="js/ai-question-creator.js?v=11"></script>
 </body>
+
 </html>

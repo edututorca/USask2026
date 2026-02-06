@@ -5,7 +5,7 @@
  * Loads questions from QuestionPool table for the selected Section
  */
 (function () {
-    async function loadQuestionsForSection(sectionId) {
+    async function loadQuestionsForSection(sectionId, newQuestionIdsParam) {
         const list = document.getElementById('questionsList');
         if (!list) return;
 
@@ -14,16 +14,43 @@
         try {
             // Fetch questions for this section
             const data = await apiRequest(`${API_CONFIG.ENDPOINTS.QUESTIONS}?sectionId=${sectionId}`);
-            const questions = data.questions || data || [];
-
-            if (questions.length === 0) {
-                showEmpty(list, 'No questions found for this section. Click "Add Question" below to create one!');
-                return;
-            }
+            let questions = data.questions || data || [];
 
             // Build questions HTML
-            const html = questions.map(q => buildQuestionRow(q)).join('');
+            let hiddenIds = [];
+            try {
+                hiddenIds = JSON.parse(localStorage.getItem('hiddenQuestionIds') || '[]');
+            } catch (e) {
+                console.warn('Failed to parse hiddenQuestionIds:', e);
+            }
+
+            // Filter out hidden questions
+            const visibleQuestions = questions.filter(q => {
+                const qid = String(q.QuestionID || q.questionID);
+                return !hiddenIds.includes(qid);
+            });
+
+            const html = visibleQuestions.map(q => buildQuestionRow(q)).join('');
             list.innerHTML = html;
+
+            // Add click handlers for AI buttons
+            list.querySelectorAll('[data-action="ai"]').forEach(btn => {
+                btn.addEventListener('click', handleAiButtonClick);
+            });
+
+            // Auto-select (check) new questions
+            const params = new URLSearchParams(window.location.search);
+            const newIdsParam = newQuestionIdsParam || params.get('newQuestionIds');
+            if (newIdsParam) {
+                const newIds = newIdsParam.split(',');
+                newIds.forEach(id => {
+                    const row = list.querySelector(`.q-row[data-question-id="${id}"]`);
+                    if (row) {
+                        const cb = row.querySelector('input[type="checkbox"]');
+                        if (cb) cb.checked = true;
+                    }
+                });
+            }
 
         } catch (error) {
             console.error('Failed to load questions:', error);
@@ -31,54 +58,73 @@
         }
     }
 
+    function handleAiButtonClick(e) {
+        const btn = e.currentTarget;
+        const row = btn.closest('.q-row');
+        const qText = row.querySelector('.q-title')?.textContent || '';
+
+        // Get context from tabs/session
+        const subjectId = sessionStorage.getItem('currentSubjectId') || '';
+        const topicId = sessionStorage.getItem('currentTopicId') || '';
+        const subtopicId = sessionStorage.getItem('currentSubtopicId') || '';
+        const sectionId = sessionStorage.getItem('currentSectionId') || '';
+
+        const play = getTabText('.tab--topic') || 'Romeo & Juliet';
+        const actRaw = getTabText('.tab--subtopic') || 'Act 1';
+        const scnRaw = getTabText('.tab--section') || 'Scene 1';
+
+        const act = actRaw.replace(/[^0-9]/g, '') || '1';
+        const scene = scnRaw.replace(/[^0-9]/g, '') || '1';
+
+        const url = new URL('ai-question-creator.html', window.location.href);
+        url.searchParams.set('play', play);
+        url.searchParams.set('act', act);
+        url.searchParams.set('scene', scene);
+
+        // Pass IDs for returning
+        url.searchParams.set('subjectId', subjectId);
+        url.searchParams.set('topicId', topicId);
+        url.searchParams.set('subtopicId', subtopicId);
+        url.searchParams.set('sectionId', sectionId);
+
+        // Get Course Info from session
+        const courseCode = sessionStorage.getItem('currentCourseCode') || '';
+        const courseCategory = sessionStorage.getItem('currentCourseCategory') || '';
+
+        if (courseCode) url.searchParams.set('courseCode', courseCode);
+        if (courseCategory) url.searchParams.set('courseCategory', courseCategory);
+
+        window.location.href = url.toString();
+    }
+
+    function getTabText(selector) {
+        const active = document.querySelector(selector + '.active');
+        if (active) return active.dataset.topicName || active.dataset.subtopicName || active.dataset.sectionName || active.textContent.trim();
+        return '';
+    }
+
     /**
      * Build HTML for a single question row
-     * Fixed to handle snake_case field names from MySQL
      */
     function buildQuestionRow(question) {
-        // Map question types to display labels (supports multiple naming conventions)
+        // ... (rest of the buildQuestionRow function looks unchanged except for using question.questionID)
         const typeMap = {
             'Multiple Choice': 'M/C',
-            'multiple_choice': 'M/C',  // MySQL uses snake_case
             'True/False': 'T/F',
-            'true_false': 'T/F',       // MySQL uses snake_case
-            'Short Answer': 'S/A',
-            'short_answer': 'S/A'      // MySQL uses snake_case
+            'Short Answer': 'S/A'
         };
-        
-// Try all naming conventions: PascalCase, camelCase, snake_case
-const typeLabel = typeMap[question.QuestionType] || 
-                  typeMap[question.questionType] || 
-                  typeMap[question.question_type] || 
-                  'M/C';
+        const typeLabel = typeMap[question.QuestionType] || typeMap[question.questionType] || 'M/C';
 
-const questionId = question.QuestionID || 
-                   question.questionID || 
-                   question.question_id;
+        const questionId = question.QuestionID || question.questionID;
+        const questionText = question.QuestionText || question.questionText || 'No question text';
+        const difficulty = question.Difficulty || question.difficulty || 1;
 
-const questionText = question.QuestionText || 
-                     question.questionText || 
-                     question.question_text || 
-                     'No question text';
+        const usageCount = question.UsageCount || question.usageCount || 0;
+        const voteDisplay = `<span class="usage-count" title="Number of users who used this question">${usageCount}</span>
+                             <span class="point-value">/1</span>`;
 
-// Get usage count - number of users who have used this question
-const usageCount = question.UsageCount || 
-                   question.usageCount || 
-                   question.usage_count || 
-                   0;
-
-// Display usage count as points (/1 default)
-const voteDisplay = `
-  <span class="usage-count" title="Number of users who used this question">
-    ${usageCount}
-  </span>
-  <span class="point-value">/1</span>
-`;
-
-
-        // Progress bar width (optional - can be adjusted or removed)
         const progressWidth = Math.min(Math.max(usageCount * 10, 20), 100);
-        
+
         return `
             <article class="q-row" data-question-id="${questionId}">
                 <label class="q-checkbox">
@@ -90,11 +136,11 @@ const voteDisplay = `
                 </div>
                 <div class="q-side">
                     <div class="points">${typeLabel}</div>
+                    <div class="points">${difficulty} point${difficulty !== 1 ? 's' : ''}</div>
                     <div class="progress">
                         <span class="bar" style="width:${progressWidth}%"></span>
-                        <span class="pval">0 /1</span>
+                        <span class="pval">${voteDisplay}</span>
                     </div>
-                    <div class="usage-count" title="Number of users who used this question">${usageCount}</div>
                     <div class="icons">
                         <button class="i check" title="Include" data-action="include">✓</button>
                         <button class="i cross" title="Delete" data-action="delete">✕</button>

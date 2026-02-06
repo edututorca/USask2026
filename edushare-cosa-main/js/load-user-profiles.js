@@ -10,6 +10,9 @@
         const userId = getCurrentUserId();
         if (!userId) {
             console.warn('No user ID found - user may not be logged in');
+            // Show fallbacks so it doesn't stay "Loading..."
+            updateProfileCard({ FirstName: 'User', UserType: 'Teacher' });
+            updateUserChip({ FirstName: 'User', LastName: '', ExperiencePoints: 0 });
             return;
         }
 
@@ -20,7 +23,7 @@
 
             // Update sidebar profile card
             updateProfileCard(profile);
-            
+
             // Update top-right user chip
             updateUserChip(profile);
 
@@ -76,7 +79,7 @@
 
     // Load profile when page loads
     document.addEventListener('DOMContentLoaded', loadUserProfile);
-    
+
     // Make function available globally for refresh
     window.loadUserProfile = loadUserProfile;
 })();

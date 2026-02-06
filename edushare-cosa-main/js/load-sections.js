@@ -1,135 +1,81 @@
 /* ===================================================== */
-/* ======== LOAD SECTIONS (ROW 3 - WAS SCENES) ======== */
+/* ========= LOAD SECTIONS (SCENES / LESSONS) ========= */
 /* ===================================================== */
-/**
- * Loads sections from Section table filtered by selected Subtopic
- * Example: If "Act 3" is selected, shows "Scene 1", "Scene 2", etc.
- * 
- * NEW FILE: Uses RESTful API endpoints
- */
 (function () {
-    async function loadSectionsForSubtopic(subtopicId) {
+    async function loadSectionsForSubtopic(subtopicId, autoNavOptions = {}) {
+        console.log('[load-sections] loadSectionsForSubtopic called:', subtopicId, autoNavOptions);
         const bar = document.getElementById('sectionsBar');
         if (!bar) return;
 
-        bar.innerHTML = '<div style="color: #999; padding: 10px; text-align: center;">Loading sections...</div>';
+        showLoading(bar, 'Loading scenes...');
 
+        // DEFINITIVE MANUAL: Hide content area until scene is clicked
+        document.getElementById('contentArea')?.classList.add('hidden');
+
+        let sections = [];
+        // 1. Try to fetch from API
         try {
-            // Use RESTful endpoint
-            const url = `http://localhost:3000/api/subtopics/${subtopicId}/sections`;
-            console.log('📚 Fetching sections from:', url);
-
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const sections = await response.json();
-            console.log('✅ Received sections:', sections);
-
-            if (sections.length === 0) {
-                bar.innerHTML = '<div style="color: #999; padding: 10px; text-align: center;">No sections available</div>';
-                return;
-            }
-
-            // Build section tabs
-            const html = sections.map((section, index) => {
-                // API returns section_name (snake_case)
-                const sectionName = section.section_name || 'Untitled';
-                const sectionId = section.section_id;
-                
-                // Fourth one active by default (to match your old Scene 4 default)
-                const activeClass = index === 3 ? ' active' : '';
-
-                return `
-                    <button 
-                        class="tab tab--section${activeClass}"
-                        data-section-id="${sectionId}"
-                        data-section-name="${escapeHtml(sectionName)}">
-                        ${escapeHtml(sectionName)}
-                    </button>
-                `;
-            }).join('');
-
-            bar.innerHTML = html;
-
-            // Add click handlers
-            bar.querySelectorAll('.tab--section').forEach(btn => {
-                btn.addEventListener('click', handleSectionClick);
-            });
-
-            // Auto-load questions for the active (4th) section, or first if less than 4
-            const activeIndex = sections.length >= 4 ? 3 : 0;
-            if (sections[activeIndex]) {
-                const activeSection = sections[activeIndex];
-                const activeSectionId = activeSection.section_id;
-                
-                // Show content area
-                const contentArea = document.getElementById('contentArea');
-                if (contentArea) {
-                    contentArea.classList.remove('hidden');
-                }
-                
-                // Load questions for this section
-                if (window.loadQuestionsForSection) {
-                    window.loadQuestionsForSection(activeSectionId);
-                }
-            }
-
+            const data = await apiRequest(`${API_CONFIG.ENDPOINTS.SECTIONS}?subtopicId=${subtopicId}`);
+            sections = data.sections || data || [];
         } catch (error) {
-            console.error('❌ Failed to load sections:', error);
-            bar.innerHTML = `
-                <div style="color: #c33; padding: 10px; text-align: center;">
-                    Failed to load sections<br>
-                    <small>Check console for details</small>
-                </div>
-            `;
+            console.error('[load-sections] API error:', error);
         }
+
+        // 3. Handle Empty State
+        if (sections.length === 0) {
+            bar.innerHTML = '<div class="nav-empty" style="color: #999;">No scenes available</div>';
+            return;
+        }
+
+        // 4. Build section tabs
+        bar.innerHTML = sections.map((sec, index) => {
+            const name = sec.SectionName || sec.sectionName || 'Untitled';
+            const id = sec.sectionId || sec.SectionID;
+
+            return `
+                <button 
+                    class="tab tab--section"
+                    data-section-id="${id}"
+                    data-section-name="${escapeHtml(name)}">
+                    ${escapeHtml(name)}
+                </button>
+            `;
+        }).join('');
+
+        // 5. Add click handlers
+        bar.querySelectorAll('.tab--section').forEach(btn => {
+            btn.addEventListener('click', handleSectionClick);
+        });
+
+        // Auto-select initial section
+        if (autoNavOptions.initialSectionId) {
+            const initialBtn = bar.querySelector(`.tab--section[data-section-id="${autoNavOptions.initialSectionId}"]`);
+            if (initialBtn) {
+                console.log('[load-sections] Auto-selecting section:', autoNavOptions.initialSectionId);
+                initialBtn.dataset.newQuestionIds = autoNavOptions.newQuestionIds || '';
+                initialBtn.click();
+            }
+        }
+
     }
 
-    /**
-     * Handle section button click
-     */
     function handleSectionClick(e) {
         const btn = e.currentTarget;
-        const sectionId = btn.dataset.sectionId;
+        const id = btn.dataset.sectionId;
+        const name = btn.dataset.sectionName;
 
-        // Update active state
-        document.querySelectorAll('.tab--section').forEach(b => {
-            b.classList.remove('active');
-        });
+        document.querySelectorAll('.tab--section').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Save current section to session
-        try {
-            sessionStorage.setItem('currentSectionId', sectionId);
-            sessionStorage.setItem('currentSectionName', btn.dataset.sectionName);
-        } catch (e) {
-            console.warn('Could not save to sessionStorage:', e);
-        }
+        sessionStorage.setItem('currentSectionId', id);
+        sessionStorage.setItem('currentSectionName', name);
 
-        // Show content area
-        const contentArea = document.getElementById('contentArea');
-        if (contentArea) {
-            contentArea.classList.remove('hidden');
-        }
+        document.getElementById('contentArea')?.classList.remove('hidden');
 
-        // Load questions for this section
         if (window.loadQuestionsForSection) {
-            window.loadQuestionsForSection(sectionId);
-        } else {
-            console.warn('loadQuestionsForSection function not found');
+            window.loadQuestionsForSection(id, btn.dataset.newQuestionIds);
         }
     }
 
-    // Helper function to escape HTML (if not already defined)
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // Make functions available globally
     window.loadSectionsForSubtopic = loadSectionsForSubtopic;
 })();
