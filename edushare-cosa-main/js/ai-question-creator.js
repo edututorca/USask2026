@@ -1,47 +1,40 @@
+/**
+ * ============================================================
+ * AI Question Creator - Frontend
+ * ============================================================
+ * 
+ * TWO WAYS TO USE:
+ * 
+ * 1. STANDALONE - Go directly to ai-question-creator.html
+ *    → Pick subject, type a topic, set grade, generate
+ * 
+ * 2. FROM QUESTION BANK - Click "Generate with AI" from User-Area
+ *    → URL params auto-fill the subject, topic, subtopic
+ *    → Example: ai-question-creator.html?subject=English&topic=Romeo+and+Juliet&subtopic=Act+3&grade=10&subjectId=1
+ * 
+ * ============================================================
+ */
 (function () {
-    const BACK_URL = 'User-Area.html';
 
-    // Read context from URL
+    // ── URL Params (auto-fill from Question Bank) ──────────
     const params = new URLSearchParams(location.search);
-    const play = params.get('play') || 'Unknown Play';
-    const actFromUrl = params.get('act') || '1';
-    const sceneFromUrl = params.get('scene') || '1';
+    const urlSubjectId = params.get('subjectId') || '';
+    const urlSubject = params.get('subject') || '';
+    const urlTopic = params.get('topic') || params.get('play') || '';
+    const urlSubtopic = params.get('subtopic') || '';
+    const urlSection = params.get('section') || '';
+    const urlGrade = params.get('grade') || '';
 
-    // Hierarchy IDs for return trip
-    const subjectId = params.get('subjectId') || '';
-    const topicId = params.get('topicId') || '';
-    const subtopicId = params.get('subtopicId') || '';
-    const sectionId = params.get('sectionId') || '';
-    const courseCode = params.get('courseCode') || '';
-    const courseCategory = params.get('courseCategory') || '';
-    let newQuestionIds = [];
-
-    function getReturnUrl() {
-        const url = new URL(BACK_URL, window.location.href);
-        if (subjectId) url.searchParams.set('subjectId', subjectId);
-        if (topicId) url.searchParams.set('topicId', topicId);
-        if (subtopicId) url.searchParams.set('subtopicId', subtopicId);
-        if (sectionId) url.searchParams.set('sectionId', sectionId);
-        if (courseCode) url.searchParams.set('courseCode', courseCode);
-        if (courseCategory) url.searchParams.set('courseCategory', courseCategory);
-        if (newQuestionIds.length > 0) url.searchParams.set('newQuestionIds', newQuestionIds.join(','));
-
-        // Also keep the play/act/scene for legacy or reference
-        url.searchParams.set('play', play);
-        url.searchParams.set('act', actSelect.value);
-        url.searchParams.set('scene', sceneSelect.value);
-
-        console.log('[ai-question-creator] Generated return URL:', url.toString());
-        return url.toString();
-    }
-
-    // Elements
+    // ── Elements ───────────────────────────────────────────
+    const subjectSelect = document.getElementById('subjectSelect');
+    const topicInput = document.getElementById('topicInput');
+    const topicSuggestions = document.getElementById('topicSuggestions');
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subtopicInput = document.getElementById('subtopicInput');
+    const customPromptEl = document.getElementById('customPrompt');
     const ctxEl = document.getElementById('aiContextInfo');
-    const btnBack = document.getElementById('btnBack');
-    const actSelect = document.getElementById('actSelect');
-    const sceneSelect = document.getElementById('sceneSelect');
-    const qCount = document.getElementById('qCount');
 
+    const btnBack = document.getElementById('btnBack');
     const btnGenerate = document.getElementById('btnGenerate');
     const btnClear = document.getElementById('btnClear');
     const btnSaveSelected = document.getElementById('btnSaveSelected');
@@ -50,14 +43,105 @@
     const resultsMeta = document.getElementById('resultsMeta');
     const aiForm = document.getElementById('aiForm');
 
-    // Init UI with URL context
-    ctxEl.textContent = `Play: ${play}`;
-    actSelect.value = actFromUrl;
-    sceneSelect.value = sceneFromUrl;
+    let generated = [];
+    let subjects = [];
 
+    // ── Back button ────────────────────────────────────────
     btnBack.addEventListener('click', () => {
-        window.location.href = getReturnUrl();
+        // If we came from Question Bank, go back there
+        if (document.referrer && document.referrer.includes('User-Area')) {
+            window.history.back();
+        } else {
+            window.location.href = 'User-Area.html';
+        }
     });
+
+    // ── Load Subjects from API ─────────────────────────────
+    async function loadSubjects() {
+        try {
+            const data = await apiRequest('/subjects');
+            subjects = Array.isArray(data) ? data : (data.subjects || []);
+
+            subjectSelect.innerHTML = '<option value="">-- Choose a subject --</option>';
+            subjects.forEach(s => {
+                const id = s.id || s.SubjectID;
+                const name = s.name || s.SubjectName;
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = name;
+
+                // Auto-select if from URL params
+                if (urlSubjectId && String(id) === String(urlSubjectId)) {
+                    opt.selected = true;
+                } else if (urlSubject && name.toLowerCase() === urlSubject.toLowerCase()) {
+                    opt.selected = true;
+                }
+
+                subjectSelect.appendChild(opt);
+            });
+
+            // Load topic suggestions for the selected subject
+            if (subjectSelect.value) {
+                loadTopicSuggestions(subjectSelect.value);
+            }
+        } catch (err) {
+            console.error('Failed to load subjects:', err);
+            subjectSelect.innerHTML = '<option value="">Failed to load subjects</option>';
+        }
+    }
+
+    // ── Load Topic Suggestions (from existing questions) ───
+    async function loadTopicSuggestions(subjectId) {
+        try {
+            let url = '/topics';
+            if (subjectId) url += `?subjectId=${subjectId}`;
+
+            const data = await apiRequest(url);
+            const topics = Array.isArray(data) ? data : [];
+
+            // Populate the datalist for autocomplete suggestions
+            topicSuggestions.innerHTML = '';
+            topics.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.name || t.topic || '';
+                topicSuggestions.appendChild(opt);
+            });
+        } catch (err) {
+            // Not critical — topics endpoint might not exist yet
+            // Teacher can still type freely
+            console.log('Topic suggestions not available:', err.message);
+        }
+    }
+
+    // ── Update context breadcrumb ──────────────────────────
+    function updateContext() {
+        const subjectName = subjectSelect.options[subjectSelect.selectedIndex]?.text || '';
+        const topic = topicInput.value.trim();
+        const subtopic = subtopicInput.value.trim();
+        const grade = gradeSelect.value;
+
+        let parts = [];
+        if (subjectName && subjectName !== '-- Choose a subject --') parts.push(subjectName);
+        if (topic) parts.push(topic);
+        if (subtopic) parts.push(subtopic);
+        if (grade) parts.push(`Grade ${grade}`);
+
+        if (parts.length > 0) {
+            ctxEl.innerHTML = parts.join(' <span>→</span> ');
+        } else {
+            ctxEl.innerHTML = '<span>Select a subject and topic to get started</span>';
+        }
+    }
+
+    // ── Event Listeners ────────────────────────────────────
+    subjectSelect.addEventListener('change', () => {
+        loadTopicSuggestions(subjectSelect.value);
+        updateContext();
+    });
+
+    topicInput.addEventListener('input', updateContext);
+    subtopicInput.addEventListener('input', updateContext);
+    gradeSelect.addEventListener('change', updateContext);
 
     // Toggle quantity inputs based on checkbox
     aiForm.addEventListener('change', (e) => {
@@ -68,33 +152,15 @@
             if (input) {
                 input.disabled = !checkbox.checked;
                 if (!input.disabled) {
-                    input.focus(); // Optional: focus when enabled
+                    input.focus();
                 } else {
-                    input.value = '0'; // Reset to 0 when disabled
+                    input.value = '0';
                 }
             }
         }
     });
 
-    // Generated items (in memory)
-    let generated = [];
-    let questionBank = null;
-
-    async function fetchBank() {
-        try {
-            btnGenerate.disabled = true;
-            btnGenerate.textContent = 'Loading Bank...';
-            questionBank = await apiRequest('/questions/mock');
-            console.log('AI Question Bank loaded:', questionBank);
-            btnGenerate.disabled = false;
-            btnGenerate.textContent = 'Generate Questions';
-        } catch (e) {
-            console.error('Failed to load AI bank:', e);
-            btnGenerate.textContent = 'Bank Load Failed';
-        }
-    }
-    fetchBank();
-
+    // ── Get selected question type config ──────────────────
     function getSelectedConfig() {
         const rows = Array.from(aiForm.querySelectorAll('.aiqb__type-row'));
         const config = [];
@@ -105,7 +171,7 @@
 
             if (checkbox && checkbox.checked) {
                 let count = parseInt(countInput.value, 10);
-                if (!count || count < 1) return; // Skip if count is 0 or invalid
+                if (!count || count < 1) return;
                 config.push({ type: checkbox.value, count });
             }
         });
@@ -116,63 +182,49 @@
         return Math.random().toString(36).slice(2, 10);
     }
 
-    // MOCK generator (now uses fetched bank)
-    function mockGenerate(config, act, scene) {
-        if (!questionBank) {
-            alert('Question bank is still loading. Please wait a moment.');
-            return [];
+    // ── Generate Questions (calls server API) ──────────────
+    async function generateQuestions(config) {
+        const subjectName = subjectSelect.options[subjectSelect.selectedIndex]?.text || '';
+        const topic = topicInput.value.trim();
+        const subtopic = subtopicInput.value.trim();
+        const grade = gradeSelect.value;
+
+        const requestBody = {
+            topic: topic,
+            subtopic: subtopic,
+            section: '',
+            subject: subjectName !== '-- Choose a subject --' ? subjectName : '',
+            grade: grade,
+            types: config,
+            customPrompt: customPromptEl ? customPromptEl.value : ''
+        };
+
+        const response = await apiRequest('/ai/generate', {
+            method: 'POST',
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.success || !response.questions) {
+            throw new Error(response.error || 'No questions returned');
         }
 
-        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-        const out = [];
+        console.log(`[AI] ${response.mode === 'ai' ? 'AI' : 'Mock'} Generated: ${response.count} questions`);
 
-        config.forEach(item => {
-            const { type, count } = item;
-
-            for (let i = 0; i < count; i++) {
-                if (type === 'MCQ') {
-                    const qData = pick(questionBank.MCQ);
-                    out.push({
-                        id: uid(),
-                        type,
-                        text: qData.text,
-                        options: qData.options,
-                        act, scene,
-                        keep: false,
-                        createdAt: Date.now()
-                    });
-                } else if (type === 'TF') {
-                    const qText = pick(questionBank.TF);
-                    out.push({
-                        id: uid(),
-                        type,
-                        text: qText,
-                        options: [
-                            { text: "True", correct: true },
-                            { text: "False", correct: false }
-                        ],
-                        act, scene,
-                        keep: false,
-                        createdAt: Date.now()
-                    });
-                } else {
-                    const typeKey = type === 'LA' ? 'LA' : 'SA';
-                    const qText = pick(questionBank[typeKey] || ["Write a question about this scene."]);
-                    out.push({
-                        id: uid(),
-                        type,
-                        text: qText,
-                        options: [],
-                        act, scene,
-                        keep: false,
-                        createdAt: Date.now()
-                    });
-                }
-            }
-        });
-        return out;
+        return {
+            questions: response.questions.map(q => ({
+                id: uid(),
+                type: q.type,
+                text: q.text,
+                options: q.options || [],
+                keep: false,
+                createdAt: Date.now(),
+                aiGenerated: response.mode === 'ai'
+            })),
+            mode: response.mode
+        };
     }
 
+    // ── Render ─────────────────────────────────────────────
     function render() {
         resultsList.innerHTML = '';
 
@@ -183,7 +235,12 @@
         }
 
         const keptCount = generated.filter(x => x.keep).length;
-        resultsMeta.textContent = `${generated.length} generated • ${keptCount} selected`;
+        const isAI = generated[0]?.aiGenerated;
+        const modeHtml = isAI
+            ? '<span class="aiqb__mode-badge aiqb__mode-badge--ai">AI Generated</span>'
+            : '<span class="aiqb__mode-badge aiqb__mode-badge--mock">Mock Mode</span>';
+
+        resultsMeta.innerHTML = `${generated.length} generated ${modeHtml} &bull; ${keptCount} selected`;
         btnSaveSelected.disabled = keptCount === 0;
 
         generated.forEach((q) => {
@@ -195,8 +252,6 @@
                 : (q.type === 'TF')
                     ? 'True/False'
                     : 'Free response';
-
-            card.innerHTML = ''; // Clear for logic
 
             if (q.editing) {
                 // EDIT MODE
@@ -228,10 +283,8 @@
                         </div>
                     </div>
                 `;
-
             } else {
-                // VIEW MODE (Current)
-                // Build tooltip content if MCQ/TF
+                // VIEW MODE
                 let tooltipHtml = '';
                 if (q.options && q.options.length > 0) {
                     const listItems = q.options.map(opt => {
@@ -246,6 +299,7 @@
                     <div class="aiqb__card-row">
                       <div class="aiqb__card-left">
                         <span class="aiqb__chip aiqb__chip--type">${q.type}</span>
+                        ${q.aiGenerated ? '<span class="aiqb__chip aiqb__chip--ai">AI</span>' : ''}
                         <span class="aiqb__qtext-inline">${escapeHtml(q.text)}</span>
                       </div>
 
@@ -276,6 +330,7 @@
         });
     }
 
+    // ── Card action handlers ───────────────────────────────
     resultsList.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-action]');
         if (!btn) return;
@@ -296,12 +351,10 @@
             item.editing = false;
             render();
         } else if (action === 'save') {
-            // Save logic
             const card = btn.closest('.aiqb__card');
             const textInput = card.querySelector(`#edit-text-${id}`);
             if (textInput) item.text = textInput.value;
 
-            // Save options if they exist
             const optionRows = card.querySelectorAll('.aiqb__edit-option-row');
             if (optionRows.length > 0 && item.options) {
                 optionRows.forEach((row, idx) => {
@@ -329,64 +382,115 @@
         render();
     });
 
-    btnGenerate.addEventListener('click', () => {
+    // ── Generate Button ────────────────────────────────────
+    btnGenerate.addEventListener('click', async () => {
         const config = getSelectedConfig();
-        if (!config.length) { alert('Select at least one question type.'); return; }
+        if (!config.length) {
+            alert('Select at least one question type and set the count.');
+            return;
+        }
 
-        const act = actSelect.value;
-        const scene = sceneSelect.value;
+        if (!topicInput.value.trim()) {
+            alert('Please enter a topic (e.g. "Romeo and Juliet").');
+            return;
+        }
 
-        // Generate (mock for now)
-        generated = mockGenerate(config, act, scene);
-        render();
+        // Show loading state
+        btnGenerate.disabled = true;
+        btnGenerate.textContent = 'Generating...';
+        resultsList.innerHTML = `
+            <div class="aiqb__generating">
+                <span class="spinner"></span>
+                AI is generating your questions...
+            </div>
+        `;
+        resultsMeta.textContent = '';
+
+        try {
+            const result = await generateQuestions(config);
+            generated = result.questions;
+            render();
+        } catch (error) {
+            console.error('Generation failed:', error);
+            resultsList.innerHTML = '';
+            resultsMeta.textContent = 'Generation failed. Check your connection and try again.';
+            alert('Failed to generate questions. Make sure the server is running.');
+        } finally {
+            btnGenerate.disabled = false;
+            btnGenerate.textContent = 'Generate Questions';
+        }
     });
 
+    // ── Clear Button ───────────────────────────────────────
     btnClear.addEventListener('click', () => {
         generated = [];
         render();
     });
 
+    // ── Save Selected Button ───────────────────────────────
     btnSaveSelected.addEventListener('click', async () => {
         const kept = generated.filter(x => x.keep);
-        if (!kept.length) { alert('Select at least one question to save.'); return; }
-
-        const act = actSelect.value;
-        const scene = sceneSelect.value;
-        const sectionId = sessionStorage.getItem('currentSectionId');
+        if (!kept.length) {
+            alert('Select at least one question to save.');
+            return;
+        }
 
         btnSaveSelected.disabled = true;
         btnSaveSelected.textContent = 'Saving...';
 
+        let savedCount = 0;
         try {
-            // Save each question to the database
             for (const q of kept) {
-                const res = await apiRequest(API_CONFIG.ENDPOINTS.QUESTIONS, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        text: q.text,
-                        type: q.type === 'TF' ? 'True/False' : (q.type === 'MCQ' ? 'Multiple Choice' : 'Short Answer'),
-                        sectionId: sectionId,
-                        difficulty: 1,
-                        options: q.options
-                    })
-                });
-                if (res && res.questionId) {
-                    newQuestionIds.push(res.questionId);
+                const body = {
+                    questionText: q.text,
+                    questionType: q.type === 'TF' ? 'True/False' : (q.type === 'MCQ' ? 'Multiple Choice' : 'Short Answer'),
+                    difficulty: 1,
+                    subjectId: subjectSelect.value || null,
+                    grade: gradeSelect.value || 10,
+                    topic: topicInput.value.trim(),
+                    userId: getCurrentUserId() || 1
+                };
+
+                // Add MCQ options
+                if (q.type === 'MCQ' && q.options.length >= 4) {
+                    body.optionA = q.options[0]?.text || '';
+                    body.optionB = q.options[1]?.text || '';
+                    body.optionC = q.options[2]?.text || '';
+                    body.optionD = q.options[3]?.text || '';
+                    const correct = q.options.find(o => o.correct);
+                    body.correctAnswer = correct ? correct.text : body.optionA;
+                } else if (q.type === 'TF') {
+                    body.optionA = 'True';
+                    body.optionB = 'False';
+                    const correct = q.options.find(o => o.correct);
+                    body.correctAnswer = correct ? correct.text : 'True';
                 }
+
+                await apiRequest('/questions', {
+                    method: 'POST',
+                    body: JSON.stringify(body)
+                });
+                savedCount++;
             }
 
-            alert(`Saved ${kept.length} question(s) to database.`);
-            window.location.href = getReturnUrl();
+            alert(`Saved ${savedCount} question(s) to the database!`);
+            generated = generated.filter(x => !x.keep);
+            render();
+
         } catch (e) {
-            alert('Failed to save some questions.');
-            console.error(e);
+            console.error('Save failed:', e);
+            if (savedCount > 0) {
+                alert(`Saved ${savedCount} question(s), but some failed.`);
+            } else {
+                alert('Failed to save questions. Make sure you are logged in.');
+            }
         } finally {
             btnSaveSelected.disabled = false;
             btnSaveSelected.textContent = 'Save Selected';
         }
     });
 
-    // Helpers
+    // ── Helpers ─────────────────────────────────────────────
     function escapeHtml(str) {
         return String(str)
             .replaceAll('&', '&amp;')
@@ -396,6 +500,22 @@
             .replaceAll("'", '&#039;');
     }
 
-    // Initial render
+    // ── Initialize ─────────────────────────────────────────
+
+    // Auto-fill from URL params if coming from Question Bank
+    if (urlTopic) topicInput.value = urlTopic;
+    if (urlSubtopic && urlSection) {
+        subtopicInput.value = `${urlSubtopic} ${urlSection}`.trim();
+    } else if (urlSubtopic) {
+        subtopicInput.value = urlSubtopic;
+    }
+    if (urlGrade) gradeSelect.value = urlGrade;
+
+    // Load subjects (will also auto-select from URL params)
+    loadSubjects().then(() => {
+        updateContext();
+    });
+
     render();
+
 })();

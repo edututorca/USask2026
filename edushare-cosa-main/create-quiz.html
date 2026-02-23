@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Quiz - EduShare</title>
+    <link rel="stylesheet" href="css/create-quiz.css">
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1>Create New Quiz</h1>
+            <p>Build a new quiz for your students</p>
+        </div>
+
+        <form id="createQuizForm">
+            <div class="form-group">
+                <label for="quizName">
+                    Quiz Name <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="quizName" 
+                    name="quizName" 
+                    placeholder="e.g., Romeo & Juliet Act 3 Quiz"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="courseSelect">
+                    Course <span class="required">*</span>
+                </label>
+                <select id="courseSelect" name="courseSelect" required>
+                    <option value="">Select a course</option>
+                </select>
+                <small>Which class is this quiz for?</small>
+            </div>
+
+            <div class="form-group">
+                <label for="quizDescription">
+                    Description (Optional)
+                </label>
+                <textarea 
+                    id="quizDescription" 
+                    name="quizDescription"
+                    placeholder="Add any notes about this quiz..."
+                ></textarea>
+                <small>e.g., Covers scenes 1-5, focuses on character development</small>
+            </div>
+
+            <div class="button-group">
+                <a href="dashboard.html" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Quiz</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="successMessage" class="success-message">
+        Quiz created successfully! Redirecting...
+    </div>
+
+    <script src="api-config.js"></script>
+    <script src="js/create-quiz.js"></script>
+</body>
+</html>

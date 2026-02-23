@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - EduShare</title>
+    <link rel="stylesheet" href="user-area.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/help.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="logo-container">
+            <img src="EduShare_Logo.png" alt="EduShare Logo" class="logo">
+        </div>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="profile-menu">
+                <button class="profile-btn" onclick="toggleProfileMenu()">
+                    <svg width="24" height="24" fill="currentColor">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="Account.html">Account Settings</a>
+                    <a href="profile.html">My Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+            <button class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="side-menu" id="sideMenu">
+        <nav class="menu-nav">
+            <a href="dashboard.html" class="menu-item">
+                <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+                Dashboard
+            </a>
+            <a href="Add-course.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                My Courses
+            </a>
+            <a href="User-Area.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                Question Bank
+            </a>
+            <a href="quiz-manager.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                My Quizzes
+            </a>
+            <a href="browse-quizzes.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Browse Quizzes
+            </a>
+            <a href="question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Question
+            </a>
+            <a href="ai-question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                AI Question Generator
+            </a>
+            <a href="help.html" class="menu-item active">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                Help
+            </a>
+        </nav>
+    </div>
+
+    <div class="help-container">
+        <div class="help-header">
+            <h1>Help Center</h1>
+            <p>Get answers to common questions and learn how to use EduShare</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="help-section">
+            <h2>
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="8 12 12 16 16 12"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                </svg>
+                Quick Links
+            </h2>
+            <div class="quick-links">
+                <a href="dashboard.html" class="quick-link">
+                    <svg width="20" height="20" fill="currentColor">
+                        <rect width="8" height="8" rx="2"/>
+                        <rect x="12" width="8" height="8" rx="2"/>
+                        <rect y="12" width="8" height="8" rx="2"/>
+                        <rect x="12" y="12" width="8" height="8" rx="2"/>
+                    </svg>
+                    <span>Go to Dashboard</span>
+                </a>
+                <a href="create-quiz.html" class="quick-link">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span>Create a Quiz</span>
+                </a>
+                <a href="question-creator.html" class="quick-link">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                    <span>Create a Question</span>
+                </a>
+                <a href="browse-quizzes.html" class="quick-link">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <span>Browse Community</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="help-section">
+            <h2>
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Getting Started
+            </h2>
+            
+            <div class="guide-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Create Your Profile</h3>
+                    <p>Set up your account with your school information and teaching subjects. This helps personalize your experience and connects you with relevant content.</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Add Your Courses</h3>
+                    <p>Start by adding the courses or classes you teach. Navigate to "My Courses" and click "Add New Course" to get started. You can organize your questions and quizzes by course.</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Create Questions</h3>
+                    <p>Build your question bank by creating multiple choice, true/false, or short answer questions. Use the AI Question Generator to speed up the process, or manually create questions through the Question Creator.</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Build Quizzes</h3>
+                    <p>Create quizzes by selecting questions from your question bank. You can reorder questions with drag-and-drop, assign point values, and customize answer spacing for printed versions.</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Share and Collaborate</h3>
+                    <p>Share your quizzes with other teachers in the community or export them for use in your classroom. Browse the community library to find and copy quizzes created by other educators.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="help-section">
+            <h2>
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+                </svg>
+                Frequently Asked Questions
+            </h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I create a new quiz?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>To create a new quiz:</p>
+                    <ul>
+                        <li>Click "Create New Quiz" from your Dashboard or Quiz Manager</li>
+                        <li>Enter a quiz name and select the course it belongs to</li>
+                        <li>Click "Create Quiz" to start adding questions</li>
+                        <li>Use the "Add Questions" button to select from your question bank</li>
+                        <li>Drag and drop to reorder questions as needed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How does the AI Question Generator work?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>The AI Question Generator uses advanced AI to automatically create questions based on your content. You can upload documents or paste text, select the question types you want, and the AI will generate relevant questions for you to review and edit before adding to your question bank.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I edit questions after adding them to a quiz?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! Click the edit icon next to any question in your quiz to open the Question Creator and make changes. The changes will be saved to the question in your question bank and will update in all quizzes that use that question.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I print a quiz for my students?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>From the Quiz Manager or when editing a quiz, click either "Print Student Version" or "Print Answer Key". You'll see a preview where you can make final adjustments before printing. The student version includes blank space for answers, while the answer key shows the correct answers.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I share quizzes with other teachers?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolutely! You can share your quizzes by clicking the "Share" button in Quiz Manager. This generates a link you can send to other teachers. They can browse your shared quiz in the Community section and copy it to their own account to use or modify.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I organize my questions by topic?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>When creating a question, you'll assign it to a specific Subject, Topic, Subtopic, and Section. This hierarchical organization helps you filter and find questions later. For example: Subject: English → Topic: Romeo & Juliet → Subtopic: Act 3 → Section: Scene 4.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What question types are supported?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>EduShare currently supports three question types:</p>
+                    <ul>
+                        <li><strong>Multiple Choice:</strong> Questions with 2-6 answer options</li>
+                        <li><strong>True/False:</strong> Simple binary questions</li>
+                        <li><strong>Short Answer:</strong> Open-ended questions where students write their own response</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I control the answer space on printed quizzes?</h3>
+                    <svg class="faq-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>For short answer questions, you can adjust the number of lines printed for student responses. When editing a quiz, use the lines selector next to each short answer question to choose between 3, 5, 10, 15, or 20 lines of writing space.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="help-section">
+            <h2>
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Contact Support
+            </h2>
+            <p style="color: #6073a0; margin-bottom: 24px;">
+                Can't find what you're looking for? Send us a message and we'll get back to you as soon as possible.
+            </p>
+
+            <div id="successMessage" class="success-message">
+                Thank you! Your message has been sent successfully. We'll get back to you soon.
+            </div>
+
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Name</label>
+                    <input type="text" id="contactName" name="name" placeholder="Your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail" name="email" placeholder="your.email@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" name="message" placeholder="Tell us how we can help..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="api-config.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="profile-link.js"></script>
+    <script src="js/help.js"></script>
+</body>
+</html>

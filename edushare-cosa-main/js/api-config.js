@@ -6,9 +6,9 @@
  */
 
 const API_CONFIG = {
-    // Changeed this to your actual URL
-    BASE_URL: 'http://localhost:3000/api',
-
+    // Change this to your actual URL (ngrok URL or localhost)
+    //BASE_URL: 'http://localhost:3000/api',
+BASE_URL: 'https://dewitt-paraffinoid-helene.ngrok-free.dev/api',
     // Endpoints
     ENDPOINTS: {
         // User endpoints
@@ -27,6 +27,22 @@ const API_CONFIG = {
         QUESTION_DELETE: '/questions',
         QUESTION_VOTE: '/questions/vote',
 
+        // Courses
+        COURSES: '/courses',
+
+        // Quizzes
+        QUIZZES: '/quizzes',
+        QUIZZES_CREATE: '/quizzes/create',
+        QUIZZES_RECENT: '/quizzes/recent',
+        QUIZZES_COMMUNITY: '/quizzes/community',
+        QUIZZES_MY_RATINGS: '/quizzes/my-ratings',
+
+        // Dashboard
+        DASHBOARD_STATS: '/dashboard/stats',
+
+        // Support
+        SUPPORT_CONTACT: '/support/contact',
+
         // Auth
         LOGIN: '/auth/login',
         LOGOUT: '/auth/logout'
@@ -41,10 +57,11 @@ async function apiRequest(endpoint, options = {}) {
 
     // Default options
     const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    };
+    headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+    }
+};
 
     // Add auth token if available
     const token = getAuthToken();
@@ -152,6 +169,22 @@ function showEmpty(container, message = 'No items found') {
     `;
 }
 
+/**
+ * Format a date string into a human-readable relative time
+ */
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return date.toLocaleDateString();
+}
+
 // Make functions globally available
 window.API_CONFIG = API_CONFIG;
 window.apiRequest = apiRequest;
@@ -161,3 +194,4 @@ window.escapeHtml = escapeHtml;
 window.showError = showError;
 window.showLoading = showLoading;
 window.showEmpty = showEmpty;
+window.formatDate = formatDate;
