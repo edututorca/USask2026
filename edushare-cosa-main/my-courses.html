@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - EduShare</title>
+    <title>My Courses - EduShare</title>
     <link rel="stylesheet" href="css/user-area.css">
     <link rel="stylesheet" href="css/nav.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/my-courses.css">
 </head>
 <body>
     <!-- Top Navigation Bar -->
@@ -46,11 +46,11 @@
     <!-- Sidebar Menu -->
     <div class="side-menu" id="sideMenu">
         <nav class="menu-nav">
-            <a href="dashboard.html" class="menu-item active">
+            <a href="dashboard.html" class="menu-item">
                 <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
                 Dashboard
             </a>
-            <a href="my-courses.html" class="menu-item">
+            <a href="my-courses.html" class="menu-item active">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                 My Courses
             </a>
@@ -81,100 +81,25 @@
         </nav>
     </div>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1>Welcome back, <span id="userName">Teacher</span>!</h1>
-            <p>Here's what's happening with your classes today</p>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <a href="my-courses.html" class="stat-card stat-card-link">
-                <h3>Total Courses</h3>
-                <div class="number" id="totalCourses">0</div>
+    <div class="courses-container">
+        <div class="page-header">
+            <h1>My Courses</h1>
+            <a href="Add-course.html" class="add-course-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Course
             </a>
-            <a href="quiz-manager.html" class="stat-card stat-card-link">
-                <h3>Total Quizzes</h3>
-                <div class="number" id="totalQuizzes">0</div>
-            </a>
-            <a href="User-Area.html" class="stat-card stat-card-link">
-                <h3>Questions Created</h3>
-                <div class="number" id="totalQuestions">0</div>
-            </a>
-            <!-- Experience Points - placeholder for future feature
-            <div class="stat-card">
-                <h3>Experience Points</h3>
-                <div class="number" id="experiencePoints">0</div>
-            </div>
-            -->
         </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <h2>Quick Actions</h2>
-            <div class="action-buttons">
-                <a href="create-quiz.html" class="action-btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Create New Quiz
-                </a>
-                <a href="question-creator.html" class="action-btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
-                    Create Question
-                </a>
-                <a href="Add-course.html" class="action-btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                    </svg>
-                    Add New Course
-                </a>
-                <a href="User-Area.html" class="action-btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    View Question Bank
-                </a>
-            </div>
-        </div>
-
-        <!-- Main Content Grid -->
-        <div class="sections-grid">
-            <div class="section-card">
-                <h2>
-                    Active Classes
-                    <a href="my-courses.html" class="view-all">View All &rarr;</a>
-                </h2>
-                <div class="class-list" id="activeClassesList"></div>
-            </div>
-
-            <div class="section-card">
-                <h2>
-                    Recent Quizzes
-                    <a href="quiz-manager.html" class="view-all">View All &rarr;</a>
-                </h2>
-                <div class="quiz-list" id="recentQuizzesList"></div>
-            </div>
-        </div>
-
-        <!-- Archived Classes -->
-        <div class="section-card">
-            <h2>
-                Archived Classes
-                <a href="#" class="view-all" onclick="loadArchivedClasses(); return false;">Show All &rarr;</a>
-            </h2>
-            <div class="class-list" id="archivedClassesList"></div>
+        <div class="courses-list" id="coursesList">
+            <div class="loading-state" style="text-align: center; padding: 40px; color: #6073a0;">Loading courses...</div>
         </div>
     </div>
 
     <script src="js/api-config.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/profile-link.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/my-courses.js"></script>
 </body>
 </html>

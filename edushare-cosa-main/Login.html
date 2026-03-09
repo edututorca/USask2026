@@ -40,19 +40,20 @@
         </div>
 
         <!-- Login Card -->
-
-            <form id="loginForm" class="login-card" aria-label="Login form">
+        <form id="loginForm" class="login-card" aria-label="Login form">
 
             <h2 class="login-card__title">Sign in</h2>
 
+            <div id="loginError" style="display:none; background:#ffe0e0; color:#c33; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:0.9rem;"></div>
+
             <label class="field">
                 <span class="field__label">Email</span>
-                <input class="field__input" type="email" name="email" placeholder="you@example.com" required />
+                <input class="field__input" type="email" name="email" placeholder="you@example.com" required value="teacher@example.com" />
             </label>
 
             <label class="field">
                 <span class="field__label">Password</span>
-                <input class="field__input" type="password" name="password" placeholder="••••••••" required />
+                <input class="field__input" type="password" name="password" placeholder="••••••••" required value="demo123" />
             </label>
 
             <div class="login-card__row">
@@ -63,39 +64,74 @@
                 <a href="forgot-password.html" class="link">Forgot password?</a>
             </div>
 
-            <button type="submit"  class="btn btn-primary">Login</button>
-
+            <button type="submit" id="loginBtn" class="btn btn-primary">Login</button>
 
             <p class="login-card__hint">
-                Don’t have an account?
+                Don't have an account?
                 <a class="link" href="Account.html">Create one</a>
             </p>
         </form>
     </div>
 </section>
 
+<script src="js/api-config.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('loginForm');
+        const errorDiv = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+
         if (!form) return;
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault(); // prevent actual form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.style.display = 'none';
 
             const email = form.querySelector('input[name="email"]').value.trim();
             const password = form.querySelector('input[name="password"]').value.trim();
 
             if (!email || !password) {
-                alert('Please fill in both email and password.');
+                errorDiv.textContent = 'Please fill in both email and password.';
+                errorDiv.style.display = 'block';
                 return;
             }
 
-            // we should verify credentials here before redirecting
-            window.location.href = 'User-Area.html';
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const response = await apiRequest(API_CONFIG.ENDPOINTS.LOGIN, {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                // Store user info in sessionStorage
+                sessionStorage.setItem('userId', response.userId);
+                sessionStorage.setItem('userType', response.userType);
+                sessionStorage.setItem('userEmail', response.email);
+                sessionStorage.setItem('firstName', response.firstName);
+                sessionStorage.setItem('lastName', response.lastName);
+
+                // Also store in localStorage if "remember me" is checked
+                if (form.querySelector('input[name="remember"]').checked) {
+                    localStorage.setItem('userId', response.userId);
+                    localStorage.setItem('userType', response.userType);
+                }
+
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+
+            } catch (error) {
+                console.error('Login failed:', error);
+                errorDiv.textContent = error.message || 'Login failed. Please check your credentials.';
+                errorDiv.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
         });
     });
 </script>
-
 
 </body>
 </html>

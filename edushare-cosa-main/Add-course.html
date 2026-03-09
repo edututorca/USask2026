@@ -1,90 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Add Course</title>
-
-    <!-- Global styles -->
-    <link rel="stylesheet" href="css/user-area.css"/>
-
-    <!-- Page styles -->
-    <link rel="stylesheet" href="css/Add-course.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Course - EduShare</title>
+    <link rel="stylesheet" href="css/user-area.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/Add-course.css">
 </head>
 <body>
-
-<div class="page">
-
-    <!-- ====================== DECORATION LAYER (orange blobs) ====================== -->
-    <div class="bg-decor" aria-hidden="true">
-        <div class="soft-blob tr"></div>
-        <div class="soft-blob bl"></div>
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="logo-container">
+            <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
+        </div>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="profile-menu">
+                <button class="profile-btn" onclick="toggleProfileMenu()">
+                    <svg width="24" height="24" fill="currentColor">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="Account.html">Account Settings</a>
+                    <a href="profile.html">My Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+            <button class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
     </div>
 
-    <!-- =========================== TOP BAR =========================== -->
-    <header class="topbar" aria-label="Top navigation">
-        <!-- Left side: brand (same pattern as other pages) -->
-        <div class="topbar__left">
-            <a class="brand" href="home.html" aria-label="Go to EduShare home">
-                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
-                <span class="brand__name">EduShare</span>
+    <!-- Sidebar Menu -->
+    <div class="side-menu" id="sideMenu">
+        <nav class="menu-nav">
+            <a href="dashboard.html" class="menu-item">
+                <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+                Dashboard
             </a>
-        </div>
+            <a href="my-courses.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                My Courses
+            </a>
+            <a href="User-Area.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                Question Bank
+            </a>
+            <a href="quiz-manager.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                My Quizzes
+            </a>
+            <a href="browse-quizzes.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Browse Quizzes
+            </a>
+            <a href="question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Question
+            </a>
+            <a href="ai-question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                AI Question Generator
+            </a>
+            <a href="help.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                Help
+            </a>
+        </nav>
+    </div>
 
-        <!-- Right side: header CTA button (like "Register" on login page) -->
-        <div class="topbar__right">
-            <a href="login.html" class="btn-header">Logout</a>
-        </div>
-    </header>
-    <div class="container">
-        <div class="card">
-            <h1>Create New Course</h1>
-            <p class="subtitle">Select course category and specific class</p>
+    <!-- Success Banner -->
+    <div class="save-banner" id="saveBanner">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        <span id="bannerText">Course added!</span>
+    </div>
 
-            <form id="courseForm">
-                <!-- Main Category -->
+    <div class="add-course-container">
+        <a href="my-courses.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to My Courses
+        </a>
+
+        <div class="form-card">
+            <div class="header">
+                <h1>Add a Course</h1>
+                <p>Set up your class and connect to shared content</p>
+            </div>
+
+            <!-- Hierarchy hint -->
+            <div class="hierarchy-hint">
+                <span class="hint-chip">English</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <span class="hint-chip">ENG1D</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <span class="hint-chip">Plays</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <span class="hint-chip">Romeo and Juliet</span>
+            </div>
+
+            <form id="addCourseForm">
+                <!-- Section: My Class Info -->
+                <div class="section-label">My Class</div>
+
+                <!-- Category -->
                 <div class="form-group">
-                    <label for="mainCategory">Course Category</label>
-                    <select id="mainCategory">
-                        <option value="">-- Select Category --</option>
-                        <option value="english">English</option>
-                        <option value="math">Mathematics</option>
-                        <option value="computer">Computer Science</option>
+                    <label for="categorySelect">Category <span class="required">*</span></label>
+                    <select id="categorySelect" required>
+                        <option value="">Select a category</option>
+                        <option value="English">English</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="Social Studies">Social Studies</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="French">French</option>
+                        <option value="Art">Art</option>
+                        <option value="Music">Music</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Physical Education">Physical Education</option>
+                        <option value="Health">Health</option>
+                        <option value="Business">Business</option>
+                        <option value="Law">Law</option>
+                        <option value="Psychology">Psychology</option>
+                        <option value="Indigenous Studies">Indigenous Studies</option>
                     </select>
                 </div>
 
-                <!-- Sub Category 1 (English/Math codes OR Computer subcategories) -->
-                <div class="form-group hidden" id="subCategory1Group">
-                    <label for="subCategory1" id="subCategory1Label">Select Course</label>
-                    <select id="subCategory1">
-                        <option value="">-- Select --</option>
-                    </select>
-                </div>
-
-                <!-- Sub Category 2 (For Computer -> Programming languages, etc.) -->
-                <div class="form-group hidden" id="subCategory2Group">
-                    <label for="subCategory2">Select Language/Technology</label>
-                    <select id="subCategory2">
-                        <option value="">-- Select --</option>
-                    </select>
-                </div>
-
-                <!-- Selection Path Display -->
-                <div class="selection-path" id="selectionPath">
-                    <div class="path-title">Selected Course:</div>
-                    <div class="path-content">
-                        <div class="breadcrumb" id="breadcrumb"></div>
+                <!-- Course Code -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="courseCodeInput">Course Code <span class="required">*</span></label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="courseCodeInput" placeholder="e.g., ENG1D, MPM2D, SBI3U..." autocomplete="off" required>
+                            <div class="autocomplete-dropdown" id="courseCodeDropdown"></div>
+                        </div>
+                        <small>Ontario course code — type to search</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionTag">Section <span class="label-optional">(optional)</span></label>
+                        <input type="text" id="sectionTag" placeholder="e.g., A, B, Period 1...">
+                        <small>Personal label for your class</small>
                     </div>
                 </div>
 
-                <button type="submit" id="submitBtn" disabled>Create Course</button>
+                <!-- Course code info display -->
+                <div class="code-info" id="codeInfo"></div>
+
+                <!-- Section: Content Area -->
+                <div class="section-label">Content Area <span class="section-hint">— connects you to the shared question bank</span></div>
+
+                <!-- Subject -->
+                <div class="form-group">
+                    <label for="subjectInput">Subject <span class="required">*</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="subjectInput" placeholder="e.g., Plays, Algebra, Grammar, Novel..." autocomplete="off" required>
+                        <div class="autocomplete-dropdown" id="subjectDropdown"></div>
+                    </div>
+                    <small>Type to search existing subjects or create a new one</small>
+                </div>
+
+                <!-- Topic -->
+                <div class="form-group">
+                    <label for="topicInput">Topic <span class="label-optional">(optional)</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="topicInput" placeholder="e.g., Romeo and Juliet, Linear Equations..." autocomplete="off">
+                        <div class="autocomplete-dropdown" id="topicDropdown"></div>
+                    </div>
+                    <small>New topics get ~5 AI-generated starter questions</small>
+                </div>
+
+                <!-- Status Banners -->
+                <div class="match-banner" id="matchBanner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                    <div><strong id="matchName"></strong> <span id="matchInfo"></span></div>
+                </div>
+
+                <div class="new-banner" id="newBanner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <div><strong id="newTitle">New topic!</strong> <span id="newInfo">AI will generate ~5 starter questions.</span></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="button-group">
+                    <a href="my-courses.html" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Course
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- External JS file -->
+    <script src="js/api-config.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/profile-link.js"></script>
     <script src="js/Add-course.js"></script>
-
-</div>
 </body>
 </html>

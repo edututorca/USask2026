@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Community Quizzes - EduShare</title>
-    <link rel="stylesheet" href="user-area.css">
+    <link rel="stylesheet" href="css/user-area.css">
     <link rel="stylesheet" href="css/nav.css">
     <link rel="stylesheet" href="css/browse-quizzes.css">
 </head>
@@ -12,7 +12,7 @@
     <!-- Top Navigation Bar -->
     <div class="top-bar">
         <div class="logo-container">
-            <img src="EduShare_Logo.png" alt="EduShare Logo" class="logo">
+            <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
         </div>
         <div class="top-bar-right">
             <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
@@ -50,7 +50,7 @@
                 <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
                 Dashboard
             </a>
-            <a href="Add-course.html" class="menu-item">
+            <a href="my-courses.html" class="menu-item">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                 My Courses
             </a>
@@ -100,36 +100,54 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label>Grade Level</label>
-                <select id="gradeFilter" onchange="filterQuizzes()">
-                    <option value="">All Grades</option>
-                    <option value="9">Grade 9</option>
-                    <option value="10">Grade 10</option>
-                    <option value="11">Grade 11</option>
-                    <option value="12">Grade 12</option>
-                </select>
-            </div>
-            <div class="filter-group">
                 <label>Sort By</label>
                 <select id="sortFilter" onchange="filterQuizzes()">
                     <option value="recent">Most Recent</option>
-                    <option value="rating">Highest Rated</option>
-                    <option value="popular">Most Copied</option>
+                    <option value="questions">Most Questions</option>
                 </select>
             </div>
         </div>
 
         <!-- Quizzes Grid -->
-        <div class="quizzes-grid" id="quizzesGrid"></div>
+        <div class="quizzes-grid" id="quizzesGrid">
+            <div class="loading-state">Loading community quizzes...</div>
+        </div>
     </div>
 
     <!-- Success Toast -->
-    <div id="successToast" class="success-toast">Quiz copied to your account!</div>
+    <div id="successToast" class="success-toast">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        Quiz copied to your account!
+    </div>
+
+    <!-- Quiz Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3 id="previewTitle">Quiz Preview</h3>
+                <button class="close-modal" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div id="previewBody"></div>
+            <div class="modal-actions">
+                <button class="action-btn btn-secondary" onclick="closePreviewModal()">Close</button>
+                <button class="action-btn btn-primary" id="previewCopyBtn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    Copy to My Quizzes
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Report Modal -->
     <div class="modal" id="reportModal">
         <div class="modal-content">
-            <h3>Report Quiz</h3>
+            <div class="modal-header">
+                <h3>Report Quiz</h3>
+                <button class="close-modal" onclick="closeReportModal()">&times;</button>
+            </div>
             <form id="reportForm">
                 <div class="form-group">
                     <label>Reason</label>
@@ -154,9 +172,9 @@
         </div>
     </div>
 
-    <script src="api-config.js"></script>
+    <script src="js/api-config.js"></script>
     <script src="js/nav.js"></script>
-    <script src="profile-link.js"></script>
+    <script src="js/profile-link.js"></script>
     <script src="js/browse-quizzes.js"></script>
 </body>
 </html>

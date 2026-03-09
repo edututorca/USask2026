@@ -2,6 +2,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 24px;
+    padding-bottom: 80px; /* space for sticky footer */
 }
 
 .quiz-header {
@@ -49,6 +50,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -73,7 +75,58 @@
     color: #ff6b35;
 }
 
-/* Questions List */
+/* ============ SAVE BANNER ============ */
+.save-banner {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2e7d32;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+    z-index: 2000;
+    transition: top 0.4s ease;
+}
+
+.save-banner.show {
+    top: 20px;
+}
+
+/* ============ STICKY FOOTER ============ */
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 2px solid #e8ecf4;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 900;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.footer-left {
+    color: #1f2f57;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.footer-right {
+    display: flex;
+    gap: 12px;
+}
+
+/* ============ QUESTIONS LIST ============ */
 .questions-container {
     background: white;
     padding: 28px;
@@ -93,24 +146,31 @@
     font-size: 1.4rem;
 }
 
+.questions-summary {
+    color: #6073a0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
 .questions-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Question Item with Drag Handle */
+/* ============ QUESTION ITEM ============ */
 .question-item {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     gap: 12px;
     padding: 20px;
     background: #f8f9fc;
     border: 2px solid #e8ecf4;
     border-radius: 8px;
     cursor: move;
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
     position: relative;
+    user-select: none;
 }
 
 .question-item:hover {
@@ -119,12 +179,19 @@
 }
 
 .question-item.dragging {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: grabbing;
+    border-style: dashed;
+    border-color: #9aa5c4;
 }
 
-.question-item.drag-over {
-    border-top: 3px solid #ff6b35;
+/* ============ DRAG PLACEHOLDER (Trello-style) ============ */
+.drag-placeholder {
+    background: #e8ecf4;
+    border: 2px dashed #ff6b35;
+    border-radius: 8px;
+    transition: height 0.15s ease;
+    margin: 6px 0;
 }
 
 .drag-handle {
@@ -133,6 +200,7 @@
     padding: 4px;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .drag-handle:active {
@@ -155,6 +223,7 @@
 
 .question-content {
     flex: 1;
+    min-width: 0;
 }
 
 .question-text {
@@ -180,29 +249,69 @@
     gap: 4px;
 }
 
-.question-controls {
+/* ============ RIGHT CONTROLS - COLUMN ALIGNED ============ */
+.question-right-controls {
     display: flex;
     gap: 8px;
     align-items: center;
-}
-
-.points-selector, .lines-selector {
-    padding: 6px 12px;
-    border: 2px solid #cfd9ef;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    background: white;
-    cursor: pointer;
-}
-
-.question-actions {
-    display: flex;
-    gap: 8px;
     flex-shrink: 0;
 }
 
+.inline-control {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: 80px; /* fixed width for column alignment */
+    justify-content: center;
+}
+
+.inline-control.placeholder-col {
+    /* invisible spacer so pts/edit/delete stay aligned when no lines */
+    visibility: hidden;
+}
+
+.num-input {
+    width: 48px;
+    padding: 6px 4px;
+    border: 2px solid #cfd9ef;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    text-align: center;
+    background: white;
+    -moz-appearance: textfield;
+}
+
+.num-input::-webkit-outer-spin-button,
+.num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.num-input:focus {
+    outline: none;
+    border-color: #ff6b35;
+}
+
+.control-label {
+    color: #6073a0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.info-tip {
+    cursor: help;
+    flex-shrink: 0;
+}
+
+/* Icon buttons */
 .icon-btn {
-    padding: 8px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     background: white;
     border: 2px solid #cfd9ef;
     border-radius: 6px;
@@ -211,20 +320,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .icon-btn:hover {
     border-color: #ff6b35;
-    color: #ff6b35;
+}
+
+.icon-btn:hover svg {
+    stroke: #ff6b35;
 }
 
 .icon-btn-danger:hover {
     border-color: #f44336;
     background: #f44336;
-    color: white;
 }
 
-/* Empty State */
+.icon-btn-danger:hover svg {
+    stroke: white;
+}
+
+/* ============ EMPTY STATE ============ */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -241,7 +357,7 @@
     margin-bottom: 12px;
 }
 
-/* Add Questions Modal */
+/* ============ MODALS ============ */
 .modal {
     display: none;
     position: fixed;
@@ -291,6 +407,40 @@
     color: #6073a0;
 }
 
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e8ecf4;
+    flex-wrap: wrap;
+}
+
+/* ============ SEARCH IN MODAL ============ */
+.modal-search {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #cfd9ef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #ff6b35;
+}
+
+.search-input::placeholder {
+    color: #9aa5c4;
+}
+
+/* ============ QUESTION BANK ITEMS ============ */
 .question-bank-item {
     display: flex;
     align-items: start;
@@ -320,15 +470,50 @@
     cursor: pointer;
 }
 
-.modal-actions {
+/* ============ EDIT QUESTION MODAL ============ */
+.edit-form {
     display: flex;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid #e8ecf4;
+    flex-direction: column;
+    gap: 16px;
 }
 
-/* Print Preview Modal */
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.edit-field span {
+    color: #1f2f57;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.edit-field textarea,
+.edit-field input[type="text"],
+.edit-field select {
+    padding: 10px 14px;
+    border: 2px solid #cfd9ef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.edit-field textarea:focus,
+.edit-field input[type="text"]:focus,
+.edit-field select:focus {
+    outline: none;
+    border-color: #ff6b35;
+}
+
+.edit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ============ PRINT PREVIEW ============ */
 .print-preview-modal .modal-content {
     max-width: 800px;
 }
@@ -398,11 +583,40 @@
 
 @media print {
     .modal-header,
-    .modal-actions {
+    .modal-actions,
+    .sticky-footer {
         display: none;
     }
     .print-preview {
         border: none;
         padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .question-right-controls {
+        flex-wrap: wrap;
+    }
+
+    .inline-control {
+        width: auto;
+    }
+
+    .question-item {
+        flex-wrap: wrap;
+    }
+
+    .quiz-actions-bar {
+        flex-direction: column;
+    }
+
+    .edit-row {
+        grid-template-columns: 1fr;
+    }
+
+    .sticky-footer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 16px;
     }
 }

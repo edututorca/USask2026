@@ -1,159 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EduShare — Question Creator</title>
-
-  <!-- Global styles (topbar/layout/buttons) -->
-  <link rel="stylesheet" href="css/user-area.css" />
-
-  <!-- Page-specific styles -->
-  <link rel="stylesheet" href="css/question-creator.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Question - EduShare</title>
+    <link rel="stylesheet" href="css/user-area.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/question-creator.css">
 </head>
-
 <body>
-
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="topbar__left">
-      <!-- Brand -->
-      <a class="brand" href="home.html" aria-label="Go to EduShare home">
-        <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
-        <span class="brand__name">EduShare</span>
-      </a>
-    </div>
-  </header>
-
-  <div class="layout" style="grid-template-columns:1fr;">
-    <main class="main" style="padding:24px 18px;">
-
-      <!-- Card -->
-      <section class="qb">
-
-        <!-- Card Header -->
-        <header class="qb__header">
-          <div class="qb__header-row">
-            <h2 class="qb__title">Question Creation</h2>
-
-            <!-- AI Button -->
-            <button id="btnAI" class="ai-btn" type="button" title="Create questions with AI — MCQ, T/F, SA, LA"
-              aria-label="AI Assisted Creation">
-              AI
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="logo-container">
+            <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
+        </div>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+                </svg>
             </button>
-          </div>
-
-          <div class="qb__context" id="contextInfo"></div>
-        </header>
-
-        <!-- Form -->
-        <form id="questionForm" class="qb__form" autocomplete="off">
-
-          <!-- Question -->
-          <div class="qb__field">
-            <label for="qText">Question</label>
-            <textarea id="qText" class="qb__textarea" placeholder="Type your question here..."></textarea>
-
-            <!-- Suggestions dropdown -->
-            <div id="qSuggestions" class="q-suggestions hidden"></div>
-          </div>
-
-          <!-- Answer Type -->
-          <div class="qb__row2">
-            <div class="qb__field">
-              <label>Answer Type</label>
-              <div class="qb__type">
-                <label title="Multiple Choice Question">
-                  <input type="radio" name="qType" value="MCQ" checked /> MCQ
-                </label>
-
-                <label title="True or False">
-                  <input type="radio" name="qType" value="TF" /> T/F
-                </label>
-
-                <label title="Short Answer">
-                  <input type="radio" name="qType" value="SA" /> S/A
-                </label>
-              </div>
+            <div class="profile-menu">
+                <button class="profile-btn" onclick="toggleProfileMenu()">
+                    <svg width="24" height="24" fill="currentColor">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="Account.html">Account Settings</a>
+                    <a href="profile.html">My Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
             </div>
-          </div>
+            <button class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
 
-          <!-- ===================== Load Doc (PDF/PPT) ===================== -->
-          <div class="qb__field">
-            <label>Load Doc (PDF/PPT)</label>
+    <!-- Sidebar Menu -->
+    <div class="side-menu" id="sideMenu">
+        <nav class="menu-nav">
+            <a href="dashboard.html" class="menu-item">
+                <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+                Dashboard
+            </a>
+            <a href="my-courses.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                My Courses
+            </a>
+            <a href="User-Area.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                Question Bank
+            </a>
+            <a href="quiz-manager.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                My Quizzes
+            </a>
+            <a href="browse-quizzes.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Browse Quizzes
+            </a>
+            <a href="question-creator.html" class="menu-item active">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Question
+            </a>
+            <a href="ai-question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                AI Question Generator
+            </a>
+            <a href="help.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                Help
+            </a>
+        </nav>
+    </div>
 
-            <div class="doc-upload">
-              <input id="docTitle" class="qb__input" type="text"
-                placeholder="Document title (e.g., Romeo & Juliet Act 3 notes)" />
+    <!-- Success Banner -->
+    <div class="save-banner" id="saveBanner">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        <span id="bannerText">Question saved!</span>
+    </div>
 
-              <input id="docFile" type="file"
-                accept="application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
-
-              <button type="button" id="btnUploadDoc" class="btn btn-warning">
-                Upload Document
-              </button>
+    <div class="qc-container">
+        <div class="page-header-row">
+            <div>
+                <h1>Create Question</h1>
+                <p>Add a question to the question bank</p>
             </div>
+            <a href="ai-question-creator.html" class="ai-link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Use AI Instead
+            </a>
+        </div>
 
-            <small id="docStatus" class="qb__hint"></small>
-          </div>
-          <!-- ========================================================== -->
+        <div class="form-card">
+            <form id="questionForm" autocomplete="off">
 
-          <!-- MCQ block -->
-          <div id="mcqPanel" class="qb__block">
-            <div id="choicesList" class="qb__choices">
-              <div class="qb__choice">
-                <input type="radio" name="correct" class="qb__correct" title="Correct?" />
-                <input type="text" class="qb__choice-text" placeholder="Option 1" />
-                <button type="button" class="qb__remove" title="Remove">×</button>
-              </div>
-            </div>
+                <!-- Subject + Difficulty row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subjectSelect">Subject</label>
+                        <select id="subjectSelect">
+                            <option value="">Select a subject</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficultySelect">Difficulty</label>
+                        <select id="difficultySelect">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="qb__choice-actions">
-              <button type="button" id="btnAddChoice" class="btn btn-orange-pill">
-                + Add Option
-              </button>
-              <small class="qb__hint">Mark the correct one with the circle</small>
-            </div>
-          </div>
+                <!-- Question Text -->
+                <div class="form-group">
+                    <label for="questionText">Question <span class="required">*</span></label>
+                    <textarea id="questionText" rows="3" placeholder="Type your question here..."></textarea>
+                </div>
 
-          <!-- True / False -->
-          <div id="tfPanel" class="qb__block hidden">
-            <div class="qb__type">
-              <label><input type="radio" name="tfCorrect" value="True" checked /> True</label>
-              <label><input type="radio" name="tfCorrect" value="False" /> False</label>
-            </div>
-          </div>
+                <!-- Question Type -->
+                <div class="form-group">
+                    <label>Question Type</label>
+                    <div class="type-pills">
+                        <label class="type-pill active">
+                            <input type="radio" name="qType" value="multiple_choice" checked>
+                            <span>Multiple Choice</span>
+                        </label>
+                        <label class="type-pill">
+                            <input type="radio" name="qType" value="true_false">
+                            <span>True / False</span>
+                        </label>
+                        <label class="type-pill">
+                            <input type="radio" name="qType" value="short_answer">
+                            <span>Short Answer</span>
+                        </label>
+                        <label class="type-pill">
+                            <input type="radio" name="qType" value="essay">
+                            <span>Essay</span>
+                        </label>
+                    </div>
+                </div>
 
-          <!-- Short Answer -->
-          <div id="saPanel" class="qb__block hidden">
-            <small class="qb__hint">Students will type a short free-form answer.</small>
-          </div>
+                <!-- MCQ Options Panel -->
+                <div id="mcqPanel" class="type-panel">
+                    <label>Answer Options <small>(select the correct answer)</small></label>
+                    <div id="choicesList" class="choices-list">
+                        <div class="choice-row">
+                            <input type="radio" name="correctChoice" class="choice-radio" title="Mark as correct">
+                            <input type="text" class="choice-input" placeholder="Option A">
+                            <button type="button" class="choice-remove" title="Remove">&times;</button>
+                        </div>
+                        <div class="choice-row">
+                            <input type="radio" name="correctChoice" class="choice-radio" title="Mark as correct">
+                            <input type="text" class="choice-input" placeholder="Option B">
+                            <button type="button" class="choice-remove" title="Remove">&times;</button>
+                        </div>
+                    </div>
+                    <button type="button" id="btnAddChoice" class="add-choice-btn">+ Add Option</button>
+                    <small class="hint">Click the circle to mark the correct answer</small>
+                </div>
 
-          <!-- Actions -->
-          <div class="qb__actions">
-            <button type="button" id="btnCancel" class="btn btn-muted">Cancel</button>
-            <button type="submit" class="btn btn-warning">Save Question</button>
-          </div>
+                <!-- True/False Panel -->
+                <div id="tfPanel" class="type-panel hidden">
+                    <label>Correct Answer</label>
+                    <div class="tf-options">
+                        <label class="tf-option">
+                            <input type="radio" name="tfCorrect" value="True" checked> True
+                        </label>
+                        <label class="tf-option">
+                            <input type="radio" name="tfCorrect" value="False"> False
+                        </label>
+                    </div>
+                </div>
 
-        </form>
-      </section>
+                <!-- Short Answer Panel -->
+                <div id="saPanel" class="type-panel hidden">
+                    <div class="form-group">
+                        <label for="saAnswer">Expected Answer (for answer key)</label>
+                        <input type="text" id="saAnswer" placeholder="The expected short answer...">
+                    </div>
+                </div>
 
-      <!-- Optional saved list -->
-      <div id="savedQuestionsList" class="qb__list"></div>
+                <!-- Essay Panel -->
+                <div id="essayPanel" class="type-panel hidden">
+                    <div class="form-group">
+                        <label for="essayGuideline">Answer Guideline (for answer key)</label>
+                        <textarea id="essayGuideline" rows="2" placeholder="Key points the answer should cover..."></textarea>
+                    </div>
+                </div>
 
-    </main>
-  </div>
+                <!-- Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Save Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-  <!-- Core Scripts -->
-  <script src="js/api-config.js"></script>
-  <script src="js/restore-context.js"></script>
-
-  <!-- Scripts -->
-  <script src="js/question-creator.js"></script>
-  <script src="js/question-suggestions.js"></script>
-  <script src="js/document-upload.js"></script>
-
+    <script src="js/api-config.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/profile-link.js"></script>
+    <script src="js/question-creator.js"></script>
 </body>
-
 </html>

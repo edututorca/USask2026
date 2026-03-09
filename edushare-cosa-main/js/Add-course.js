@@ -1,282 +1,392 @@
-// Course data structure containing all available options
-const courseData = {
-    english: [
-        { code: 'ENG 010', name: 'English Fundamentals' },
-        { code: 'ENG 101', name: 'English I (Grade 9)' },
-        { code: 'ENG 102', name: 'English II (Grade 10)' },
-        { code: 'ENG 201', name: 'English III (Grade 11)' },
-        { code: 'ENG 202', name: 'English IV (Grade 12)' },
-        { code: 'ENG 110', name: 'Creative Writing' },
-        { code: 'ENG 120', name: 'Literature & Composition' },
-        { code: 'ENG 130', name: 'English for Academic Purposes' },
-        { code: 'ENG 140', name: 'Business English' }
-    ],
-    math: [
-        { code: 'MATH 010', name: 'Basic Mathematics' },
-        { code: 'MATH 101', name: 'Algebra I (Grade 9)' },
-        { code: 'MATH 102', name: 'Geometry (Grade 10)' },
-        { code: 'MATH 201', name: 'Algebra II (Grade 11)' },
-        { code: 'MATH 202', name: 'Pre-Calculus (Grade 12)' },
-        { code: 'MATH 301', name: 'Calculus I' },
-        { code: 'MATH 302', name: 'Calculus II' },
-        { code: 'MATH 110', name: 'Statistics & Probability' },
-        { code: 'MATH 120', name: 'Trigonometry' },
-        { code: 'MATH 150', name: 'Applied Mathematics' }
-    ],
-    computer: {
-        programming: [
-            { code: 'CS-PROG-101', name: 'Java Programming' },
-            { code: 'CS-PROG-102', name: 'Python Programming' },
-            { code: 'CS-PROG-103', name: 'C++ Programming' },
-            { code: 'CS-PROG-104', name: 'C# Programming' },
-            { code: 'CS-PROG-105', name: 'JavaScript' },
-            { code: 'CS-PROG-106', name: 'HTML & CSS' },
-            { code: 'CS-PROG-107', name: 'PHP Programming' },
-            { code: 'CS-PROG-108', name: 'Ruby Programming' }
-        ],
-        networking: [
-            { code: 'CS-NET-101', name: 'Network Fundamentals' },
-            { code: 'CS-NET-102', name: 'Network Security' },
-            { code: 'CS-NET-103', name: 'Cisco CCNA' },
-            { code: 'CS-NET-104', name: 'Network Administration' },
-            { code: 'CS-NET-105', name: 'Wireless Networks' },
-            { code: 'CS-NET-106', name: 'Cloud Networking' }
-        ],
-        database: [
-            { code: 'CS-DB-101', name: 'SQL Fundamentals' },
-            { code: 'CS-DB-102', name: 'MySQL Database' },
-            { code: 'CS-DB-103', name: 'PostgreSQL' },
-            { code: 'CS-DB-104', name: 'MongoDB (NoSQL)' },
-            { code: 'CS-DB-105', name: 'Database Design' },
-            { code: 'CS-DB-106', name: 'Database Administration' }
-        ],
-        web: [
-            { code: 'CS-WEB-101', name: 'Web Development Fundamentals' },
-            { code: 'CS-WEB-102', name: 'Frontend Development' },
-            { code: 'CS-WEB-103', name: 'Backend Development' },
-            { code: 'CS-WEB-104', name: 'Full Stack Development' },
-            { code: 'CS-WEB-105', name: 'React.js' },
-            { code: 'CS-WEB-106', name: 'Node.js' }
-        ],
-        security: [
-            { code: 'CS-SEC-101', name: 'Cybersecurity Fundamentals' },
-            { code: 'CS-SEC-102', name: 'Ethical Hacking' },
-            { code: 'CS-SEC-103', name: 'Penetration Testing' },
-            { code: 'CS-SEC-104', name: 'Security Architecture' },
-            { code: 'CS-SEC-105', name: 'Cryptography' }
-        ]
-    }
-};
+/* ===================================================== */
+/* ============= ADD COURSE PAGE JS ==================== */
+/* ===================================================== */
 
-// Get references to DOM elements
-const mainCategory = document.getElementById('mainCategory');
-const subCategory1 = document.getElementById('subCategory1');
-const subCategory2 = document.getElementById('subCategory2');
-const subCategory1Group = document.getElementById('subCategory1Group');
-const subCategory2Group = document.getElementById('subCategory2Group');
-const subCategory1Label = document.getElementById('subCategory1Label');
-const selectionPath = document.getElementById('selectionPath');
-const breadcrumb = document.getElementById('breadcrumb');
-const submitBtn = document.getElementById('submitBtn');
-const courseForm = document.getElementById('courseForm');
+let allCourseCodes = [];
+let allSubjects = [];
+let allTopics = [];
+let selectedCodeId = null;
+let selectedSubjectId = null;
+let selectedTopicId = null;
 
-// Object to store the current selected path (main, sub1, sub2)
-let selectedPath = {};
+// ============ LOAD DATA ============
 
-// Handle change on main category select
-mainCategory.addEventListener('change', function () {
-    const category = this.value;
-
-    // Save selected main category text (e.g., "English", "Mathematics")
-    selectedPath = { main: this.options[this.selectedIndex].text };
-
-    // Reset subcategory groups and options
-    subCategory1Group.classList.add('hidden');
-    subCategory2Group.classList.add('hidden');
-    subCategory1.innerHTML = '<option value="">-- Select --</option>';
-    subCategory2.innerHTML = '<option value="">-- Select --</option>';
-    submitBtn.disabled = true;
-
-    // If English or Math, show list of course codes directly
-    if (category === 'english' || category === 'math') {
-        subCategory1Label.textContent = 'Select Course Code';
-        courseData[category].forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.code;
-            option.textContent = `${course.code} - ${course.name}`;
-            subCategory1.appendChild(option);
-        });
-        subCategory1Group.classList.remove('hidden');
-    }
-    // If Computer Science, first show specializations (programming, networking, etc.)
-    else if (category === 'computer') {
-        subCategory1Label.textContent = 'Select Specialization';
-        const specializations = [
-            { value: 'programming', text: 'Programming' },
-            { value: 'networking', text: 'Networking' },
-            { value: 'database', text: 'Database Management' },
-            { value: 'web', text: 'Web Development' },
-            { value: 'security', text: 'Cybersecurity' }
+async function loadCourseCodes() {
+    try {
+        allCourseCodes = await apiRequest('/course-codes');
+    } catch (error) {
+        console.warn('Could not load course codes from server, using local list');
+        // Fallback: common Ontario codes hardcoded
+        allCourseCodes = [
+            { id: 1, code: 'ENG1D', title: 'English, Grade 9, Academic', category: 'English', grade: 9 },
+            { id: 2, code: 'ENG1P', title: 'English, Grade 9, Applied', category: 'English', grade: 9 },
+            { id: 3, code: 'ENG2D', title: 'English, Grade 10, Academic', category: 'English', grade: 10 },
+            { id: 4, code: 'ENG2P', title: 'English, Grade 10, Applied', category: 'English', grade: 10 },
+            { id: 5, code: 'ENG3U', title: 'English, Grade 11, University', category: 'English', grade: 11 },
+            { id: 6, code: 'ENG3C', title: 'English, Grade 11, College', category: 'English', grade: 11 },
+            { id: 7, code: 'ENG4U', title: 'English, Grade 12, University', category: 'English', grade: 12 },
+            { id: 8, code: 'ENG4C', title: 'English, Grade 12, College', category: 'English', grade: 12 },
+            { id: 9, code: 'MTH1W', title: 'Mathematics, Grade 9, Destreamed', category: 'Mathematics', grade: 9 },
+            { id: 10, code: 'MPM1D', title: 'Principles of Math, Grade 9, Academic', category: 'Mathematics', grade: 9 },
+            { id: 11, code: 'MPM2D', title: 'Principles of Math, Grade 10, Academic', category: 'Mathematics', grade: 10 },
+            { id: 12, code: 'MFM2P', title: 'Foundations of Math, Grade 10, Applied', category: 'Mathematics', grade: 10 },
+            { id: 13, code: 'MCR3U', title: 'Functions, Grade 11, University', category: 'Mathematics', grade: 11 },
+            { id: 14, code: 'MHF4U', title: 'Advanced Functions, Grade 12, University', category: 'Mathematics', grade: 12 },
+            { id: 15, code: 'MCV4U', title: 'Calculus & Vectors, Grade 12, University', category: 'Mathematics', grade: 12 },
+            { id: 16, code: 'MDM4U', title: 'Data Management, Grade 12, University', category: 'Mathematics', grade: 12 },
+            { id: 17, code: 'SNC1D', title: 'Science, Grade 9, Academic', category: 'Science', grade: 9 },
+            { id: 18, code: 'SNC1W', title: 'Science, Grade 9, Destreamed', category: 'Science', grade: 9 },
+            { id: 19, code: 'SNC2D', title: 'Science, Grade 10, Academic', category: 'Science', grade: 10 },
+            { id: 20, code: 'SBI3U', title: 'Biology, Grade 11, University', category: 'Science', grade: 11 },
+            { id: 21, code: 'SCH3U', title: 'Chemistry, Grade 11, University', category: 'Science', grade: 11 },
+            { id: 22, code: 'SPH3U', title: 'Physics, Grade 11, University', category: 'Science', grade: 11 },
+            { id: 23, code: 'SBI4U', title: 'Biology, Grade 12, University', category: 'Science', grade: 12 },
+            { id: 24, code: 'SCH4U', title: 'Chemistry, Grade 12, University', category: 'Science', grade: 12 },
+            { id: 25, code: 'SPH4U', title: 'Physics, Grade 12, University', category: 'Science', grade: 12 },
+            { id: 26, code: 'CGC1D', title: 'Geography of Canada, Grade 9, Academic', category: 'Geography', grade: 9 },
+            { id: 27, code: 'CHC2D', title: 'Canadian History Since WWI, Grade 10, Academic', category: 'History', grade: 10 },
+            { id: 28, code: 'CHV2O', title: 'Civics and Citizenship, Grade 10, Open', category: 'Social Studies', grade: 10 },
+            { id: 29, code: 'FSF1D', title: 'Core French, Grade 9, Academic', category: 'French', grade: 9 },
+            { id: 30, code: 'FSF2D', title: 'Core French, Grade 10, Academic', category: 'French', grade: 10 },
+            { id: 31, code: 'ICS2O', title: 'Intro to Computer Studies, Grade 10, Open', category: 'Computer Science', grade: 10 },
+            { id: 32, code: 'ICS3U', title: 'Intro to Computer Science, Grade 11, University', category: 'Computer Science', grade: 11 },
+            { id: 33, code: 'ICS4U', title: 'Computer Science, Grade 12, University', category: 'Computer Science', grade: 12 },
+            { id: 34, code: 'AVI1O', title: 'Visual Arts, Grade 9, Open', category: 'Art', grade: 9 },
+            { id: 35, code: 'ADA1O', title: 'Drama, Grade 9, Open', category: 'Drama', grade: 9 },
+            { id: 36, code: 'AMU1O', title: 'Music, Grade 9, Open', category: 'Music', grade: 9 },
+            { id: 37, code: 'PPL1O', title: 'Health & Physical Education, Grade 9, Open', category: 'Physical Education', grade: 9 },
+            { id: 38, code: 'BBI1O', title: 'Intro to Business, Grade 9, Open', category: 'Business', grade: 9 },
+            { id: 39, code: 'CLU3M', title: 'Understanding Canadian Law, Grade 11, University/College', category: 'Law', grade: 11 },
+            { id: 40, code: 'HSP3U', title: 'Intro to Anthropology/Psychology/Sociology, Grade 11, University', category: 'Social Studies', grade: 11 }
         ];
-        specializations.forEach(spec => {
-            const option = document.createElement('option');
-            option.value = spec.value;
-            option.textContent = spec.text;
-            subCategory1.appendChild(option);
-        });
-        subCategory1Group.classList.remove('hidden');
     }
+}
 
-    // Update the visual breadcrumb path
-    updateBreadcrumb();
-});
-
-// Handle change on subCategory1 select
-subCategory1.addEventListener('change', function () {
-    const mainCat = mainCategory.value;
-    const subCat = this.value;
-
-    // Hide second subcategory and reset its options
-    subCategory2Group.classList.add('hidden');
-    subCategory2.innerHTML = '<option value="">-- Select --</option>';
-
-    // For English and Math, this select contains the final course code
-    if (mainCat === 'english' || mainCat === 'math') {
-        selectedPath.sub1 = this.options[this.selectedIndex].text;
-        submitBtn.disabled = false;
+async function loadSubjects() {
+    try {
+        allSubjects = await apiRequest(API_CONFIG.ENDPOINTS.SUBJECTS);
+    } catch (error) {
+        console.warn('Could not load subjects:', error.message);
+        allSubjects = [];
     }
-    // For Computer Science, this select contains specializations
-    else if (mainCat === 'computer' && subCat) {
-        selectedPath.sub1 = this.options[this.selectedIndex].text;
+}
 
-        // Populate second subcategory with courses for the chosen specialization
-        courseData.computer[subCat].forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.code;
-            option.textContent = `${course.code} - ${course.name}`;
-            subCategory2.appendChild(option);
-        });
-
-        subCategory2Group.classList.remove('hidden');
-        submitBtn.disabled = true;
+async function loadTopicsForSubject(subjectId) {
+    try {
+        allTopics = await apiRequest(`${API_CONFIG.ENDPOINTS.TOPICS}?subjectId=${subjectId}`);
+    } catch (error) {
+        console.warn('Could not load topics:', error.message);
+        allTopics = [];
     }
+}
 
-    // Update the visual breadcrumb path
-    updateBreadcrumb();
-});
+// ============ GENERIC AUTOCOMPLETE ============
 
-// Handle change on subCategory2 select (only used for Computer Science)
-subCategory2.addEventListener('change', function () {
-    if (this.value) {
-        // Save the full course code and name chosen
-        selectedPath.sub2 = this.options[this.selectedIndex].text;
-        submitBtn.disabled = false;
-    } else {
-        // If user clears the selection, remove it from the path and disable submit
-        delete selectedPath.sub2;
-        submitBtn.disabled = true;
-    }
+function setupAutocomplete(inputId, dropdownId, getItems, onSelect, onClear) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    let debounce = null;
 
-    // Update the visual breadcrumb path
-    updateBreadcrumb();
-});
+    input.addEventListener('focus', () => {
+        const items = getItems();
+        if (items.length > 0) renderDropdown(dropdown, items.slice(0, 12), input, onSelect);
+    });
 
-// Function to update the breadcrumb UI showing current selection
-function updateBreadcrumb() {
-    // Clear previous breadcrumb items
-    breadcrumb.innerHTML = '';
+    input.addEventListener('input', () => {
+        clearTimeout(debounce);
+        if (onClear) onClear();
 
-    // If there is no selection at all, hide the selection path box
-    if (Object.keys(selectedPath).length === 0) {
-        selectionPath.classList.remove('show');
-        return;
-    }
+        debounce = setTimeout(() => {
+            const query = input.value.trim().toLowerCase();
+            const items = getItems();
 
-    // Show the selection path box
-    selectionPath.classList.add('show');
+            if (query.length === 0) {
+                if (items.length > 0) renderDropdown(dropdown, items.slice(0, 12), input, onSelect);
+                else dropdown.classList.remove('show');
+                return;
+            }
 
-    // Build an array from the selected path in correct order
-    const items = [];
-    if (selectedPath.main) items.push(selectedPath.main);
-    if (selectedPath.sub1) items.push(selectedPath.sub1);
-    if (selectedPath.sub2) items.push(selectedPath.sub2);
+            const matches = items.filter(item => {
+                const searchStr = `${item.name} ${item.meta || ''}`.toLowerCase();
+                return searchStr.includes(query);
+            });
 
-    // Create elements for each breadcrumb item
-    items.forEach((item, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'breadcrumb-item';
+            if (matches.length > 0) renderDropdown(dropdown, matches.slice(0, 12), input, onSelect);
+            else dropdown.classList.remove('show');
+        }, 150);
+    });
 
-        // Add arrow before all items except the first one
-        if (index > 0) {
-            const arrow = document.createElement('span');
-            arrow.textContent = '→';
-            itemDiv.appendChild(arrow);
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest(`#${inputId}`) && !e.target.closest(`#${dropdownId}`)) {
+            dropdown.classList.remove('show');
         }
-
-        const text = document.createElement('span');
-        text.textContent = item;
-        itemDiv.appendChild(text);
-
-        breadcrumb.appendChild(itemDiv);
     });
 }
 
-// Handle form submission
-courseForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+function renderDropdown(dropdown, items, input, onSelect) {
+    dropdown.innerHTML = items.map(item => `
+        <div class="autocomplete-item" data-id="${item.id}" data-name="${escapeHtml(item.name)}">
+            <div class="ac-name">${escapeHtml(item.name)}</div>
+            ${item.meta ? `<div class="ac-meta">${escapeHtml(item.meta)}</div>` : ''}
+        </div>
+    `).join('');
 
-    // Build final path string (for display, if needed)
-    const finalPath = Object.values(selectedPath).join(' → ');
+    dropdown.classList.add('show');
 
-    // Main category text (e.g., "English", "Mathematics", "Computer Science")
-    const courseCategory = selectedPath.main || '';
+    dropdown.querySelectorAll('.autocomplete-item').forEach(el => {
+        el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            input.value = el.dataset.name;
+            dropdown.classList.remove('show');
+            onSelect(parseInt(el.dataset.id), el.dataset.name);
+        });
+    });
+}
 
-    // Full label from select, like "ENG 010 - English Fundamentals"
-    const fullCourseLabel =
-        selectedPath.sub2      // Computer Science case
-        || selectedPath.sub1   // English / Math case
-        || '';
+// ============ COURSE CODE AUTOCOMPLETE ============
 
-    // Extract code and name from label like "ENG 010 - English Fundamentals"
-    const labelParts = fullCourseLabel.split(' - ');
-    const courseCode = labelParts[0].trim();
-    const courseName = labelParts.length > 1 ? labelParts[1].trim() : courseCategory;
+function getCourseCodeItems() {
+    const category = document.getElementById('categorySelect').value;
+    let codes = allCourseCodes;
 
-    // Object representing the new course
-    const newCourse = {
-        code: courseCode,         // e.g., "ENG 010"
-        name: courseName,         // e.g., "English Fundamentals"
-        category: courseCategory, // e.g., "English"
-        fullPath: finalPath
-    };
+    // Filter by selected category
+    if (category) {
+        codes = codes.filter(c => c.category === category);
+    }
 
-    // Read existing course list from sessionStorage (or start empty)
-    let courseList = [];
-    try {
-        const stored = sessionStorage.getItem('myCourses');
-        if (stored) {
-            courseList = JSON.parse(stored);
+    return codes.map(c => ({
+        id: c.id,
+        name: c.code,
+        meta: c.title
+    }));
+}
+
+function onCourseCodeSelect(id, name) {
+    selectedCodeId = id;
+    const code = allCourseCodes.find(c => c.id === id);
+    if (code) {
+        const info = document.getElementById('codeInfo');
+        info.innerHTML = `<strong>${code.code}</strong> — ${code.title}`;
+        info.classList.add('show');
+
+        // Auto-select category if not already set
+        const catSelect = document.getElementById('categorySelect');
+        if (!catSelect.value && code.category) {
+            catSelect.value = code.category;
         }
-    } catch (err) {
-        console.warn('Could not read myCourses from sessionStorage:', err);
     }
+}
 
-    // Optional: avoid duplicates (same category + code)
-    const exists = courseList.some(
-        c => c.category === newCourse.category && c.code === newCourse.code
-    );
+// ============ SUBJECT AUTOCOMPLETE ============
 
-    if (!exists) {
-        courseList.push(newCourse);
-    }
+function getSubjectItems() {
+    return allSubjects.map(s => ({
+        id: s.subject_id || s.SubjectID || s.id,
+        name: s.subject_name || s.SubjectName || s.name,
+        meta: ''
+    }));
+}
 
-    // Save updated list back to sessionStorage
-    try {
-        sessionStorage.setItem('myCourses', JSON.stringify(courseList));
-    } catch (err) {
-        console.warn('Could not save myCourses to sessionStorage:', err);
-    }
+function onSubjectSelect(id, name) {
+    selectedSubjectId = id;
+    selectedTopicId = null;
+    document.getElementById('topicInput').value = '';
+    hideBanners();
+    loadTopicsForSubject(id);
+}
 
-    // Redirect back to user-area page
-    window.location.href = 'User-Area.html';
+// ============ TOPIC AUTOCOMPLETE ============
+
+function getTopicItems() {
+    return allTopics.map(t => ({
+        id: t.topic_id || t.TopicID || t.id || 0,
+        name: t.topic_name || t.TopicName || t.name || '',
+        meta: ''
+    }));
+}
+
+function onTopicSelect(id, name) {
+    selectedTopicId = id;
+    showMatchBanner(name, 'existing topic — questions already available');
+}
+
+// ============ WATCHERS ============
+
+function setupCategoryChange() {
+    document.getElementById('categorySelect').addEventListener('change', () => {
+        // Re-filter course codes
+        const input = document.getElementById('courseCodeInput');
+        if (input.value) {
+            input.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+function setupSubjectWatcher() {
+    const input = document.getElementById('subjectInput');
+    input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        const exact = allSubjects.find(s =>
+            (s.subject_name || s.SubjectName || s.name || '').toLowerCase() === query
+        );
+        if (exact) {
+            selectedSubjectId = exact.subject_id || exact.SubjectID || exact.id;
+            loadTopicsForSubject(selectedSubjectId);
+        } else {
+            selectedSubjectId = null;
+            allTopics = [];
+        }
+        selectedTopicId = null;
+        hideBanners();
+    });
+}
+
+function setupTopicWatcher() {
+    const input = document.getElementById('topicInput');
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            const query = input.value.trim();
+            if (query.length < 2) { hideBanners(); return; }
+
+            if (!selectedTopicId) {
+                const exact = allTopics.find(t =>
+                    (t.topic_name || t.TopicName || t.name || '').toLowerCase() === query.toLowerCase()
+                );
+                if (exact) {
+                    selectedTopicId = exact.topic_id || exact.TopicID || exact.id;
+                    showMatchBanner(query, 'existing topic — questions already available');
+                } else {
+                    showNewBanner('New topic!', 'AI will generate ~5 starter questions.');
+                }
+            }
+        }, 250);
+    });
+}
+
+// ============ BANNERS ============
+
+function showMatchBanner(name, info) {
+    hideBanners();
+    document.getElementById('matchName').textContent = name;
+    document.getElementById('matchInfo').textContent = ' — ' + info;
+    document.getElementById('matchBanner').classList.add('show');
+}
+
+function showNewBanner(title, info) {
+    hideBanners();
+    document.getElementById('newTitle').textContent = title;
+    document.getElementById('newInfo').textContent = info;
+    document.getElementById('newBanner').classList.add('show');
+}
+
+function hideBanners() {
+    document.getElementById('matchBanner').classList.remove('show');
+    document.getElementById('newBanner').classList.remove('show');
+}
+
+// ============ FORM SUBMIT ============
+
+function setupFormSubmit() {
+    document.getElementById('addCourseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const category = document.getElementById('categorySelect').value;
+        const courseCode = document.getElementById('courseCodeInput').value.trim();
+        const sectionTag = document.getElementById('sectionTag').value.trim();
+        const subjectName = document.getElementById('subjectInput').value.trim();
+        const topicName = document.getElementById('topicInput').value.trim();
+
+        if (!category) { alert('Please select a category.'); return; }
+        if (!courseCode) { alert('Please enter a course code.'); return; }
+        if (!subjectName) { alert('Please enter a subject.'); return; }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = 'Adding...';
+
+        let subjectId = selectedSubjectId;
+        let isNewTopic = false;
+
+        // Create subject if new
+        if (!subjectId) {
+            try {
+                const result = await apiRequest(API_CONFIG.ENDPOINTS.SUBJECTS, {
+                    method: 'POST',
+                    body: JSON.stringify({ subject_name: subjectName, category: category })
+                });
+                subjectId = result.id || result.subject_id || result.insertId;
+            } catch (err) { console.warn('Subject create:', err.message); }
+        }
+
+        // Create topic if new
+        if (topicName && !selectedTopicId && subjectId) {
+            isNewTopic = true;
+            try {
+                const result = await apiRequest(API_CONFIG.ENDPOINTS.TOPICS, {
+                    method: 'POST',
+                    body: JSON.stringify({ topic_name: topicName, subject_id: subjectId })
+                });
+                const topicId = result.id || result.topic_id || result.insertId;
+
+                if (topicId) {
+                    btn.innerHTML = 'Generating starter questions...';
+                    try {
+                        await apiRequest('/ai/generate', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                subject_id: subjectId, topic_id: topicId,
+                                topic_name: topicName, count: 5, auto_save: true
+                            })
+                        });
+                    } catch (aiErr) { console.warn('AI gen:', aiErr.message); }
+                }
+            } catch (err) { console.warn('Topic create:', err.message); }
+        }
+
+        // Save user's course (personal class label)
+        try {
+            await apiRequest('/user-courses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    course_code: courseCode,
+                    course_code_id: selectedCodeId,
+                    section_tag: sectionTag,
+                    subject_id: subjectId,
+                    category: category
+                })
+            });
+        } catch (err) { console.warn('User course save:', err.message); }
+
+        showSaveBanner(isNewTopic ? 'Course created with starter questions!' : 'Course added!');
+        setTimeout(() => { window.location.href = 'my-courses.html'; }, 1500);
+    });
+}
+
+function showSaveBanner(text) {
+    const banner = document.getElementById('saveBanner');
+    document.getElementById('bannerText').textContent = text;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 3000);
+}
+
+// ============ INIT ============
+
+Promise.all([loadCourseCodes(), loadSubjects()]).then(() => {
+    setupAutocomplete('courseCodeInput', 'courseCodeDropdown', getCourseCodeItems, onCourseCodeSelect, () => {
+        selectedCodeId = null;
+        document.getElementById('codeInfo').classList.remove('show');
+    });
+    setupAutocomplete('subjectInput', 'subjectDropdown', getSubjectItems, onSubjectSelect, () => {
+        selectedSubjectId = null;
+        allTopics = [];
+        hideBanners();
+    });
+    setupAutocomplete('topicInput', 'topicDropdown', getTopicItems, onTopicSelect, () => {
+        selectedTopicId = null;
+        hideBanners();
+    });
+    setupCategoryChange();
+    setupSubjectWatcher();
+    setupTopicWatcher();
+    setupFormSubmit();
 });

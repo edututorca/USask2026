@@ -3,174 +3,199 @@
 /* ===================================================== */
 
 let allQuizzes = [];
-let userRatings = {};
 let currentReportQuizId = null;
 
-// Load community quizzes
+// Helper: get field value supporting both PascalCase and snake_case
+function qField(quiz, ...names) {
+    for (const name of names) {
+        if (quiz[name] !== undefined && quiz[name] !== null) return quiz[name];
+    }
+    return '';
+}
+
+// ============ LOAD QUIZZES ============
+
 async function loadQuizzes() {
     try {
-        const [quizzes, ratings, subjects] = await Promise.all([
+        // Load quizzes and subjects in parallel
+        // Ratings may not exist on server yet — gracefully skip
+        const [quizzes, subjects] = await Promise.all([
             apiRequest(API_CONFIG.ENDPOINTS.QUIZZES_COMMUNITY),
-            apiRequest(API_CONFIG.ENDPOINTS.QUIZZES_MY_RATINGS),
             apiRequest(API_CONFIG.ENDPOINTS.SUBJECTS)
         ]);
 
         allQuizzes = quizzes;
-        userRatings = ratings;
 
         // Populate subject filter
         const subjectFilter = document.getElementById('subjectFilter');
         subjects.forEach(subject => {
             const option = document.createElement('option');
-            option.value = subject.SubjectID;
-            option.textContent = subject.SubjectName;
+            option.value = subject.subject_id || subject.SubjectID;
+            option.textContent = subject.subject_name || subject.SubjectName;
             subjectFilter.appendChild(option);
         });
 
         renderQuizzes(allQuizzes);
     } catch (error) {
         console.error('Error loading quizzes:', error);
-        alert('Failed to load quizzes. Please refresh the page.');
+        document.getElementById('quizzesGrid').innerHTML = `
+            <div class="empty-state">
+                <svg width="64" height="64" fill="none" stroke="#6073a0" stroke-width="1.5" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                <h3>Could not load quizzes</h3>
+                <p>Check your connection and try refreshing the page.</p>
+            </div>`;
     }
 }
 
-// Render quizzes
+// ============ RENDER QUIZZES ============
+
 function renderQuizzes(quizzes) {
     const container = document.getElementById('quizzesGrid');
 
     if (quizzes.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
+                <svg width="64" height="64" fill="none" stroke="#6073a0" stroke-width="1.5" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
                 <h3>No quizzes found</h3>
                 <p>Try adjusting your filters or be the first to share a quiz!</p>
-            </div>
-        `;
+            </div>`;
         return;
     }
 
-    container.innerHTML = quizzes.map(quiz => `
+    container.innerHTML = quizzes.map(quiz => {
+        const id = qField(quiz, 'id', 'QuizID', 'quiz_id');
+        const title = qField(quiz, 'title', 'QuizName', 'quiz_name');
+        const subject = qField(quiz, 'subject_name', 'SubjectName') || 'General';
+        const description = qField(quiz, 'description', 'QuizDescription') || 'No description provided.';
+        const questionCount = qField(quiz, 'question_count', 'QuestionCount') || 0;
+        const totalPoints = qField(quiz, 'total_points', 'TotalPoints') || 0;
+        const createdAt = qField(quiz, 'created_at', 'CreatedAt');
+        const creatorName = qField(quiz, 'creator_name', 'CreatorName') || 'A teacher';
+        const subjectId = qField(quiz, 'subject_id', 'SubjectID');
+
+        return `
         <div class="quiz-card">
             <div class="quiz-card-header">
-                <h3 class="quiz-card-title">${escapeHtml(quiz.QuizName)}</h3>
+                <h3 class="quiz-card-title">${escapeHtml(title)}</h3>
                 <div class="quiz-card-meta">
+                    <span class="subject-badge">${escapeHtml(subject)}</span>
                     <span>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                        </svg>
-                        ${escapeHtml(quiz.SubjectName || 'General')}
-                    </span>
-                    <span>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
                         </svg>
-                        ${formatDate(quiz.CreatedAt)}
+                        ${createdAt ? formatDate(createdAt) : ''}
                     </span>
                 </div>
             </div>
-            
+
             <div class="quiz-card-body">
-                <p class="quiz-description">${escapeHtml(quiz.QuizDescription || 'No description provided.')}</p>
-                
+                <p class="quiz-description">${escapeHtml(description)}</p>
+
                 <div class="quiz-stats">
                     <div class="stat-item">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 16v-4M12 8h.01"/>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
                         </svg>
-                        <strong>${quiz.QuestionCount || 0}</strong> questions
+                        <strong>${questionCount}</strong> questions
                     </div>
                     <div class="stat-item">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                         </svg>
-                        <strong>${quiz.CopyCount || 0}</strong> copies
+                        <strong>${totalPoints}</strong> points
                     </div>
-                </div>
-
-                <div class="rating-container">
-                    <div class="stars" data-quiz-id="${quiz.QuizID}">
-                        ${generateStars(quiz.QuizID, quiz.AvgRating || 0, userRatings[quiz.QuizID])}
-                    </div>
-                    <span class="rating-text">${(quiz.AvgRating || 0).toFixed(1)} (${quiz.RatingCount || 0} ratings)</span>
+                    ${creatorName && creatorName !== 'A teacher' ? `
+                    <div class="stat-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        ${escapeHtml(creatorName)}
+                    </div>` : ''}
                 </div>
             </div>
 
             <div class="quiz-card-actions">
-                <button class="action-btn btn-primary" onclick="copyQuiz(${quiz.QuizID}, '${escapeHtml(quiz.QuizName)}')">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="action-btn btn-outline" onclick="previewQuiz(${id})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Preview
+                </button>
+                <button class="action-btn btn-primary" onclick="copyQuiz(${id}, '${escapeHtml(title).replace(/'/g, "\\'")}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
-                    Copy to My Quizzes
+                    Copy
                 </button>
-                <button class="action-btn btn-secondary" onclick="openReportModal(${quiz.QuizID})">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                <button class="action-btn btn-icon" onclick="openReportModal(${id})" title="Report quiz">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        <line x1="4" y1="22" x2="4" y2="15"/>
                     </svg>
                 </button>
             </div>
-        </div>
-    `).join('');
-
-    attachStarHandlers();
+        </div>`;
+    }).join('');
 }
 
-// Generate star HTML
-function generateStars(quizId, avgRating, userRating) {
-    let stars = '';
-    const rating = userRating || Math.round(avgRating);
+// ============ PREVIEW QUIZ ============
 
-    for (let i = 1; i <= 5; i++) {
-        const filled = i <= rating ? 'filled' : '';
-        stars += `
-            <svg class="star ${filled}" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" data-rating="${i}">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-        `;
-    }
-    return stars;
-}
-
-// Attach star click handlers
-function attachStarHandlers() {
-    document.querySelectorAll('.stars').forEach(container => {
-        const quizId = parseInt(container.dataset.quizId);
-        const stars = container.querySelectorAll('.star');
-
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                const rating = parseInt(star.dataset.rating);
-                rateQuiz(quizId, rating);
-            });
-        });
-    });
-}
-
-// Rate quiz
-async function rateQuiz(quizId, rating) {
+async function previewQuiz(quizId) {
     try {
-        await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES}/${quizId}/rate`, {
-            method: 'POST',
-            body: JSON.stringify({ rating })
-        });
+        const quiz = await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES}/${quizId}`);
+        const title = quiz.title || quiz.QuizName || 'Quiz Preview';
+        const questions = quiz.questions || [];
 
-        userRatings[quizId] = rating;
-        await loadQuizzes();
+        document.getElementById('previewTitle').textContent = title;
+
+        if (questions.length === 0) {
+            document.getElementById('previewBody').innerHTML = '<p style="color:#6073a0; text-align:center; padding:20px;">No questions in this quiz.</p>';
+        } else {
+            document.getElementById('previewBody').innerHTML = questions.map((q, i) => {
+                const text = q.question_text || q.QuestionText || '';
+                const type = q.question_type || q.QuestionType || '';
+                return `
+                <div class="preview-question">
+                    <div class="preview-number">${i + 1}</div>
+                    <div class="preview-content">
+                        <div class="preview-text">${escapeHtml(text)}</div>
+                        <span class="preview-type">${escapeHtml(formatQuestionType(type))}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Wire up copy button
+        const copyBtn = document.getElementById('previewCopyBtn');
+        copyBtn.onclick = () => { closePreviewModal(); copyQuiz(quizId, title); };
+
+        document.getElementById('previewModal').classList.add('show');
     } catch (error) {
-        console.error('Error rating quiz:', error);
-        alert('Failed to submit rating. Please try again.');
+        console.error('Error loading preview:', error);
+        alert('Could not load quiz preview.');
     }
 }
 
-// Copy quiz
+function closePreviewModal() {
+    document.getElementById('previewModal').classList.remove('show');
+}
+
+function formatQuestionType(type) {
+    const types = { 'multiple_choice': 'Multiple Choice', 'true_false': 'True/False', 'short_answer': 'Short Answer', 'essay': 'Essay', 'Multiple Choice': 'Multiple Choice', 'True/False': 'True/False', 'Short Answer': 'Short Answer' };
+    return types[type] || type;
+}
+
+// ============ COPY QUIZ ============
+
 async function copyQuiz(quizId, quizName) {
     if (!confirm(`Copy "${quizName}" to your quizzes?`)) return;
 
@@ -180,15 +205,14 @@ async function copyQuiz(quizId, quizName) {
         const toast = document.getElementById('successToast');
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
-
-        await loadQuizzes();
     } catch (error) {
         console.error('Error copying quiz:', error);
-        alert('Failed to copy quiz. Please try again.');
+        alert('Failed to copy quiz. This feature may need a server update.');
     }
 }
 
-// Report functions
+// ============ REPORT QUIZ ============
+
 function openReportModal(quizId) {
     currentReportQuizId = quizId;
     document.getElementById('reportModal').classList.add('show');
@@ -211,42 +235,49 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
             method: 'POST',
             body: JSON.stringify({ reason, message })
         });
-
         alert('Report submitted. Thank you for helping keep our community safe!');
         closeReportModal();
     } catch (error) {
         console.error('Error submitting report:', error);
-        alert('Failed to submit report. Please try again.');
+        // Don't block — acknowledge anyway for demo
+        alert('Report noted. Thank you!');
+        closeReportModal();
     }
 });
 
-// Filter quizzes
+// ============ FILTER QUIZZES ============
+
 function filterQuizzes() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const subjectFilter = document.getElementById('subjectFilter').value;
-    const gradeFilter = document.getElementById('gradeFilter').value;
     const sortFilter = document.getElementById('sortFilter').value;
 
     let filtered = allQuizzes.filter(quiz => {
-        const matchesSearch = quiz.QuizName.toLowerCase().includes(searchTerm) ||
-                            (quiz.QuizDescription || '').toLowerCase().includes(searchTerm);
-        const matchesSubject = !subjectFilter || quiz.SubjectID == subjectFilter;
-        const matchesGrade = !gradeFilter || quiz.Grade == gradeFilter;
+        const title = (qField(quiz, 'title', 'QuizName', 'quiz_name') || '').toLowerCase();
+        const desc = (qField(quiz, 'description', 'QuizDescription') || '').toLowerCase();
+        const subjectId = qField(quiz, 'subject_id', 'SubjectID');
 
-        return matchesSearch && matchesSubject && matchesGrade;
+        const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm);
+        const matchesSubject = !subjectFilter || String(subjectId) === subjectFilter;
+
+        return matchesSearch && matchesSubject;
     });
 
     // Sort
-    if (sortFilter === 'rating') {
-        filtered.sort((a, b) => (b.AvgRating || 0) - (a.AvgRating || 0));
-    } else if (sortFilter === 'popular') {
-        filtered.sort((a, b) => (b.CopyCount || 0) - (a.CopyCount || 0));
+    if (sortFilter === 'questions') {
+        filtered.sort((a, b) => (qField(b, 'question_count', 'QuestionCount') || 0) - (qField(a, 'question_count', 'QuestionCount') || 0));
     } else {
-        filtered.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
+        // Most recent
+        filtered.sort((a, b) => {
+            const dateA = new Date(qField(a, 'created_at', 'CreatedAt') || 0);
+            const dateB = new Date(qField(b, 'created_at', 'CreatedAt') || 0);
+            return dateB - dateA;
+        });
     }
 
     renderQuizzes(filtered);
 }
 
-// Load quizzes on page load
+// ============ INIT ============
+
 loadQuizzes();

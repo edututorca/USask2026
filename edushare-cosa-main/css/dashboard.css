@@ -41,6 +41,13 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
+/* Clickable stat cards */
+.stat-card-link {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
 .stat-card h3 {
     color: #6073a0;
     font-size: 0.9rem;
@@ -100,6 +107,7 @@
 
 .action-btn svg {
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
 /* Sections Grid */

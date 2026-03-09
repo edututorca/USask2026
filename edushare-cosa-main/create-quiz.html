@@ -4,70 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Quiz - EduShare</title>
+    <link rel="stylesheet" href="css/user-area.css">
+    <link rel="stylesheet" href="css/nav.css">
     <link rel="stylesheet" href="css/create-quiz.css">
 </head>
 <body>
-    <div class="container">
-        <a href="dashboard.html" class="back-link">
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="logo-container">
+            <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
+        </div>
+        <div class="top-bar-right">
+            <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="profile-menu">
+                <button class="profile-btn" onclick="toggleProfileMenu()">
+                    <svg width="24" height="24" fill="currentColor">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="Account.html">Account Settings</a>
+                    <a href="profile.html">My Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+            <button class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="side-menu" id="sideMenu">
+        <nav class="menu-nav">
+            <a href="dashboard.html" class="menu-item">
+                <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+                Dashboard
+            </a>
+            <a href="my-courses.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                My Courses
+            </a>
+            <a href="User-Area.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                Question Bank
+            </a>
+            <a href="quiz-manager.html" class="menu-item active">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                My Quizzes
+            </a>
+            <a href="browse-quizzes.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Browse Quizzes
+            </a>
+            <a href="question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Question
+            </a>
+            <a href="ai-question-creator.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                AI Question Generator
+            </a>
+            <a href="help.html" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                Help
+            </a>
+        </nav>
+    </div>
+
+    <!-- Success Banner -->
+    <div class="save-banner" id="successBanner">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        Quiz created! Redirecting...
+    </div>
+
+    <div class="create-quiz-container">
+        <a href="quiz-manager.html" class="back-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
-            Back to Dashboard
+            Back to My Quizzes
         </a>
 
-        <div class="header">
-            <h1>Create New Quiz</h1>
-            <p>Build a new quiz for your students</p>
+        <div class="form-card">
+            <div class="header">
+                <h1>Create New Quiz</h1>
+                <p>Build a new quiz for your students</p>
+            </div>
+
+            <form id="createQuizForm">
+                <div class="form-group">
+                    <label for="quizName">
+                        Quiz Name <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="quizName"
+                        name="quizName"
+                        placeholder="e.g., Romeo & Juliet Act 3 Quiz"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="subjectSelect">
+                        Subject <span class="required">*</span>
+                    </label>
+                    <select id="subjectSelect" name="subjectSelect" required>
+                        <option value="">Select a subject</option>
+                    </select>
+                    <small>Which subject is this quiz for?</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="quizDescription">
+                        Description (Optional)
+                    </label>
+                    <textarea
+                        id="quizDescription"
+                        name="quizDescription"
+                        placeholder="Add any notes about this quiz..."
+                    ></textarea>
+                    <small>e.g., Covers scenes 1-5, focuses on character development</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isPublic" name="isPublic">
+                        <span>Make this quiz public</span>
+                    </label>
+                    <small>Public quizzes can be found by other teachers in Browse Quizzes</small>
+                </div>
+
+                <div class="button-group">
+                    <a href="quiz-manager.html" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Create Quiz</button>
+                </div>
+            </form>
         </div>
-
-        <form id="createQuizForm">
-            <div class="form-group">
-                <label for="quizName">
-                    Quiz Name <span class="required">*</span>
-                </label>
-                <input 
-                    type="text" 
-                    id="quizName" 
-                    name="quizName" 
-                    placeholder="e.g., Romeo & Juliet Act 3 Quiz"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="courseSelect">
-                    Course <span class="required">*</span>
-                </label>
-                <select id="courseSelect" name="courseSelect" required>
-                    <option value="">Select a course</option>
-                </select>
-                <small>Which class is this quiz for?</small>
-            </div>
-
-            <div class="form-group">
-                <label for="quizDescription">
-                    Description (Optional)
-                </label>
-                <textarea 
-                    id="quizDescription" 
-                    name="quizDescription"
-                    placeholder="Add any notes about this quiz..."
-                ></textarea>
-                <small>e.g., Covers scenes 1-5, focuses on character development</small>
-            </div>
-
-            <div class="button-group">
-                <a href="dashboard.html" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Create Quiz</button>
-            </div>
-        </form>
     </div>
 
-    <div id="successMessage" class="success-message">
-        Quiz created successfully! Redirecting...
-    </div>
-
-    <script src="api-config.js"></script>
+    <script src="js/api-config.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/profile-link.js"></script>
     <script src="js/create-quiz.js"></script>
 </body>
 </html>
