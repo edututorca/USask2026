@@ -98,24 +98,10 @@
         <div class="form-card">
             <div class="header">
                 <h1>Add a Course</h1>
-                <p>Set up your class and connect to shared content</p>
-            </div>
-
-            <!-- Hierarchy hint -->
-            <div class="hierarchy-hint">
-                <span class="hint-chip">English</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                <span class="hint-chip">ENG1D</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                <span class="hint-chip">Plays</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa5c4" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                <span class="hint-chip">Romeo and Juliet</span>
+                <p>Set up your class in seconds</p>
             </div>
 
             <form id="addCourseForm">
-                <!-- Section: My Class Info -->
-                <div class="section-label">My Class</div>
-
                 <!-- Category -->
                 <div class="form-group">
                     <label for="categorySelect">Category <span class="required">*</span></label>
@@ -144,12 +130,12 @@
                     </select>
                 </div>
 
-                <!-- Course Code -->
+                <!-- Course Code + Section -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="courseCodeInput">Course Code <span class="required">*</span></label>
                         <div class="autocomplete-wrapper">
-                            <input type="text" id="courseCodeInput" placeholder="e.g., ENG1D, MPM2D, SBI3U..." autocomplete="off" required>
+                            <input type="text" id="courseCodeInput" placeholder="e.g., ENG1D, MPM2D..." autocomplete="off" required>
                             <div class="autocomplete-dropdown" id="courseCodeDropdown"></div>
                         </div>
                         <small>Ontario course code — type to search</small>
@@ -157,48 +143,12 @@
                     <div class="form-group">
                         <label for="sectionTag">Section <span class="label-optional">(optional)</span></label>
                         <input type="text" id="sectionTag" placeholder="e.g., A, B, Period 1...">
-                        <small>Personal label for your class</small>
+                        <small>Label for your class section</small>
                     </div>
                 </div>
 
-                <!-- Course code info display -->
+                <!-- Course code info -->
                 <div class="code-info" id="codeInfo"></div>
-
-                <!-- Section: Content Area -->
-                <div class="section-label">Content Area <span class="section-hint">— connects you to the shared question bank</span></div>
-
-                <!-- Subject -->
-                <div class="form-group">
-                    <label for="subjectInput">Subject <span class="required">*</span></label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="subjectInput" placeholder="e.g., Plays, Algebra, Grammar, Novel..." autocomplete="off" required>
-                        <div class="autocomplete-dropdown" id="subjectDropdown"></div>
-                    </div>
-                    <small>Type to search existing subjects or create a new one</small>
-                </div>
-
-                <!-- Topic -->
-                <div class="form-group">
-                    <label for="topicInput">Topic <span class="label-optional">(optional)</span></label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="topicInput" placeholder="e.g., Romeo and Juliet, Linear Equations..." autocomplete="off">
-                        <div class="autocomplete-dropdown" id="topicDropdown"></div>
-                    </div>
-                    <small>New topics get ~5 AI-generated starter questions</small>
-                </div>
-
-                <!-- Status Banners -->
-                <div class="match-banner" id="matchBanner">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-                    <div><strong id="matchName"></strong> <span id="matchInfo"></span></div>
-                </div>
-
-                <div class="new-banner" id="newBanner">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <div><strong id="newTitle">New topic!</strong> <span id="newInfo">AI will generate ~5 starter questions.</span></div>
-                </div>
 
                 <!-- Actions -->
                 <div class="button-group">

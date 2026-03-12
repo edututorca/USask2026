@@ -1,7 +1,7 @@
 /* ============ ADD COURSE PAGE ============ */
 
 .add-course-container {
-    max-width: 720px;
+    max-width: 620px;
     margin: 0 auto;
     padding: 24px;
 }
@@ -30,7 +30,7 @@
 
 .header {
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 36px;
 }
 
 .header h1 {
@@ -44,50 +44,9 @@
     font-size: 1rem;
 }
 
-/* ============ HIERARCHY HINT ============ */
-.hierarchy-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 14px;
-    background: #f8f9fc;
-    border: 1px solid #e8ecf4;
-    border-radius: 8px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-}
-
-.hint-chip {
-    background: white;
-    border: 1px solid #cfd9ef;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #1f2f57;
-}
-
-/* ============ SECTION LABELS ============ */
-.section-label {
-    color: #1f2f57;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 18px;
-    margin-top: 8px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #e8ecf4;
-}
-
-.section-hint {
-    color: #6073a0;
-    font-weight: 400;
-    font-size: 0.85rem;
-}
-
 /* ============ FORM ============ */
 .form-group {
-    margin-bottom: 22px;
+    margin-bottom: 24px;
 }
 
 .form-row {
@@ -117,10 +76,10 @@
 .form-group select,
 .form-group input[type="text"] {
     width: 100%;
-    padding: 13px 14px;
+    padding: 14px;
     border: 2px solid #cfd9ef;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-family: inherit;
     transition: border-color 0.3s ease;
     box-sizing: border-box;
@@ -147,8 +106,8 @@
     border-radius: 8px;
     color: #1f2f57;
     font-size: 0.9rem;
-    margin-bottom: 22px;
-    margin-top: -10px;
+    margin-bottom: 24px;
+    margin-top: -12px;
 }
 
 .code-info.show {
@@ -176,7 +135,7 @@
     border-radius: 0 0 8px 8px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     z-index: 100;
-    max-height: 240px;
+    max-height: 260px;
     overflow-y: auto;
 }
 
@@ -211,49 +170,11 @@
     margin-top: 2px;
 }
 
-/* ============ STATUS BANNERS ============ */
-.match-banner,
-.new-banner {
-    display: none;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
-    border-radius: 8px;
-    margin-bottom: 22px;
-}
-
-.match-banner.show,
-.new-banner.show {
-    display: flex;
-}
-
-.match-banner {
-    background: #e8f5e9;
-    border: 2px solid #a5d6a7;
-}
-
-.match-banner strong { color: #2e7d32; }
-.match-banner span { color: #4a7c4f; font-size: 0.88rem; }
-
-.new-banner {
-    background: #fff4ee;
-    border: 2px solid #ffcc80;
-}
-
-.new-banner strong { color: #e65100; }
-.new-banner span { color: #8d6e3f; font-size: 0.88rem; }
-
-.match-banner svg,
-.new-banner svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
 /* ============ BUTTONS ============ */
 .button-group {
     display: flex;
     gap: 15px;
-    margin-top: 32px;
+    margin-top: 36px;
 }
 
 .btn {
@@ -335,9 +256,5 @@
 
     .button-group {
         flex-direction: column;
-    }
-
-    .hierarchy-hint {
-        flex-wrap: wrap;
     }
 }
