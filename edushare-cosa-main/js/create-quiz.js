@@ -11,8 +11,8 @@ async function loadSubjects() {
         subjects.forEach(subject => {
             const option = document.createElement('option');
             // Handle both column naming conventions
-            option.value = subject.subject_id || subject.SubjectID;
-            option.textContent = subject.subject_name || subject.SubjectName;
+            option.value = subject.id || subject.subject_id || subject.SubjectID;
+            option.textContent = subject.name || subject.subject_name || subject.SubjectName;
             select.appendChild(option);
         });
     } catch (error) {
@@ -32,11 +32,13 @@ document.getElementById('createQuizForm').addEventListener('submit', async (e) =
     submitBtn.textContent = 'Creating...';
 
     const formData = {
-        title: document.getElementById('quizName').value.trim(),
-        subject_id: document.getElementById('subjectSelect').value || null,
-        description: document.getElementById('quizDescription').value.trim(),
-        is_public: document.getElementById('isPublic').checked ? 1 : 0
-    };
+    userId: getCurrentUserId() || 1,
+    title: document.getElementById('quizName').value.trim(),
+    subjectId: document.getElementById('subjectSelect').value || null,
+    description: document.getElementById('quizDescription').value.trim(),
+    is_public: document.getElementById('isPublic').checked ? 1 : 0,
+    grade: null
+};
 
     if (!formData.title) {
         alert('Please enter a quiz name.');

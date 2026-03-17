@@ -454,6 +454,160 @@ body {
 .btn-bar.ghost:hover { color: #fff; }
 
 /* ===================================================== */
+/* QUIZ PICKER MODAL                                     */
+/* ===================================================== */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(23, 50, 95, 0.5);
+    z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.15s ease;
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-panel {
+    background: var(--bg-card); border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(23, 50, 95, 0.25);
+    width: 90%; max-width: 480px; max-height: 80vh;
+    display: flex; flex-direction: column;
+    animation: modalSlideUp 0.2s ease;
+}
+
+.modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--border-light);
+}
+.modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--navy-deep); }
+.modal-close {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: var(--bg); color: var(--text-muted); font-size: 1.3rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+}
+.modal-close:hover { background: var(--border-light); color: var(--text); }
+
+.modal-body {
+    padding: 12px 22px; overflow-y: auto; flex: 1;
+}
+
+.modal-loading { text-align: center; padding: 30px; color: var(--text-faint); font-size: 0.85rem; }
+.modal-empty { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.88rem; }
+.modal-empty p { margin-bottom: 12px; }
+
+.modal-list { display: flex; flex-direction: column; gap: 6px; }
+
+.quiz-pick-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-sm); cursor: pointer;
+    transition: all 0.15s;
+}
+.quiz-pick-item:hover { border-color: var(--navy-light); background: #f8faff; }
+
+.quiz-pick-info h3 { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.quiz-pick-info .quiz-pick-meta { font-size: 0.75rem; color: var(--text-faint); }
+
+.quiz-pick-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 0.78rem;
+    font-weight: 600; background: var(--orange-bright); color: #fff;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: all 0.15s; white-space: nowrap;
+}
+.quiz-pick-btn:hover { background: #e85d2a; }
+.quiz-pick-btn:disabled { opacity: 0.5; cursor: default; }
+.quiz-pick-btn.added { background: var(--success); }
+
+.modal-footer {
+    padding: 14px 22px; border-top: 1px solid var(--border-light);
+    display: flex; justify-content: space-between; gap: 8px;
+}
+
+/* ===================================================== */
+/* EDIT QUESTION MODAL                                   */
+/* ===================================================== */
+.modal-panel-wide { max-width: 580px; }
+
+.edit-field { margin-bottom: 14px; }
+
+.edit-label {
+    display: block; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-faint); margin-bottom: 5px;
+}
+
+.edit-textarea {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.88rem; font-family: inherit;
+    color: var(--text); resize: vertical; min-height: 70px;
+    transition: border-color 0.2s;
+}
+.edit-textarea:focus { outline: none; border-color: var(--orange-bright); }
+
+.edit-select {
+    width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.85rem; font-family: inherit;
+    color: var(--text); background: #fff; cursor: pointer;
+    transition: border-color 0.2s;
+}
+.edit-select:focus { outline: none; border-color: var(--orange-bright); }
+
+.edit-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+
+/* Option rows */
+.edit-option-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+}
+.edit-option-row input[type="text"] {
+    flex: 1; padding: 8px 10px; border: 1.5px solid var(--border);
+    border-radius: 6px; font-size: 0.85rem; font-family: inherit;
+    color: var(--text); transition: border-color 0.2s;
+}
+.edit-option-row input[type="text"]:focus { outline: none; border-color: var(--orange-bright); }
+
+.edit-option-row .correct-radio {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; color: var(--text-faint); font-weight: 600;
+    white-space: nowrap; cursor: pointer;
+}
+.edit-option-row .correct-radio input { cursor: pointer; }
+
+.edit-option-row .remove-option {
+    width: 28px; height: 28px; border-radius: 6px; border: none;
+    background: var(--bg); color: var(--text-faint); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; transition: all 0.15s;
+}
+.edit-option-row .remove-option:hover { background: #ffeae6; color: var(--error); }
+
+/* ===================================================== */
+/* SUCCESS TOAST                                         */
+/* ===================================================== */
+.toast {
+    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+    background: var(--success); color: #fff;
+    padding: 10px 20px; border-radius: 8px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+    z-index: 3000;
+    animation: toastIn 0.3s ease;
+}
+.toast.hidden { display: none; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ===================================================== */
 /* HIDDEN UTILITY                                        */
 /* ===================================================== */
 .hidden { display: none !important; }

@@ -136,6 +136,93 @@
     </div><!-- /main-content -->
 </div><!-- /app-layout -->
 
+<!-- Quiz Picker Modal -->
+<div class="modal-overlay hidden" id="quizPickerOverlay" onclick="closeQuizPicker(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="quizPickerTitle">Add to Quiz</h2>
+            <button class="modal-close" onclick="closeQuizPicker()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-loading hidden" id="quizPickerLoading">Loading your quizzes...</div>
+            <div class="modal-list" id="quizPickerList">
+                <!-- Quiz items populated by JS -->
+            </div>
+            <div class="modal-empty hidden" id="quizPickerEmpty">
+                <p>You don't have any quizzes yet.</p>
+                <a href="create-quiz.html" class="btn btn-primary btn-sm">Create Your First Quiz</a>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline btn-sm" onclick="closeQuizPicker()">Cancel</button>
+            <a href="create-quiz.html" class="btn btn-outline btn-sm">Create New Quiz</a>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Question Modal -->
+<div class="modal-overlay hidden" id="editQuestionOverlay" onclick="closeEditQuestion(event)">
+    <div class="modal-panel modal-panel-wide" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Edit Question</h2>
+            <button class="modal-close" onclick="closeEditQuestion()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="editQuestionForm" onsubmit="saveEditedQuestion(event)">
+                <input type="hidden" id="editQId">
+
+                <!-- Question Text -->
+                <div class="edit-field">
+                    <label class="edit-label">Question Text</label>
+                    <textarea class="edit-textarea" id="editQText" rows="3" required></textarea>
+                </div>
+
+                <!-- Type + Difficulty row -->
+                <div class="edit-row">
+                    <div class="edit-field">
+                        <label class="edit-label">Type</label>
+                        <select class="edit-select" id="editQType" onchange="editTypeChanged()">
+                            <option value="multiple_choice">Multiple Choice</option>
+                            <option value="true_false">True / False</option>
+                            <option value="short_answer">Short Answer</option>
+                            <option value="essay">Essay</option>
+                        </select>
+                    </div>
+                    <div class="edit-field">
+                        <label class="edit-label">Difficulty</label>
+                        <select class="edit-select" id="editQDifficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Options (MCQ / T-F) -->
+                <div id="editOptionsSection">
+                    <label class="edit-label">Options</label>
+                    <div id="editOptionsList">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" id="editAddOptionBtn" onclick="addEditOption()" style="margin-top:8px;">+ Add Option</button>
+                </div>
+
+                <!-- Modal footer inside form -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeEditQuestion()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="editSaveBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="toast hidden" id="successToast">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastMessage">Added to quiz!</span>
+</div>
+
 <!-- Persistent Action Bar -->
 <div class="action-bar" id="actionBar">
     <div class="action-bar-left">

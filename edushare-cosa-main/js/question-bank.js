@@ -621,22 +621,329 @@
         }
     };
 
+    // ═════════════════════════════════════════════════════
+    // EDIT QUESTION MODAL
+    // ═════════════════════════════════════════════════════
+
     window.editQuestion = function (id) {
-        // TODO: Open edit modal or navigate to question editor
-        alert('Edit functionality coming soon — question ID: ' + id);
+        const q = questions.find(x => x.id === id);
+        if (!q) return;
+
+        document.getElementById('editQId').value = q.id;
+        document.getElementById('editQText').value = q.question_text || '';
+        document.getElementById('editQType').value = q.question_type || 'multiple_choice';
+        document.getElementById('editQDifficulty').value = q.difficulty || 'medium';
+
+        // Build options
+        buildEditOptions(q);
+        editTypeChanged();
+
+        document.getElementById('editQuestionOverlay').classList.remove('hidden');
+        document.getElementById('editQText').focus();
     };
 
+    function buildEditOptions(q) {
+        const list = document.getElementById('editOptionsList');
+        list.innerHTML = '';
+
+        let opts = [];
+
+        // Use question_options table data if available
+        if (q.options && q.options.length > 0) {
+            opts = q.options.map(o => ({
+                text: o.option_text || o.text || '',
+                correct: o.is_correct || o.correct || false
+            }));
+        } else if (q.option_a) {
+            // Fallback to inline options
+            ['option_a', 'option_b', 'option_c', 'option_d'].forEach(key => {
+                if (q[key]) {
+                    opts.push({
+                        text: q[key],
+                        correct: q.correct_answer === q[key]
+                    });
+                }
+            });
+        }
+
+        // Default to 4 empty options for MCQ if none exist
+        if (opts.length === 0 && (q.question_type === 'multiple_choice' || q.question_type === 'true_false')) {
+            if (q.question_type === 'true_false') {
+                opts = [{ text: 'True', correct: true }, { text: 'False', correct: false }];
+            } else {
+                opts = [{ text: '', correct: true }, { text: '', correct: false }, { text: '', correct: false }, { text: '', correct: false }];
+            }
+        }
+
+        opts.forEach((opt, i) => addEditOptionRow(opt.text, opt.correct, i));
+    }
+
+    function addEditOptionRow(text, correct, index) {
+        const list = document.getElementById('editOptionsList');
+        const row = document.createElement('div');
+        row.className = 'edit-option-row';
+
+        const radioName = 'editCorrect';
+        row.innerHTML = `
+            <input type="text" value="${esc(text || '')}" placeholder="Option text..." class="edit-opt-text">
+            <label class="correct-radio">
+                <input type="radio" name="${radioName}" ${correct ? 'checked' : ''}>
+                Correct
+            </label>
+            <button type="button" class="remove-option" onclick="this.closest('.edit-option-row').remove()" title="Remove">&times;</button>
+        `;
+        list.appendChild(row);
+    }
+
+    window.addEditOption = function () {
+        addEditOptionRow('', false, document.querySelectorAll('.edit-option-row').length);
+    };
+
+    window.editTypeChanged = function () {
+        const type = document.getElementById('editQType').value;
+        const section = document.getElementById('editOptionsSection');
+        const addBtn = document.getElementById('editAddOptionBtn');
+
+        if (type === 'short_answer' || type === 'essay') {
+            section.classList.add('hidden');
+        } else {
+            section.classList.remove('hidden');
+            // For T/F, hide the add button (always exactly 2 options)
+            addBtn.style.display = type === 'true_false' ? 'none' : '';
+
+            // If switching to T/F and options aren't True/False, reset them
+            if (type === 'true_false') {
+                const list = document.getElementById('editOptionsList');
+                const rows = list.querySelectorAll('.edit-option-row');
+                if (rows.length !== 2 || !rows[0].querySelector('.edit-opt-text').value.match(/^true$/i)) {
+                    list.innerHTML = '';
+                    addEditOptionRow('True', true, 0);
+                    addEditOptionRow('False', false, 1);
+                }
+            }
+        }
+    };
+
+    window.saveEditedQuestion = async function (e) {
+        e.preventDefault();
+
+        const id = document.getElementById('editQId').value;
+        const questionText = document.getElementById('editQText').value.trim();
+        const questionType = document.getElementById('editQType').value;
+        const difficulty = document.getElementById('editQDifficulty').value;
+
+        if (!questionText) { alert('Question text is required.'); return; }
+
+        const btn = document.getElementById('editSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        // Gather options
+        const optionRows = document.querySelectorAll('#editOptionsList .edit-option-row');
+        const options = [];
+        optionRows.forEach(row => {
+            const text = row.querySelector('.edit-opt-text').value.trim();
+            const isCorrect = row.querySelector('input[type="radio"]').checked;
+            if (text) {
+                options.push({ text, isCorrect });
+            }
+        });
+
+        // Build body — send both inline fields and options array for compatibility
+        const body = {
+            questionText,
+            questionType,
+            difficulty,
+            options: options.length > 0 ? options : undefined
+        };
+
+        // Also set inline fields for backward compatibility
+        if (options.length >= 1) body.optionA = options[0]?.text || null;
+        if (options.length >= 2) body.optionB = options[1]?.text || null;
+        if (options.length >= 3) body.optionC = options[2]?.text || null;
+        if (options.length >= 4) body.optionD = options[3]?.text || null;
+        const correctOpt = options.find(o => o.isCorrect);
+        body.correctAnswer = correctOpt ? correctOpt.text : null;
+
+        try {
+            await apiRequest(`/questions/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(body)
+            });
+
+            // Update local state
+            const q = questions.find(x => x.id === parseInt(id));
+            if (q) {
+                q.question_text = questionText;
+                q.question_type = questionType;
+                q.difficulty = difficulty;
+                q.option_a = body.optionA || null;
+                q.option_b = body.optionB || null;
+                q.option_c = body.optionC || null;
+                q.option_d = body.optionD || null;
+                q.correct_answer = body.correctAnswer;
+                if (options.length > 0) {
+                    q.options = options.map((o, i) => ({
+                        option_text: o.text,
+                        is_correct: o.isCorrect ? 1 : 0,
+                        sort_order: i
+                    }));
+                }
+            }
+
+            closeEditQuestion();
+            renderQuestions();
+            showToast('Question updated!');
+
+        } catch (err) {
+            console.error('Failed to update question:', err);
+            alert('Failed to save. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+        }
+    };
+
+    window.closeEditQuestion = function (event) {
+        if (event && event.target !== event.currentTarget) return;
+        document.getElementById('editQuestionOverlay').classList.add('hidden');
+    };
+
+    // Close edit modal on Escape too
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const editOverlay = document.getElementById('editQuestionOverlay');
+            if (editOverlay && !editOverlay.classList.contains('hidden')) {
+                closeEditQuestion();
+            }
+        }
+    });
+
+    // ═════════════════════════════════════════════════════
+    // QUIZ PICKER MODAL
+    // ═════════════════════════════════════════════════════
+
+    let pendingQuestionIds = [];
+
     window.addQuestionToQuiz = function (id) {
-        // TODO: Open quiz picker modal
-        alert('Add to quiz functionality coming soon — question ID: ' + id);
+        pendingQuestionIds = [id];
+        openQuizPicker();
     };
 
     window.addSelectedToQuiz = function () {
-        const selectedIds = Array.from(document.querySelectorAll('.q-card .checkbox:checked'))
-            .map(cb => cb.dataset.id);
-        // TODO: Open quiz picker modal with selected IDs
-        alert('Add ' + selectedIds.length + ' questions to quiz — coming soon');
+        pendingQuestionIds = Array.from(document.querySelectorAll('.q-card .checkbox:checked'))
+            .map(cb => parseInt(cb.dataset.id));
+        if (pendingQuestionIds.length === 0) return;
+        openQuizPicker();
     };
+
+    async function openQuizPicker() {
+        const overlay = document.getElementById('quizPickerOverlay');
+        const list = document.getElementById('quizPickerList');
+        const loading = document.getElementById('quizPickerLoading');
+        const empty = document.getElementById('quizPickerEmpty');
+        const title = document.getElementById('quizPickerTitle');
+
+        title.textContent = pendingQuestionIds.length === 1
+            ? 'Add Question to Quiz'
+            : `Add ${pendingQuestionIds.length} Questions to Quiz`;
+
+        // Show modal with loading state
+        overlay.classList.remove('hidden');
+        loading.classList.remove('hidden');
+        list.innerHTML = '';
+        empty.classList.add('hidden');
+
+        try {
+            const userId = getCurrentUserId() || 1;
+            const quizzes = await apiRequest(`/quizzes?userId=${userId}`);
+
+            loading.classList.add('hidden');
+
+            if (!quizzes || quizzes.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            list.innerHTML = quizzes.map(q => `
+                <div class="quiz-pick-item" data-quiz-id="${q.id}">
+                    <div class="quiz-pick-info">
+                        <h3>${esc(q.title)}</h3>
+                        <span class="quiz-pick-meta">${q.question_count || 0} questions · ${q.subject_name || 'No subject'}</span>
+                    </div>
+                    <button class="quiz-pick-btn" onclick="addToThisQuiz(${q.id}, this)">Add</button>
+                </div>
+            `).join('');
+
+        } catch (err) {
+            console.error('Failed to load quizzes:', err);
+            loading.classList.add('hidden');
+            list.innerHTML = '<div class="modal-loading">Failed to load quizzes. Please try again.</div>';
+        }
+    }
+
+    window.addToThisQuiz = async function (quizId, btn) {
+        btn.disabled = true;
+        btn.textContent = 'Adding...';
+
+        let addedCount = 0;
+        try {
+            for (const questionId of pendingQuestionIds) {
+                await apiRequest(`/quizzes/${quizId}/questions`, {
+                    method: 'POST',
+                    body: JSON.stringify({ questionId: questionId })
+                });
+                addedCount++;
+            }
+
+            btn.textContent = 'Added!';
+            btn.classList.add('added');
+
+            // Update the question count in the modal
+            const item = btn.closest('.quiz-pick-item');
+            const meta = item.querySelector('.quiz-pick-meta');
+            if (meta) {
+                const currentCount = parseInt(meta.textContent) || 0;
+                meta.textContent = meta.textContent.replace(/^\d+/, currentCount + addedCount);
+            }
+
+            showToast(`Added ${addedCount} question${addedCount !== 1 ? 's' : ''} to quiz!`);
+
+            // Clear selection after a short delay
+            setTimeout(() => {
+                clearSelection();
+            }, 500);
+
+        } catch (err) {
+            console.error('Failed to add to quiz:', err);
+            btn.disabled = false;
+            btn.textContent = 'Failed';
+            setTimeout(() => { btn.textContent = 'Add'; }, 2000);
+        }
+    };
+
+    window.closeQuizPicker = function (event) {
+        if (event && event.target !== event.currentTarget) return;
+        document.getElementById('quizPickerOverlay').classList.add('hidden');
+        pendingQuestionIds = [];
+    };
+
+    // Close modal on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const overlay = document.getElementById('quizPickerOverlay');
+            if (!overlay.classList.contains('hidden')) {
+                closeQuizPicker();
+            }
+        }
+    });
+
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        document.getElementById('toastMessage').textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
 
     // ═════════════════════════════════════════════════════
     // HELPERS
