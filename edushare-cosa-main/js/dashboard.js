@@ -2,9 +2,11 @@
 /* ============= DASHBOARD PAGE JS ===================== */
 /* ===================================================== */
 
+const dashUserId = getCurrentUserId() || 1;
+
 async function loadDashboardData() {
     try {
-        const stats = await apiRequest(API_CONFIG.ENDPOINTS.DASHBOARD_STATS);
+        const stats = await apiRequest(`${API_CONFIG.ENDPOINTS.DASHBOARD_STATS}?userId=${dashUserId}`);
 
         document.getElementById('totalCourses').textContent = stats.totalCourses || 0;
         document.getElementById('totalQuizzes').textContent = stats.totalQuizzes || 0;
@@ -20,7 +22,7 @@ async function loadDashboardData() {
 
 async function loadActiveClasses() {
     try {
-        const courses = await apiRequest(API_CONFIG.ENDPOINTS.COURSES);
+        const courses = await apiRequest(`/user-courses?userId=${dashUserId}`);
         const container = document.getElementById('activeClassesList');
 
         if (courses.length === 0) {
@@ -36,14 +38,16 @@ async function loadActiveClasses() {
             return;
         }
 
-        container.innerHTML = courses.slice(0, 5).map(course => `
-            <div class="class-item" onclick="window.location.href='my-courses.html?course=${encodeURIComponent(course.CourseName)}'">
+        container.innerHTML = courses.slice(0, 5).map(course => {
+            const label = course.section ? `${course.course_code} — ${course.section}` : course.course_code;
+            return `
+            <div class="class-item" onclick="window.location.href='User-Area.html'">
                 <div class="class-info">
-                    <h3>${escapeHtml(course.CourseName)}</h3>
-                    <p>Grade 9-12</p>
+                    <h3>${escapeHtml(label)}</h3>
+                    <p>${escapeHtml(course.subject_name)}</p>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     } catch (error) {
         console.error('Error loading active classes:', error);
     }
@@ -51,7 +55,7 @@ async function loadActiveClasses() {
 
 async function loadRecentQuizzes() {
     try {
-        const quizzes = await apiRequest(API_CONFIG.ENDPOINTS.QUIZZES_RECENT + '?limit=5');
+        const quizzes = await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES_RECENT}?userId=${dashUserId}&limit=5`);
         const container = document.getElementById('recentQuizzesList');
 
         if (quizzes.length === 0) {

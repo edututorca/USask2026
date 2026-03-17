@@ -1,260 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduShare – Learning Hub</title>
-    <!-- Main app stylesheet -->
-    <link rel="stylesheet" href="css/user-area.css" />
-
-    <style>
-        /* --- KEBAB STYLES --- */
-        .kebab-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .kebab-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 5px;
-        }
-
-        .kebab-menu {
-            display: none;
-            background: #1f2a44;
-            border-radius: 6px;
-            position: absolute;
-            margin-top: 5px;
-            padding: 10px;
-            width: 120px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            z-index: 999;
-        }
-
-        .kebab-menu.show {
-            display: block;
-        }
-
-        .kebab-item {
-            padding: 6px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .kebab-item:hover {
-            opacity: 0.6;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank - EduShare</title>
+    <link rel="stylesheet" href="css/user-area.css">
 </head>
-
 <body>
 
-    <!--  TOP BAR  -->
-    <header class="topbar">
-        <div class="topbar__left">
-            <!-- Brand: logo + name, links to Home -->
-            <a class="brand" href="home.html" aria-label="Go to EduShare home">
-                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
-                <span class="brand__name">EduShare</span>
-            </a>
-
-            <!-- Primary navigation - populated from Subject table -->
-            <nav id="primaryNav" class="primary-nav" aria-label="Primary">
-                <!-- Subjects will be loaded here dynamically after course selection -->
-            </nav>
-        </div>
-
-        <div class="topbar__right">
-            <button class="icon-btn" aria-label="Help">?</button>
-            <button class="icon-btn" aria-label="Messages">💬</button>
-            <div class="plan-pill">Plans</div>
-            <div id="userChip" class="user-chip">
-                <!-- User info will be loaded dynamically -->
-                <div class="avatar" aria-hidden="true">?</div>
-                <div class="user-chip__txt">
-                    <div class="user-name">Loading...</div>
-                    <div class="user-points">XP: <strong>0</strong></div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!--  MAIN LAYOUT  -->
-    <div class="layout">
-
-        <!-- LEFT SIDEBAR -->
-        <aside class="sidebar" aria-label="Sidebar">
-            <!-- Profile Card - populated from UserProfile table -->
-            <div id="profileCard" class="profile-card">
-                <div class="avatar large" aria-hidden="true">?</div>
-                <div class="profile-meta">
-                    <div class="profile-name">Loading...</div>
-                    <div class="profile-role">Teacher</div>
-                </div>
-            </div>
-
-            <!-- My Courses - populated from Course table (via UserCourse) -->
-            <div class="sidebar-block">
-
-
-                <!-- NEW: WRAP TITLE + KEBAB -->
-                <div class="kebab-wrapper">
-                    <div class="block-title">My Courses:</div>
-
-                    <!-- NEW: KEBAB BUTTON -->
-                    <button class="kebab-btn" id="coursesMenuBtn">⋮</button>
-                </div>
-
-                <!-- NEW: DROPDOWN -->
-                <div class="kebab-menu" id="coursesMenu">
-                    <div class="kebab-item">Archive</div>
-                    <div class="kebab-item">Delete</div>
-                </div>
-
-                <ul id="courseList" class="course-list">
-                    <!-- Courses will be loaded here dynamically -->
-                    <li style="color: #999;">Loading courses...</li>
-
-
-                </ul>
-
-                <button id="btnAddCourse" class="btn btn-muted full"> + Add Course</button>
-            </div>
-
-            <div class="sidebar-block sticky-bottom">
-                <!-- REMOVED ARCHIVE HERE -->
-                <button id="btnProfile" class="btn btn-muted full">Profile</button>
-                <button id="btnLogout" class="btn btn-muted full">Log Out</button>
-            </div>
-        </aside>
-
-
-        <!-- MAIN CONTENT -->
-        <main class="main">
-
-
-            <!--  ROW 1 – TOPICS (from Topic table, filtered by selected Subject)  -->
-            <section id="rowTopics" class="row row-topics hidden" aria-label="Topics row">
-                <div id="topicsBar" class="topics-bar">
-                    <!-- Topics will be loaded here dynamically -->
-                </div>
-            </section>
-
-            <!-- ROW 2 – SUBTOPICS (from SubTopic table, filtered by selected Topic)  -->
-            <section id="rowSubtopics" class="row row-subtopics hidden" aria-label="Subtopics row">
-                <div id="subtopicsBar" class="subtopics-bar">
-                    <!-- Subtopics will be loaded here dynamically -->
-                </div>
-            </section>
-
-            <!--  ROW 3 – SECTIONS (from Section table, filtered by selected SubTopic)  -->
-            <section id="rowSections" class="row row-sections hidden" aria-label="Sections row">
-                <div id="sectionsBar" class="sections-bar">
-                    <!-- Sections will be loaded here dynamically -->
-                </div>
-            </section>
-
-            <!--  CONTENT AREA (QUESTIONS LIST from QuestionPool)  -->
-            <section id="contentArea" class="content hidden" aria-label="Questions content">
-
-
-                <!-- Toolbar -->
-                <div class="toolbar">
-                    <div class="left">
-                        <button class="btn btn-orange-pill">Randomize</button>
-                        <button class="btn btn-orange-outline">Filter</button>
-                    </div>
-
-                    <div class="center">
-                        <div class="search">
-                            <input id="searchInput" type="text" placeholder="Search Content" />
-                            <button id="btnSearch" type="button" class="magnifier">🔍</button>
-                        </div>
-                    </div>
-
-                    <div class="right">
-                        <button class="btn btn-warning">Worksheet</button>
-                        <button class="btn btn-warning">Quiz</button>
-                        <button class="btn btn-warning">Games</button>
-                    </div>
-                </div>
-
-                <!-- Select all -->
-                <div class="select-strip">
-                    <button class="btn btn-select-all">Select All</button>
-                </div>
-
-
-
-                <!-- QUESTION LIST (from QuestionPool table) -->
-                <div class="q-list" id="questionsList">
-                    <!-- Questions will be loaded here dynamically -->
-                    <div class="loading-state" style="text-align: center; padding: 40px; color: #999;">
-                        <p>Select a section to view questions</p>
-                    </div>
-                </div>
-
-                <!-- Content footer CTA: Add Question -->
-                <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-                    <a id="btnAddQuestion" class="btn btn-warning" href="javascript:void(0)">Add Question</a>
-                </div>
-
-            </section>
-        </main>
+<!-- =================== TOP BAR =================== -->
+<div class="top-bar">
+    <div class="top-bar-left">
+        <a href="dashboard.html" class="logo-link">
+            <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
+        </a>
     </div>
+    <div class="top-bar-right">
+        <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="10" cy="10" r="8"/><path d="M7.5 7.5a2.5 2.5 0 0 1 5 .8c0 1.7-2.5 2.5-2.5 2.5"/><circle cx="10" cy="14" r="0.5" fill="currentColor"/>
+            </svg>
+        </button>
+        <div class="profile-menu">
+            <button class="profile-btn" onclick="toggleProfileMenu()" title="Profile">
+                <svg width="18" height="18" fill="currentColor"><circle cx="9" cy="6" r="3.5"/><path d="M2 16c0-3 3.5-5 7-5s7 2 7 5"/></svg>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="Account.html">Account Settings</a>
+                <a href="profile.html">My Profile</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- =================== APP LAYOUT =================== -->
+<div class="app-layout">
 
-    <script>
-        // TOGGLE MENU
-        document.getElementById("coursesMenuBtn").addEventListener("click", () => {
-            document.getElementById("coursesMenu").classList.toggle("show");
-        });
+    <!-- =================== SIDEBAR =================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">My Courses</div>
+            <div id="sidebarCourses">
+                <div class="sidebar-loading">Loading courses...</div>
+            </div>
+        </div>
 
-        // CLOSE MENU WHEN CLICKING OUTSIDE
-        document.addEventListener("click", (e) => {
-            const menu = document.getElementById("coursesMenu");
-            const btn = document.getElementById("coursesMenuBtn");
+        <div class="sidebar-bottom">
+            <button class="sidebar-btn highlight" onclick="window.location.href='Add-course.html'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+                Add Course
+            </button>
+            <button class="sidebar-btn" onclick="window.location.href='dashboard.html'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 8h12"/></svg>
+                Dashboard
+            </button>
+            <button class="sidebar-btn" onclick="window.location.href='quiz-manager.html'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2H6a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V5z"/><polyline points="12 2 12 5 15 5"/></svg>
+                My Quizzes
+            </button>
+            <button class="sidebar-btn" onclick="window.location.href='browse-quizzes.html'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="m12 12-2.5-2.5"/></svg>
+                Browse Quizzes
+            </button>
+            <button class="sidebar-btn logout" onclick="logout()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M6 8h7"/></svg>
+                Log Out
+            </button>
+        </div>
+    </aside>
 
-            if (!menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.remove("show");
-            }
-        });
-    </script>
+    <!-- =================== MAIN CONTENT =================== -->
+    <div class="main-content">
 
-    <!-- Core Scripts -->
-    <script src="js/api-config.js"></script>
-    <script src="js/restore-context.js"></script>
+        <!-- Subject Header -->
+        <div class="subject-header" id="subjectHeader">
+            <div class="subject-header-left">
+                <h1 id="subjectTitle">Question Bank</h1>
+                <span class="course-label" id="courseLabel">Select a course to get started</span>
+            </div>
+            <div class="subject-header-right">
+                <a href="question-creator.html" class="btn btn-outline-light" id="btnCreateTop">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
+                    Create Question
+                </a>
+                <a href="ai-question-creator.html" class="btn btn-primary" id="btnAITop">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
+                    Generate with AI
+                </a>
+            </div>
+        </div>
 
-    <!-- UI Component Loaders -->
-    <script src="js/load-user-profiles.js"></script>
-    <script src="js/load-courses.js"></script>
-    <script src="js/load-subjects.js"></script>
-    <script src="js/load-topics.js"></script>
-    <script src="js/load-subtopics.js"></script>
-    <script src="js/load-sections.js"></script>
-    <script src="js/load-questions.js"></script>
+        <!-- Drill-Down Bars Container -->
+        <div id="drillBarsContainer">
+            <!-- Bars are dynamically inserted here by JS -->
+        </div>
 
-    <!-- Navigation & Flow Control -->
-    <script src="js/navigation-flow.js"></script>
+        <!-- Sub-layer Prompt Bar -->
+        <div class="sublayer-bar hidden" id="sublayerBar">
+            <div class="sublayer-inner">
+                <button class="sublayer-prompt" id="sublayerPrompt" onclick="showSublayerForm()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+                    Add a sub-layer here (e.g. Scenes, Chapters, Sections...)
+                </button>
+                <div class="sublayer-form hidden" id="sublayerForm">
+                    <label>Layer name</label>
+                    <input class="sublayer-input" id="sublayerName" placeholder='e.g. "Scene"'>
+                    <label>First entry</label>
+                    <input class="sublayer-input" id="sublayerFirst" placeholder='e.g. "Scene 1"'>
+                    <button class="btn btn-primary btn-sm" onclick="createSublayer()">Create</button>
+                    <button class="btn btn-outline btn-sm" onclick="cancelSublayer()">Cancel</button>
+                </div>
+            </div>
+        </div>
 
-    <!-- Interaction Scripts -->
-    <script src="js/search-question.js"></script>
-    <script src="js/add-question-link.js"></script>
-    <script src="js/delete-question.js"></script>
-    <script src="js/logout.js"></script>
+        <!-- Breadcrumb -->
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="crumb current">Select a course</span>
+            <span class="q-count" id="qCount"></span>
+        </div>
 
-    <!-- Support Scripts -->
-    <script src="js/Add-course-link.js"></script>
-    <script src="js/profile-link.js"></script>
+        <!-- Question List -->
+        <div class="question-area">
+            <div class="question-list" id="questionList">
+                <div class="prompt-state">
+                    <div class="prompt-icon">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4L4 9l10 5 10-5-10-5z"/><path d="M4 19l10 5 10-5M4 14l10 5 10-5"/></svg>
+                    </div>
+                    <h3>Select a course from the sidebar</h3>
+                    <p>Pick one of your courses to view and manage your questions.</p>
+                </div>
+            </div>
+        </div>
 
+    </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- Persistent Action Bar -->
+<div class="action-bar" id="actionBar">
+    <div class="action-bar-left">
+        <a href="question-creator.html" class="btn-bar outline" id="btnCreateBottom">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
+            Create Question
+        </a>
+        <a href="ai-question-creator.html" class="btn-bar outline" id="btnAIBottom">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
+            Generate with AI
+        </a>
+    </div>
+    <div class="action-bar-right">
+        <div class="sel-group hidden" id="selGroup">
+            <div class="sel-divider"></div>
+            <span class="sel-info"><span id="selCount">0</span> selected</span>
+            <button class="btn-bar ghost" onclick="clearSelection()">Clear</button>
+            <button class="btn-bar primary" onclick="addSelectedToQuiz()">Add to Quiz</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/api-config.js"></script>
+<script src="js/question-bank.js"></script>
 
 </body>
-
 </html>

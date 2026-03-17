@@ -208,12 +208,20 @@ function validate() {
         if (!form.email.value.trim() || !form.email.checkValidity()) {
             setError("email", "Please enter a valid work email.");
         }
+        
         // Password
         if (!form.password.value.trim()) {
             setError("password", "Password is required.");
         } else if (form.password.value.length < 8) {
             setError("password", "Password must be at least 8 characters.");
         }
+        // Confirm password
+        if (!form.confirmPassword.value.trim()) {
+            setError("confirmPassword", "Please confirm your password.");
+        } else if (form.password.value !== form.confirmPassword.value) {
+            setError("confirmPassword", "Passwords do not match.");
+        }
+
         // Work phone
         if (!form.phone.value.trim() || !form.phone.checkValidity()) {
             setError("phone", "Please enter a valid work phone number.");
@@ -238,7 +246,7 @@ function validate() {
             if (!form.school.value.trim())        setError("school",        "School is required.");
             if (!form.schoolCity.value.trim())    setError("schoolCity",    "City is required.");
             if (!form.schoolCountry.value.trim()) setError("schoolCountry", "Country is required.");
-            if (!form.subjects.value.trim())      setError("subjects",      "Subjects are required.");
+           // if (!form.subjects.value.trim())      setError("subjects",      "Subjects are required.");
         } else if (activeRole === "Learner") {
             if (!form.grade.value.trim())     setError("grade",     "Grade is required.");
             if (!form.interests.value.trim()) setError("interests", "Interests are required.");
@@ -272,7 +280,7 @@ function renderReview() {
               <dt>School</dt><dd>${safe(state.school)}</dd>
               <dt>School city</dt><dd>${safe(state.schoolCity)}</dd>
               <dt>School country</dt><dd>${safe(state.schoolCountry)}</dd>
-              <dt>Subjects</dt><dd>${safe(state.subjects)}</dd>
+        
             `
             : `
               <dt>Grade</dt><dd>${safe(state.grade)}</dd>
@@ -307,8 +315,9 @@ form.addEventListener("input", (e) => {
     if (el.name) clearError(el.name);
 });
 
-// Final submit: validate, clear state, show modal, then redirect
-form.addEventListener("submit", (e) => {
+
+// Final submit: validate, register account, save profile, show modal
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
     collect();
     const err = validate();
@@ -319,14 +328,65 @@ form.addEventListener("submit", (e) => {
         return;
     }
 
-    // The API, will be call here and await success before continuing.
+    // Disable submit button while processing
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = "Creating account...";
+    errorLine.textContent = "";
 
-    localStorage.removeItem("profileState");
-    showSuccessModal({
-        title: "Profile created",
-        text: "Everything looks good. You can go to login now.",
-        autoMs: 0
-    });
+    try {
+        // Step 1: Create user account
+        const displayName = `${state.firstName || ""} ${state.lastName || ""}`.trim();
+        const registerResult = await apiRequest("/auth/register", {
+            method: "POST",
+            body: JSON.stringify({
+                email: state.email,
+                password: state.password,
+                displayName: displayName,
+                role: (state.role || "Teacher").toLowerCase()
+            })
+        });
+
+        if (!registerResult.success || !registerResult.userId) {
+            throw new Error("Registration failed");
+        }
+
+        const userId = registerResult.userId;
+
+        // Step 2: Save profile details
+        await apiRequest("/user/profile", {
+            method: "POST",
+            body: JSON.stringify({
+                userId: userId,
+                firstName: state.firstName,
+                lastName: state.lastName,
+                phone: state.phone || null,
+                street: state.street || null,
+                city: state.city || null,
+                province: state.state || null,
+                postalCode: state.zip || null,
+                school: state.school || null,
+                schoolCity: state.schoolCity || null,
+                schoolCountry: state.schoolCountry || null,
+                subjects: state.subjects || null,
+                grade: state.grade || null,
+                interests: state.interests || null
+            })
+        });
+
+        // Success — clear saved state and show modal
+        localStorage.removeItem("profileState");
+        showSuccessModal({
+            title: "Profile created",
+            text: "Everything looks good. You can go to login now.",
+            autoMs: 0
+        });
+
+    } catch (error) {
+        console.error("Registration failed:", error);
+        errorLine.textContent = error.message || "Registration failed. Please try again.";
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Create profile";
+    }
 });
 
 // ---------- Seed UI with saved state and show current step ----------

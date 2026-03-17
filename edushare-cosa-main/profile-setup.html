@@ -90,16 +90,56 @@
                 </label>
 
                 <!-- Password (new) -->
-                <label class="field">
-                    <span class="field__label">Password</span>
-                    <input class="field__input"
-                           type="password"
-                           name="password"
-                           required
-                           minlength="8"
-                           placeholder="Create a password"/>
-                    <small class="field__error" data-for="password"></small>
-                </label>
+                <!-- Password -->
+<label class="field">
+    <span class="field__label">Password</span>
+    <div style="position:relative;">
+        <input class="field__input"
+               type="password"
+               name="password"
+               id="passwordInput"
+               required
+               minlength="8"
+               placeholder="Create a password (min 8 characters)"/>
+        <button type="button" class="toggle-pw" onclick="togglePassword('passwordInput', this)" aria-label="Show password"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6073a0;font-size:0.8rem;font-weight:600;">
+            Show
+        </button>
+    </div>
+    <small class="field__error" data-for="password"></small>
+</label>
+
+<!-- Confirm Password -->
+<label class="field">
+    <span class="field__label">Confirm Password</span>
+    <div style="position:relative;">
+        <input class="field__input"
+               type="password"
+               name="confirmPassword"
+               id="confirmPasswordInput"
+               required
+               minlength="8"
+               placeholder="Re-enter your password"/>
+        <button type="button" class="toggle-pw" onclick="togglePassword('confirmPasswordInput', this)" aria-label="Show password"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6073a0;font-size:0.8rem;font-weight:600;">
+            Show
+        </button>
+    </div>
+    <small class="field__error" data-for="confirmPassword"></small>
+</label>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+    } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+    }
+}
+</script>
 
                 <div class="grid grid-4">
                 <label class="field">
@@ -172,11 +212,11 @@
                             </label>
                         </div>
 
-                        <label class="field">
+                        <!--<label class="field"> commented it out i dont think we need this anymore 
                             <span class="field__label">Course Code</span>
                             <input class="field__input" name="subjects" required placeholder="Math-103, Eng-101"/>
                             <small class="field__error" data-for="subjects"></small>
-                        </label>
+                        </label> -->
                     </div>
 
                     <!-- Learner -->
@@ -218,6 +258,7 @@
     </div>
 </section>
 
+<script src="js/api-config.js"></script>
 <script src="js/profile-setup.js"></script>
 
 <!-- Success Modal (hidden by default) -->
