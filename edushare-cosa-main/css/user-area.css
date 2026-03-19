@@ -271,6 +271,13 @@ body {
 }
 .drill-chip.add:hover { border-color: var(--orange); color: var(--orange); background: #fff8f0; }
 
+.drill-chip.general {
+    border-style: solid; border-color: var(--border);
+    color: var(--text-faint); font-style: italic;
+}
+.drill-chip.general:hover { border-color: var(--navy-light); color: var(--text); background: #eef2ff; }
+.drill-chip.general.active { background: var(--navy-mid); color: #fff; border-color: var(--navy-mid); font-style: normal; }
+
 /* ===================================================== */
 /* SUB-LAYER PROMPT                                      */
 /* ===================================================== */
