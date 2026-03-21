@@ -80,10 +80,10 @@
                 <span class="course-label" id="courseLabel">Select a course to get started</span>
             </div>
             <div class="subject-header-right">
-                <a href="question-creator.html" class="btn btn-outline-light" id="btnCreateTop">
+                <button class="btn btn-outline-light" id="btnCreateTop" onclick="openCreatePanel()">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
                     Create Question
-                </a>
+                </button>
                 <a href="ai-question-creator.html" class="btn btn-primary" id="btnAITop">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
                     Generate with AI
@@ -149,13 +149,26 @@
                 <!-- Quiz items populated by JS -->
             </div>
             <div class="modal-empty hidden" id="quizPickerEmpty">
-                <p>You don't have any quizzes yet.</p>
-                <a href="create-quiz.html" class="btn btn-primary btn-sm">Create Your First Quiz</a>
+                <p>You don't have any quizzes yet. Create one below!</p>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-outline btn-sm" onclick="closeQuizPicker()">Cancel</button>
-            <a href="create-quiz.html" class="btn btn-outline btn-sm">Create New Quiz</a>
+        <div class="modal-footer" style="flex-direction:column;gap:10px;">
+            <!-- Inline create quiz -->
+            <div id="quickCreateSection" style="width:100%;">
+                <div id="quickCreateToggle">
+                    <button class="btn btn-outline btn-sm" onclick="showQuickCreate()" style="width:100%;">+ Create New Quiz & Add Questions</button>
+                </div>
+                <div id="quickCreateForm" class="hidden" style="width:100%;">
+                    <div style="display:flex;gap:8px;align-items:flex-end;">
+                        <div style="flex:1;">
+                            <label class="edit-label" style="margin-bottom:4px;">Quiz Name</label>
+                            <input type="text" id="quickQuizName" class="edit-select" placeholder="e.g. Romeo Act 3 Test" style="width:100%;">
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="quickCreateQuiz()" id="quickCreateBtn" style="white-space:nowrap;">Create & Add</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="closeQuizPicker()" style="align-self:flex-start;">Cancel</button>
         </div>
     </div>
 </div>
@@ -217,6 +230,68 @@
     </div>
 </div>
 
+<!-- Create Question Side Panel -->
+<div class="side-panel-overlay hidden" id="createPanelOverlay" onclick="closeCreatePanel()"></div>
+<div class="side-panel hidden" id="createPanel">
+    <div class="side-panel-header">
+        <h2>Create Question</h2>
+        <button class="modal-close" onclick="closeCreatePanel()">&times;</button>
+    </div>
+
+    <!-- Location indicator -->
+    <div class="side-panel-location" id="createPanelLocation">
+        <span class="side-panel-location-label">Adding to:</span>
+        <span class="side-panel-location-path" id="createPanelPath">Select a location first</span>
+    </div>
+
+    <div class="side-panel-body">
+        <form id="createQuestionForm" onsubmit="saveNewQuestion(event)">
+
+            <!-- Question Text -->
+            <div class="edit-field">
+                <label class="edit-label">Question Text <span style="color:var(--error)">*</span></label>
+                <textarea class="edit-textarea" id="createQText" rows="3" required placeholder="Enter your question..."></textarea>
+            </div>
+
+            <!-- Type + Difficulty -->
+            <div class="edit-row">
+                <div class="edit-field">
+                    <label class="edit-label">Type <span style="color:var(--error)">*</span></label>
+                    <select class="edit-select" id="createQType" onchange="createTypeChanged()">
+                        <option value="multiple_choice">Multiple Choice</option>
+                        <option value="true_false">True / False</option>
+                        <option value="short_answer">Short Answer</option>
+                        <option value="essay">Essay</option>
+                    </select>
+                </div>
+                <div class="edit-field">
+                    <label class="edit-label">Difficulty</label>
+                    <select class="edit-select" id="createQDifficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div id="createOptionsSection">
+                <label class="edit-label">Options</label>
+                <div id="createOptionsList">
+                    <!-- Pre-filled with 4 MCQ options -->
+                </div>
+                <button type="button" class="btn btn-outline btn-sm" id="createAddOptionBtn" onclick="addCreateOption()" style="margin-top:8px;">+ Add Option</button>
+            </div>
+
+            <!-- Submit -->
+            <div class="side-panel-actions">
+                <button type="button" class="btn btn-outline" onclick="closeCreatePanel()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="createSaveBtn">Save Question</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Success Toast -->
 <div class="toast hidden" id="successToast">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
@@ -226,10 +301,10 @@
 <!-- Persistent Action Bar -->
 <div class="action-bar" id="actionBar">
     <div class="action-bar-left">
-        <a href="question-creator.html" class="btn-bar outline" id="btnCreateBottom">
+        <button class="btn-bar outline" id="btnCreateBottom" onclick="openCreatePanel()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
             Create Question
-        </a>
+        </button>
         <a href="ai-question-creator.html" class="btn-bar outline" id="btnAIBottom">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
             Generate with AI

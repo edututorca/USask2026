@@ -345,8 +345,18 @@ async function saveEditedQuestion() {
             const saved = await apiRequest(API_CONFIG.ENDPOINTS.QUESTIONS, {
                 method: 'POST',
                 body: JSON.stringify({
-                    ...questionData,
-                    subject_id: quizData.subject_id || null
+                    questionText: questionData.question_text,
+                    questionType: questionData.question_type,
+                    difficulty: questionData.difficulty,
+                    optionA: questionData.option_a,
+                    optionB: questionData.option_b,
+                    optionC: questionData.option_c,
+                    optionD: questionData.option_d,
+                    correctAnswer: questionData.correct_answer,
+                    subjectId: quizData.subject_id || null,
+                    userId: getCurrentUserId() || 1,
+                    grade: 10,
+                    nodeId: null
                 })
             });
             newId = saved.id || saved.insertId || saved.questionId;

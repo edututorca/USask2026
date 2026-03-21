@@ -85,7 +85,7 @@
 .course-main-info {
     flex: 1;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 16px;
     align-items: center;
 }
@@ -119,6 +119,69 @@
 
 .course-expanded.show {
     display: block;
+}
+
+/* Course Code Items */
+.course-codes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e8ecf4;
+}
+
+.course-code-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f8f9fc;
+    border-radius: 8px;
+    border: 1px solid #e8ecf4;
+    transition: all 0.15s;
+}
+
+.course-code-item:hover {
+    background: #f0f3fa;
+    border-color: #cfd9ef;
+}
+
+.course-code-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.course-code-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2f57;
+}
+
+.course-code-nickname {
+    font-size: 0.8rem;
+    color: #6073a0;
+}
+
+.course-code-remove {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #9aa5c4;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.course-code-remove:hover {
+    background: #ffeae6;
+    color: #e53935;
 }
 
 /* Quizzes inside course */

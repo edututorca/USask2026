@@ -15,7 +15,7 @@ function toggleQuiz(quizId) {
 
 async function loadQuizzes() {
     try {
-        const quizzes = await apiRequest(API_CONFIG.ENDPOINTS.QUIZZES);
+        const quizzes = await apiRequest(API_CONFIG.ENDPOINTS.QUIZZES + '?userId=' + (getCurrentUserId() || 1));
         const container = document.getElementById('quizList');
 
         if (quizzes.length === 0) {

@@ -1,232 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>EduShare — AI Question Generator</title>
-
-    <link rel="stylesheet" href="css/user-area.css" />
-    <link rel="stylesheet" href="css/ai-question-creator.css" />
-    <style>
-        /* Extra styles for new features */
-        .aiqb__chip--ai {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            color: #c2410c;
-        }
-        .aiqb__custom-prompt {
-            width: 100%;
-            min-height: 70px;
-            padding: 10px 12px;
-            border: 1px solid #cfd9ef;
-            border-radius: 6px;
-            outline: none;
-            background: #fff;
-            color: #0d2a57;
-            font-weight: 600;
-            font-family: inherit;
-            resize: vertical;
-        }
-        .aiqb__custom-prompt::placeholder {
-            color: #9bacc9;
-            font-weight: 500;
-        }
-        .aiqb__mode-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            margin-left: 10px;
-        }
-        .aiqb__mode-badge--ai {
-            background: #dcfce7;
-            color: #166534;
-        }
-        .aiqb__mode-badge--mock {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .aiqb__generating {
-            text-align: center;
-            padding: 30px;
-            color: #6073a0;
-            font-weight: 700;
-        }
-        .aiqb__generating .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #cfd9ef;
-            border-top-color: #ffa321;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        /* Combo input — text input with datalist suggestions */
-        .aiqb__combo {
-            position: relative;
-        }
-        .aiqb__combo input {
-            width: 100%;
-        }
-        .aiqb__context-bar {
-            background: #f0f4ff;
-            border: 1px solid #cfe0ff;
-            border-radius: 8px;
-            padding: 8px 14px;
-            margin-top: 6px;
-            font-weight: 700;
-            color: #2a4686;
-            font-size: 0.9rem;
-        }
-        .aiqb__context-bar span {
-            color: #6073a0;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="css/nav.css"/>
+    <link rel="stylesheet" href="css/ai-question-creator.css"/>
 </head>
-
 <body>
 
-    <header class="topbar">
-        <div class="topbar__left">
-            <a class="brand" href="home.html" aria-label="Go to EduShare home">
-                <img src="./assets/EduShare_Logo.png" alt="EduShare logo" class="brand__logo" />
-                <span class="brand__name">EduShare</span>
-            </a>
+<!-- Standard Top Bar -->
+<div class="top-bar">
+    <div class="logo-container">
+        <img src="assets/EduShare_Logo.png" alt="EduShare Logo" class="logo">
+    </div>
+    <div class="top-bar-right">
+        <button class="icon-btn" onclick="window.location.href='help.html'" title="Help">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+            </svg>
+        </button>
+        <div class="profile-menu">
+            <button class="profile-btn" onclick="toggleProfileMenu()">
+                <svg width="24" height="24" fill="currentColor">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                </svg>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="Account.html">Account Settings</a>
+                <a href="profile.html">My Profile</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
         </div>
-    </header>
+        <button class="hamburger-menu" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</div>
 
-    <div class="layout" style="grid-template-columns:1fr;">
-        <main class="main" style="padding:24px 18px;">
+<!-- Sidebar -->
+<div class="side-menu" id="sideMenu">
+    <nav class="menu-nav">
+        <a href="dashboard.html" class="menu-item">
+            <svg width="20" height="20" fill="currentColor"><rect width="8" height="8" rx="2"/><rect x="12" width="8" height="8" rx="2"/><rect y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+            Dashboard
+        </a>
+        <a href="User-Area.html" class="menu-item">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Question Bank
+        </a>
+        <a href="quiz-manager.html" class="menu-item">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            My Quizzes
+        </a>
+        <a href="ai-question-creator.html" class="menu-item active">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI Question Generator
+        </a>
+    </nav>
+</div>
 
-            <section class="aiqb">
-                <header class="aiqb__header">
-                    <div class="aiqb__header-row">
-                        <h2 class="aiqb__title">AI Question Generator</h2>
-                        <button type="button" id="btnBack" class="btn btn-muted">Back</button>
-                    </div>
-                    <div class="aiqb__context-bar" id="aiContextInfo">
-                        <span>Select a subject and topic to get started</span>
-                    </div>
-                </header>
+<!-- Main Content -->
+<div class="ai-container">
 
-                <!-- Config Form -->
-                <form id="aiForm" class="aiqb__form" autocomplete="off">
-
-                    <div class="aiqb__grid">
-
-                        <!-- Subject (dropdown from DB) -->
-                        <div class="aiqb__field">
-                            <label for="subjectSelect">Subject</label>
-                            <select id="subjectSelect" class="aiqb__select">
-                                <option value="">Loading subjects...</option>
-                            </select>
-                        </div>
-
-                        <!-- Grade -->
-                        <div class="aiqb__field">
-                            <label for="gradeSelect">Grade Level</label>
-                            <select id="gradeSelect" class="aiqb__select">
-                                <option value="9">Grade 9</option>
-                                <option value="10" selected>Grade 10</option>
-                                <option value="11">Grade 11</option>
-                                <option value="12">Grade 12</option>
-                            </select>
-                        </div>
-
-                        <!-- Topic (text input with datalist suggestions from DB) -->
-                        <div class="aiqb__field">
-                            <label for="topicInput">Topic</label>
-                            <div class="aiqb__combo">
-                                <input type="text" id="topicInput" class="aiqb__input" list="topicSuggestions"
-                                    placeholder="e.g. Romeo and Juliet, Fractions, World War II" />
-                                <datalist id="topicSuggestions"></datalist>
-                            </div>
-                        </div>
-
-                        <!-- Subtopic (free text) -->
-                        <div class="aiqb__field">
-                            <label for="subtopicInput">Subtopic / Chapter <small style="color:#9bacc9;">(optional)</small></label>
-                            <input type="text" id="subtopicInput" class="aiqb__input" placeholder="e.g. Act 3, Chapter 5, Unit 2" />
-                        </div>
-
-                        <!-- Question Types & Counts -->
-                        <div class="aiqb__field" style="grid-column: 1 / -1;">
-                            <label>Question Types & Counts</label>
-                            <div class="aiqb__type-rows">
-                                <div class="aiqb__type-row">
-                                    <label class="aiqb__check-label" title="Multiple Choice">
-                                        <input type="checkbox" name="types" value="MCQ" />
-                                        <span>Multiple Choice (MCQ)</span>
-                                    </label>
-                                    <input type="number" class="aiqb__count-input" data-type="MCQ" value="0" min="1" max="10" placeholder="Qty" disabled />
-                                </div>
-
-                                <div class="aiqb__type-row">
-                                    <label class="aiqb__check-label" title="Short Answer">
-                                        <input type="checkbox" name="types" value="SA" />
-                                        <span>Short Answer (SA)</span>
-                                    </label>
-                                    <input type="number" class="aiqb__count-input" data-type="SA" value="0" min="1" max="10" placeholder="Qty" disabled />
-                                </div>
-
-                                <div class="aiqb__type-row">
-                                    <label class="aiqb__check-label" title="True / False">
-                                        <input type="checkbox" name="types" value="TF" />
-                                        <span>True / False (T/F)</span>
-                                    </label>
-                                    <input type="number" class="aiqb__count-input" data-type="TF" value="0" min="1" max="10" placeholder="Qty" disabled />
-                                </div>
-
-                                <div class="aiqb__type-row">
-                                    <label class="aiqb__check-label" title="Long Answer">
-                                        <input type="checkbox" name="types" value="LA" />
-                                        <span>Long Answer (LA)</span>
-                                    </label>
-                                    <input type="number" class="aiqb__count-input" data-type="LA" value="0" min="1" max="5" placeholder="Qty" disabled />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Custom Prompt -->
-                        <div class="aiqb__field" style="grid-column: 1 / -1;">
-                            <label for="customPrompt">Additional Instructions <small style="color:#9bacc9;">(optional)</small></label>
-                            <textarea id="customPrompt" class="aiqb__custom-prompt"
-                                placeholder="e.g. Focus on character motivations, make questions harder, include vocabulary questions..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="aiqb__actions">
-                        <button type="button" id="btnGenerate" class="btn btn-warning">Generate Questions</button>
-                        <div class="aiqb__spacer"></div>
-                        <button type="button" id="btnClear" class="btn btn-muted">Clear</button>
-                        <button type="button" id="btnSaveSelected" class="btn btn-orange-pill" disabled>Save Selected</button>
-                    </div>
-                </form>
-
-                <!-- Results -->
-                <section class="aiqb__results">
-                    <div class="aiqb__results-head">
-                        <h3 class="aiqb__results-title">Generated Questions</h3>
-                        <small class="aiqb__hint" id="resultsMeta">Nothing generated yet.</small>
-                    </div>
-                    <div id="resultsList" class="aiqb__list"></div>
-                </section>
-            </section>
-
-        </main>
+    <div class="ai-header">
+        <div>
+            <h1>AI Question Generator</h1>
+            <p class="ai-subtitle">Generate questions using GPT-4o mini</p>
+        </div>
+        <a href="User-Area.html" class="btn btn-outline-nav">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to Question Bank
+        </a>
     </div>
 
-    <!-- Core Scripts -->
-    <script src="js/api-config.js"></script>
-    <script src="js/ai-question-creator.js"></script>
-</body>
+    <!-- Context Bar -->
+    <div class="ai-context-bar" id="aiContextBar">
+        <span class="ai-context-label">Generating for:</span>
+        <span class="ai-context-path" id="aiContextPath">Select a subject and topic below</span>
+    </div>
 
+    <!-- Config Form -->
+    <div class="ai-form-card">
+        <form id="aiForm" autocomplete="off">
+            <div class="ai-form-grid">
+
+                <!-- Subject -->
+                <div class="ai-field">
+                    <label for="subjectSelect">Subject <span class="req">*</span></label>
+                    <select id="subjectSelect" class="ai-select" required>
+                        <option value="">Loading subjects...</option>
+                    </select>
+                </div>
+
+                <!-- Grade -->
+                <div class="ai-field">
+                    <label for="gradeSelect">Grade Level</label>
+                    <select id="gradeSelect" class="ai-select">
+                        <option value="9">Grade 9</option>
+                        <option value="10" selected>Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+
+                <!-- Hierarchy Level 1 -->
+                <div class="ai-field" id="hierField0">
+                    <label id="hierLabel0">Category</label>
+                    <select id="hierSelect0" class="ai-select" onchange="onHierChange(0)">
+                        <option value="">Select subject first</option>
+                    </select>
+                </div>
+
+                <!-- Hierarchy Level 2 -->
+                <div class="ai-field hidden" id="hierField1">
+                    <label id="hierLabel1">Topic</label>
+                    <select id="hierSelect1" class="ai-select" onchange="onHierChange(1)">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <!-- Hierarchy Level 3 -->
+                <div class="ai-field hidden" id="hierField2">
+                    <label id="hierLabel2">Section</label>
+                    <select id="hierSelect2" class="ai-select" onchange="onHierChange(2)">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <!-- Hierarchy Level 4 -->
+                <div class="ai-field hidden" id="hierField3">
+                    <label id="hierLabel3">Detail</label>
+                    <select id="hierSelect3" class="ai-select" onchange="onHierChange(3)">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+
+                <!-- Question Types -->
+                <div class="ai-field ai-field-full">
+                    <label>Question Types & Counts</label>
+                    <div class="ai-type-rows">
+                        <div class="ai-type-row">
+                            <label class="ai-check"><input type="checkbox" name="types" value="MCQ"><span>Multiple Choice</span></label>
+                            <input type="number" class="ai-count" value="0" min="1" max="10" disabled>
+                        </div>
+                        <div class="ai-type-row">
+                            <label class="ai-check"><input type="checkbox" name="types" value="TF"><span>True / False</span></label>
+                            <input type="number" class="ai-count" value="0" min="1" max="10" disabled>
+                        </div>
+                        <div class="ai-type-row">
+                            <label class="ai-check"><input type="checkbox" name="types" value="SA"><span>Short Answer</span></label>
+                            <input type="number" class="ai-count" value="0" min="1" max="10" disabled>
+                        </div>
+                        <div class="ai-type-row">
+                            <label class="ai-check"><input type="checkbox" name="types" value="LA"><span>Long Answer / Essay</span></label>
+                            <input type="number" class="ai-count" value="0" min="1" max="5" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Prompt -->
+                <div class="ai-field ai-field-full">
+                    <label for="customPrompt">Additional Instructions <span class="opt">(optional)</span></label>
+                    <textarea id="customPrompt" class="ai-textarea" rows="3"
+                        placeholder="e.g. Focus on character motivations, include vocabulary questions, make them harder..."></textarea>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="ai-form-actions">
+                <button type="button" id="btnGenerate" class="btn btn-primary-lg">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 1L1 5l8 4 8-4-8-4z"/><path d="M1 13l8 4 8-4"/><path d="M1 9l8 4 8-4"/></svg>
+                    Generate Questions
+                </button>
+                <button type="button" id="btnClear" class="btn btn-outline-nav">Clear All</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div class="ai-results-card">
+        <div class="ai-results-header">
+            <h2>Generated Questions</h2>
+            <span class="ai-results-meta" id="resultsMeta">Nothing generated yet.</span>
+        </div>
+        <div id="resultsList" class="ai-results-list"></div>
+
+        <!-- Post-save actions (hidden until questions are saved) -->
+        <div class="ai-post-save hidden" id="postSaveActions">
+            <p id="postSaveMsg">Questions saved!</p>
+            <div class="ai-post-save-btns">
+                <a href="User-Area.html" class="btn btn-outline-nav" id="btnViewBank">View in Question Bank</a>
+                <button type="button" class="btn btn-primary-lg" id="btnAddSavedToQuiz" onclick="openSavedQuizPicker()">Add to Quiz</button>
+            </div>
+        </div>
+
+        <!-- Save bar -->
+        <div class="ai-save-bar" id="saveBar">
+            <button type="button" id="btnSaveSelected" class="btn btn-primary-lg" disabled>Save Selected</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Quiz Picker Modal (reused from question bank pattern) -->
+<div class="modal-overlay hidden" id="quizPickerOverlay" onclick="closeQuizPicker(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="quizPickerTitle">Add to Quiz</h2>
+            <button class="modal-close" onclick="closeQuizPicker()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-loading hidden" id="quizPickerLoading">Loading your quizzes...</div>
+            <div class="modal-list" id="quizPickerList"></div>
+            <div class="modal-empty hidden" id="quizPickerEmpty">
+                <p>You don't have any quizzes yet.</p>
+            </div>
+        </div>
+        <div class="modal-footer" style="flex-direction:column;gap:10px;">
+            <div id="quickCreateSection" style="width:100%;">
+                <div id="quickCreateToggle">
+                    <button class="btn btn-outline-nav" onclick="showQuickCreate()" style="width:100%;">+ Create New Quiz & Add Questions</button>
+                </div>
+                <div id="quickCreateForm" class="hidden" style="width:100%;">
+                    <div style="display:flex;gap:8px;align-items:flex-end;">
+                        <div style="flex:1;">
+                            <label style="font-size:0.75rem;font-weight:700;color:#6073a0;">Quiz Name</label>
+                            <input type="text" id="quickQuizName" class="ai-select" placeholder="e.g. Romeo Act 3 Test" style="width:100%;margin-top:4px;">
+                        </div>
+                        <button class="btn btn-primary-lg" onclick="quickCreateQuiz()" id="quickCreateBtn" style="white-space:nowrap;">Create & Add</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-outline-nav" onclick="closeQuizPicker()" style="align-self:flex-start;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="successToast">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastMessage">Saved!</span>
+</div>
+
+<script src="js/api-config.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/ai-question-creator.js"></script>
+</body>
 </html>

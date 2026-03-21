@@ -1,4 +1,3 @@
-
 /* Layer that holds the orange blobs */
 .bg-decor {
     position: absolute;
@@ -417,13 +416,29 @@ body {
 
 /* Better spacing for photo buttons */
 .card--photo .btn-photo-main {
-    margin-bottom: 106px;
+    margin-bottom: 8px;
 }
 
 .card--photo .btn-photo-secondary {
-    margin-top: 23px;
+    margin-top: 4px;
 }
 
-
-
-
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2e7d32;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+    z-index: 3000;
+}
+.toast.hidden { display: none; }

@@ -73,6 +73,14 @@ body {
 }
 .profile-btn:hover { background: var(--navy-light); border-color: var(--orange-bright); }
 
+/* ---- User Name Display ---- */
+.nav-user-name {
+    color: #b8c6e3;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .profile-dropdown {
     display: none; position: absolute; top: calc(100% + 8px); right: 0;
     background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
@@ -527,6 +535,71 @@ body {
 .modal-footer {
     padding: 14px 22px; border-top: 1px solid var(--border-light);
     display: flex; justify-content: space-between; gap: 8px;
+}
+
+/* ===================================================== */
+/* CREATE QUESTION SIDE PANEL                            */
+/* ===================================================== */
+.side-panel-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(23, 50, 95, 0.3);
+    z-index: 1500;
+    animation: fadeIn 0.2s ease;
+}
+.side-panel-overlay.hidden { display: none; }
+
+.side-panel {
+    position: fixed; top: 0; right: 0;
+    width: 420px; max-width: 90vw;
+    height: 100vh;
+    background: var(--bg-card);
+    z-index: 1501;
+    box-shadow: -8px 0 30px rgba(23, 50, 95, 0.15);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.side-panel.open { transform: translateX(0); }
+.side-panel.hidden { display: none; }
+
+.side-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+.side-panel-header h2 {
+    font-size: 1.1rem; font-weight: 700; color: var(--navy-deep);
+}
+
+.side-panel-location {
+    padding: 10px 22px;
+    background: #f0f4ff;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+}
+.side-panel-location-label {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--text-faint); white-space: nowrap;
+}
+.side-panel-location-path {
+    font-size: 0.82rem; font-weight: 600; color: var(--navy-deep);
+}
+
+.side-panel-body {
+    flex: 1; overflow-y: auto;
+    padding: 18px 22px;
+}
+
+.side-panel-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    padding-top: 18px; margin-top: 10px;
+    border-top: 1px solid var(--border-light);
+}
+
+@media (max-width: 640px) {
+    .side-panel { width: 100vw; }
 }
 
 /* ===================================================== */

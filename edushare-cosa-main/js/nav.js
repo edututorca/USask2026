@@ -28,10 +28,25 @@ document.addEventListener('click', (e) => {
 function logout() {
     apiRequest(API_CONFIG.ENDPOINTS.LOGOUT, { method: 'POST' })
         .then(() => {
+            sessionStorage.clear();
             window.location.href = 'Login.html';
         })
         .catch(() => {
-            // Even if logout API fails, redirect to login
+            sessionStorage.clear();
             window.location.href = 'Login.html';
         });
 }
+
+// Show logged-in user name next to profile button
+(function showUserName() {
+    const name = sessionStorage.getItem('firstName') || localStorage.getItem('firstName');
+    if (!name) return;
+
+    const profileMenu = document.querySelector('.profile-menu');
+    if (!profileMenu) return;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'nav-user-name';
+    nameEl.textContent = name;
+    profileMenu.parentNode.insertBefore(nameEl, profileMenu);
+})();

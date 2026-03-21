@@ -2,50 +2,17 @@
 /* ============= MY COURSES PAGE JS ==================== */
 /* ===================================================== */
 
-let coursesData = [];
-let quizzesData = [];
+const userId = getCurrentUserId() || 1;
 
-// Toggle course expansion
-function toggleCourse(courseId) {
-    const expandedDiv = document.getElementById(`course-expanded-${courseId}`);
-    const icon = document.getElementById(`course-icon-${courseId}`);
-    const header = document.getElementById(`course-header-${courseId}`);
-
-    expandedDiv.classList.toggle('show');
-    icon.classList.toggle('rotated');
-    header.classList.toggle('expanded');
-}
-
-// Check URL for a specific course to auto-expand
-function getTargetCourse() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('course');
-}
-
-// Load all data
 async function loadCoursesData() {
     try {
         const [courses, quizzes] = await Promise.all([
-            apiRequest(API_CONFIG.ENDPOINTS.COURSES),
-            apiRequest(API_CONFIG.ENDPOINTS.QUIZZES)
+            apiRequest('/user-courses?userId=' + userId),
+            apiRequest('/quizzes?userId=' + userId)
         ]);
 
-        coursesData = courses;
-        quizzesData = quizzes;
+        renderCourses(courses, quizzes);
 
-        renderCourses();
-
-        // Auto-expand if a course was specified in the URL
-        const targetCourse = getTargetCourse();
-        if (targetCourse) {
-            const match = coursesData.find(c => c.CourseName === targetCourse);
-            if (match) {
-                toggleCourse(match.CourseID);
-                // Scroll to it
-                const header = document.getElementById(`course-header-${match.CourseID}`);
-                if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
     } catch (error) {
         console.error('Error loading courses:', error);
         document.getElementById('coursesList').innerHTML = `
@@ -57,10 +24,10 @@ async function loadCoursesData() {
     }
 }
 
-function renderCourses() {
+function renderCourses(courses, quizzes) {
     const container = document.getElementById('coursesList');
 
-    if (coursesData.length === 0) {
+    if (!courses || courses.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,72 +46,145 @@ function renderCourses() {
         return;
     }
 
-    container.innerHTML = coursesData.map(course => {
-        const courseQuizzes = quizzesData.filter(q => q.subject_name === course.CourseName);
-        const quizCount = courseQuizzes.length;
-        const questionCount = courseQuizzes.reduce((sum, q) => sum + (q.question_count || 0), 0);
+    // Group courses by subject
+    const grouped = {};
+    courses.forEach(c => {
+        const subName = c.subject_name;
+        if (!grouped[subName]) {
+            grouped[subName] = {
+                subjectId: c.subject_id,
+                courses: []
+            };
+        }
+        grouped[subName].courses.push(c);
+    });
 
-        return `
-            <div class="course-row">
-                <div class="course-header" id="course-header-${course.CourseID}" onclick="toggleCourse(${course.CourseID})">
-                    <svg id="course-icon-${course.CourseID}" class="expand-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                    <div class="course-main-info">
-                        <div class="course-name">
-                            <h3>${escapeHtml(course.CourseName)}</h3>
-                            <p>Grade 9-12</p>
-                        </div>
-                        <div class="course-stat"><strong>${quizCount}</strong> quiz${quizCount !== 1 ? 'zes' : ''}</div>
-                        <div class="course-stat"><strong>${questionCount}</strong> question${questionCount !== 1 ? 's' : ''}</div>
+    let html = '';
+
+    for (const [subjectName, data] of Object.entries(grouped)) {
+        const subjectId = data.subjectId;
+        const subjectCourses = data.courses;
+
+        // Count quizzes for this subject
+        const subjectQuizzes = quizzes.filter(q => q.subject_id === subjectId || q.subject_name === subjectName);
+        const quizCount = subjectQuizzes.length;
+
+        const subKey = subjectName.toLowerCase().replace(/\s+/g, '-');
+
+        html += `
+        <div class="course-row">
+            <div class="course-header" id="course-header-${subKey}" onclick="toggleSubject('${subKey}')">
+                <svg id="course-icon-${subKey}" class="expand-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <div class="course-main-info">
+                    <div class="course-name">
+                        <h3>${escapeHtml(subjectName)}</h3>
+                        <p>${subjectCourses.length} course${subjectCourses.length !== 1 ? 's' : ''}</p>
                     </div>
+                    <div class="course-stat"><strong>${quizCount}</strong> quiz${quizCount !== 1 ? 'zes' : ''}</div>
+                </div>
+            </div>
+
+            <div class="course-expanded" id="course-expanded-${subKey}">
+                <!-- Course codes under this subject -->
+                <div class="course-codes-list">
+                    ${subjectCourses.map(c => {
+                        const label = c.section ? c.course_code + ' — ' + c.section : c.course_code;
+                        return `
+                        <div class="course-code-item">
+                            <div class="course-code-info">
+                                <span class="course-code-label">${escapeHtml(label)}</span>
+                                ${c.nickname ? '<span class="course-code-nickname">' + escapeHtml(c.nickname) + '</span>' : ''}
+                            </div>
+                            <button class="course-code-remove" onclick="removeCourse(${c.id}, this)" title="Remove course">&times;</button>
+                        </div>`;
+                    }).join('')}
                 </div>
 
-                <div class="course-expanded" id="course-expanded-${course.CourseID}">
-                    ${quizCount > 0 ? `
-                        <div class="course-quizzes">
-                            <h4>Quizzes in ${escapeHtml(course.CourseName)}:</h4>
-                            ${courseQuizzes.map(quiz => {
-                                const statusLabel = quiz.is_public ? 'Published' : 'Draft';
-                                const statusClass = quiz.is_public ? 'published' : 'draft';
-                                return `
-                                    <div class="quiz-row-item" onclick="window.location.href='my-quiz.html?id=${quiz.id}'">
-                                        <div class="quiz-row-info">
-                                            <div class="quiz-row-title">${escapeHtml(quiz.title)}</div>
-                                            <div class="quiz-row-meta">
-                                                <span>${quiz.question_count || 0} questions</span>
-                                                <span>${quiz.total_points || 0} points</span>
-                                                <span>${formatDate(quiz.created_at)}</span>
-                                            </div>
-                                        </div>
-                                        <span class="status-badge status-${statusClass}">${statusLabel}</span>
-                                    </div>`;
-                            }).join('')}
-                        </div>
-                    ` : `
-                        <div class="course-empty">
-                            <p>No quizzes for this course yet.</p>
-                            <a href="create-quiz.html" class="create-link">Create a quiz &rarr;</a>
-                        </div>
-                    `}
-
-                    <div class="course-actions">
-                        <a href="create-quiz.html" class="action-btn action-btn-primary">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Create Quiz
-                        </a>
-                        <a href="ai-question-creator.html" class="action-btn">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                            </svg>
-                            AI Generate Questions
-                        </a>
+                <!-- Quizzes for this subject -->
+                ${quizCount > 0 ? `
+                    <div class="course-quizzes">
+                        <h4>Quizzes</h4>
+                        ${subjectQuizzes.map(quiz => {
+                            const statusLabel = quiz.is_public ? 'Published' : 'Draft';
+                            const statusClass = quiz.is_public ? 'published' : 'draft';
+                            return `
+                            <div class="quiz-row-item" onclick="window.location.href='my-quiz.html?id=${quiz.id}'">
+                                <div class="quiz-row-info">
+                                    <div class="quiz-row-title">${escapeHtml(quiz.title)}</div>
+                                    <div class="quiz-row-meta">
+                                        <span>${quiz.question_count || 0} questions</span>
+                                        <span>${formatDate(quiz.created_at)}</span>
+                                    </div>
+                                </div>
+                                <span class="status-badge status-${statusClass}">${statusLabel}</span>
+                            </div>`;
+                        }).join('')}
                     </div>
+                ` : `
+                    <div class="course-empty">
+                        <p>No quizzes for this subject yet.</p>
+                    </div>
+                `}
+
+                <!-- Actions -->
+                <div class="course-actions">
+                    <a href="create-quiz.html?subject=${subjectId}" class="action-btn action-btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Create Quiz
+                    </a>
+                    <a href="User-Area.html" class="action-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="8" cy="8" r="6"/><path d="M8 12v-4M8 6h.01"/>
+                        </svg>
+                        Question Bank
+                    </a>
                 </div>
-            </div>`;
-    }).join('');
+            </div>
+        </div>`;
+    }
+
+    container.innerHTML = html;
+
+    // Auto-expand if URL param provided
+    const params = new URLSearchParams(window.location.search);
+    const targetCourse = params.get('course');
+    if (targetCourse) {
+        const key = targetCourse.toLowerCase().replace(/\s+/g, '-');
+        const el = document.getElementById('course-expanded-' + key);
+        if (el) {
+            toggleSubject(key);
+            document.getElementById('course-header-' + key).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+
+function toggleSubject(subKey) {
+    const expandedDiv = document.getElementById('course-expanded-' + subKey);
+    const icon = document.getElementById('course-icon-' + subKey);
+    const header = document.getElementById('course-header-' + subKey);
+
+    expandedDiv.classList.toggle('show');
+    icon.classList.toggle('rotated');
+    header.classList.toggle('expanded');
+}
+
+async function removeCourse(courseId, btn) {
+    if (!confirm('Remove this course? Your questions and quizzes won\'t be affected.')) return;
+
+    btn.disabled = true;
+    try {
+        await apiRequest('/user-courses/' + courseId, { method: 'DELETE' });
+        // Reload the page data
+        loadCoursesData();
+    } catch (err) {
+        console.error('Failed to remove course:', err);
+        alert('Failed to remove course.');
+        btn.disabled = false;
+    }
 }
 
 loadCoursesData();

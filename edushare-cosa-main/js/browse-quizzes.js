@@ -30,8 +30,8 @@ async function loadQuizzes() {
         const subjectFilter = document.getElementById('subjectFilter');
         subjects.forEach(subject => {
             const option = document.createElement('option');
-            option.value = subject.subject_id || subject.SubjectID;
-            option.textContent = subject.subject_name || subject.SubjectName;
+            option.value = subject.id || subject.subject_id || subject.SubjectID;
+            option.textContent = subject.name || subject.subject_name || subject.SubjectName;
             subjectFilter.appendChild(option);
         });
 
@@ -200,7 +200,7 @@ async function copyQuiz(quizId, quizName) {
     if (!confirm(`Copy "${quizName}" to your quizzes?`)) return;
 
     try {
-        await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES}/${quizId}/copy`, { method: 'POST' });
+        await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES}/${quizId}/duplicate`, { method: 'POST' });
 
         const toast = document.getElementById('successToast');
         toast.classList.add('show');

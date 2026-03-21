@@ -16,11 +16,51 @@ async function loadSubjects() {
         allSubjects.forEach(s => {
             select.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)}</option>`;
         });
+        select.innerHTML += '<option value="__new__">+ Add New Subject...</option>';
     } catch (error) {
         console.warn('Failed to load subjects from API, using defaults');
-        // Fallback — keep whatever is in the HTML
     }
 }
+
+// Handle "Add New Subject" selection
+document.getElementById('categorySelect').addEventListener('change', function() {
+    if (this.value === '__new__') {
+        const name = prompt('Enter the new subject name (e.g. "French", "Drama"):');
+        if (!name || !name.trim()) {
+            this.value = '';
+            return;
+        }
+
+        // Check if it already exists
+        const existing = allSubjects.find(s => s.name.toLowerCase() === name.trim().toLowerCase());
+        if (existing) {
+            this.value = existing.id;
+            alert('That subject already exists — selected it for you.');
+            return;
+        }
+
+        // Create on server
+        apiRequest('/subjects', {
+            method: 'POST',
+            body: JSON.stringify({ name: name.trim() })
+        }).then(result => {
+            if (result.success) {
+                allSubjects.push({ id: result.id, name: result.name });
+                // Add new option before the "+ Add New" option
+                const newOpt = document.createElement('option');
+                newOpt.value = result.id;
+                newOpt.textContent = result.name;
+                const addNewOpt = this.querySelector('option[value="__new__"]');
+                this.insertBefore(newOpt, addNewOpt);
+                this.value = result.id;
+            }
+        }).catch(err => {
+            console.error('Failed to create subject:', err);
+            alert('Failed to create subject: ' + (err.message || 'Please try again.'));
+            this.value = '';
+        });
+    }
+});
 
 // ============ LOAD COURSE CODES ============
 

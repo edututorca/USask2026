@@ -30,6 +30,18 @@
 
     loadSidebar();
 
+    // Show logged-in user name in top bar
+    (function() {
+        const name = sessionStorage.getItem('firstName') || localStorage.getItem('firstName');
+        if (!name) return;
+        const topRight = document.querySelector('.top-bar-right');
+        if (!topRight) return;
+        const nameEl = document.createElement('span');
+        nameEl.className = 'nav-user-name';
+        nameEl.textContent = name;
+        topRight.insertBefore(nameEl, topRight.firstChild);
+    })();
+
     window.toggleProfileMenu = function(){ document.getElementById('profileDropdown').classList.toggle('show'); };
     document.addEventListener('click', (e) => { if(!e.target.closest('.profile-menu')){ const dd=document.getElementById('profileDropdown'); if(dd) dd.classList.remove('show'); }});
     window.logout = function(){ apiRequest('/auth/logout',{method:'POST'}).then(()=>{window.location.href='Login.html';}).catch(()=>{window.location.href='Login.html';}); };
@@ -183,6 +195,7 @@
         const count=questions.length;
         breadcrumb.innerHTML=parts.join('');
         qCount.textContent=count+' question'+(count!==1?'s':'');
+        updateContextLinks();
     }
 
     window.resetDrill=function(){
@@ -378,7 +391,67 @@
         }catch(err){ console.error('Failed to add:',err); btn.disabled=false; btn.textContent='Failed'; setTimeout(()=>{btn.textContent='Add';},2000); }
     };
 
-    window.closeQuizPicker=function(event){ if(event&&event.target!==event.currentTarget) return; document.getElementById('quizPickerOverlay').classList.add('hidden'); pendingQuestionIds=[]; };
+    window.closeQuizPicker=function(event){ if(event&&event.target!==event.currentTarget) return; document.getElementById('quizPickerOverlay').classList.add('hidden'); pendingQuestionIds=[]; hideQuickCreate(); };
+
+    window.showQuickCreate=function(){
+        document.getElementById('quickCreateToggle').classList.add('hidden');
+        document.getElementById('quickCreateForm').classList.remove('hidden');
+        document.getElementById('quickQuizName').value='';
+        document.getElementById('quickQuizName').focus();
+    };
+
+    function hideQuickCreate(){
+        const toggle=document.getElementById('quickCreateToggle');
+        const form=document.getElementById('quickCreateForm');
+        if(toggle) toggle.classList.remove('hidden');
+        if(form) form.classList.add('hidden');
+    }
+
+    window.quickCreateQuiz=async function(){
+        const name=document.getElementById('quickQuizName').value.trim();
+        if(!name){ alert('Please enter a quiz name.'); return; }
+
+        const btn=document.getElementById('quickCreateBtn');
+        btn.disabled=true; btn.textContent='Creating...';
+
+        try{
+            // Create the quiz with current subject
+            const result=await apiRequest('/quizzes',{
+                method:'POST',
+                body:JSON.stringify({
+                    userId: getCurrentUserId()||1,
+                    title: name,
+                    subjectId: currentSubjectId||null,
+                    grade: null,
+                    description: ''
+                })
+            });
+
+            if(!result.success||!result.quizId) throw new Error('Failed to create quiz');
+
+            const quizId=result.quizId;
+
+            // Add all pending questions to the new quiz
+            let addedCount=0;
+            for(const questionId of pendingQuestionIds){
+                await apiRequest('/quizzes/'+quizId+'/questions',{
+                    method:'POST',
+                    body:JSON.stringify({questionId:questionId})
+                });
+                addedCount++;
+            }
+
+            closeQuizPicker();
+            clearSelection();
+            showToast('Created "'+name+'" with '+addedCount+' question'+(addedCount!==1?'s':'')+'!');
+
+        }catch(err){
+            console.error('Failed to create quiz:',err);
+            alert('Failed to create quiz. Please try again.');
+        }finally{
+            btn.disabled=false; btn.textContent='Create & Add';
+        }
+    };
 
     // === GLOBAL KEY HANDLERS ===
     document.addEventListener('keydown',(e)=>{
@@ -392,6 +465,179 @@
     function showToast(message){ const toast=document.getElementById('successToast'); document.getElementById('toastMessage').textContent=message; toast.classList.remove('hidden'); setTimeout(()=>toast.classList.add('hidden'),3000); }
     function esc(str){ const div=document.createElement('div'); div.textContent=str||''; return div.innerHTML; }
 
+    // === CREATE QUESTION SIDE PANEL ===
+
+    window.openCreatePanel = function() {
+        const panel = document.getElementById('createPanel');
+        const overlay = document.getElementById('createPanelOverlay');
+
+        // Reset form
+        document.getElementById('createQuestionForm').reset();
+        document.getElementById('createQType').value = 'multiple_choice';
+        document.getElementById('createQDifficulty').value = 'medium';
+
+        // Build default MCQ options
+        resetCreateOptions('multiple_choice');
+
+        // Set location from current context
+        const ctx = getCurrentContext();
+        const pathEl = document.getElementById('createPanelPath');
+        if (ctx.subjectName && ctx.path) {
+            pathEl.textContent = ctx.subjectName + ' > ' + ctx.path;
+        } else if (ctx.subjectName) {
+            pathEl.textContent = ctx.subjectName;
+        } else {
+            pathEl.textContent = 'No location selected — question will be added to the subject level';
+        }
+
+        // Show panel
+        overlay.classList.remove('hidden');
+        panel.classList.remove('hidden');
+        // Trigger slide-in animation on next frame
+        requestAnimationFrame(() => { panel.classList.add('open'); });
+        document.getElementById('createQText').focus();
+    };
+
+    window.closeCreatePanel = function() {
+        const panel = document.getElementById('createPanel');
+        const overlay = document.getElementById('createPanelOverlay');
+        panel.classList.remove('open');
+        // Wait for slide-out animation then hide
+        setTimeout(() => {
+            panel.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }, 300);
+    };
+
+    function resetCreateOptions(type) {
+        const list = document.getElementById('createOptionsList');
+        const addBtn = document.getElementById('createAddOptionBtn');
+        list.innerHTML = '';
+
+        if (type === 'multiple_choice') {
+            addCreateOptionRow('', true);
+            addCreateOptionRow('', false);
+            addCreateOptionRow('', false);
+            addCreateOptionRow('', false);
+            addBtn.style.display = '';
+        } else if (type === 'true_false') {
+            addCreateOptionRow('True', true);
+            addCreateOptionRow('False', false);
+            addBtn.style.display = 'none';
+        }
+    }
+
+    function addCreateOptionRow(text, correct) {
+        const list = document.getElementById('createOptionsList');
+        const row = document.createElement('div');
+        row.className = 'edit-option-row';
+        row.innerHTML = '<input type="text" value="' + esc(text || '') + '" placeholder="Option text..." class="create-opt-text"><label class="correct-radio"><input type="radio" name="createCorrect" ' + (correct ? 'checked' : '') + '>Correct</label><button type="button" class="remove-option" onclick="this.closest(\'.edit-option-row\').remove()" title="Remove">&times;</button>';
+        list.appendChild(row);
+    }
+
+    window.addCreateOption = function() {
+        addCreateOptionRow('', false);
+    };
+
+    window.createTypeChanged = function() {
+        const type = document.getElementById('createQType').value;
+        const section = document.getElementById('createOptionsSection');
+
+        if (type === 'short_answer' || type === 'essay') {
+            section.classList.add('hidden');
+        } else {
+            section.classList.remove('hidden');
+            resetCreateOptions(type);
+        }
+    };
+
+    window.saveNewQuestion = async function(e) {
+        e.preventDefault();
+
+        const questionText = document.getElementById('createQText').value.trim();
+        const questionType = document.getElementById('createQType').value;
+        const difficulty = document.getElementById('createQDifficulty').value;
+
+        if (!questionText) { alert('Question text is required.'); return; }
+        if (!currentSubjectId) { alert('Please select a course first.'); return; }
+
+        const btn = document.getElementById('createSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        // Get current drill-down context for node_id
+        const ctx = getCurrentContext();
+
+        // Gather options
+        const optionRows = document.querySelectorAll('#createOptionsList .edit-option-row');
+        const options = [];
+        optionRows.forEach(row => {
+            const text = row.querySelector('.create-opt-text').value.trim();
+            const isCorrect = row.querySelector('input[type="radio"]').checked;
+            if (text) options.push({ text: text, isCorrect: isCorrect });
+        });
+
+        // Validate MCQ has at least 2 options with a correct one
+        if ((questionType === 'multiple_choice' || questionType === 'true_false') && options.length < 2) {
+            alert('Please provide at least 2 options.');
+            btn.disabled = false;
+            btn.textContent = 'Save Question';
+            return;
+        }
+
+        const body = {
+            userId: getCurrentUserId() || 1,
+            subjectId: currentSubjectId,
+            grade: 10,
+            nodeId: ctx.nodeId || null,
+            questionText: questionText,
+            questionType: questionType,
+            difficulty: difficulty,
+            options: options.length > 0 ? options : undefined
+        };
+
+        // Also set inline fields for backward compatibility
+        if (options.length >= 1) body.optionA = options[0].text;
+        if (options.length >= 2) body.optionB = options[1].text;
+        if (options.length >= 3) body.optionC = options[2].text;
+        if (options.length >= 4) body.optionD = options[3].text;
+        const correctOpt = options.find(o => o.isCorrect);
+        body.correctAnswer = correctOpt ? correctOpt.text : null;
+
+        try {
+            const result = await apiRequest('/questions', {
+                method: 'POST',
+                body: JSON.stringify(body)
+            });
+
+            if (result.success) {
+                closeCreatePanel();
+                showToast('Question created!');
+                // Reload questions so the new one appears
+                loadQuestions();
+            } else {
+                throw new Error(result.error || 'Failed to create question');
+            }
+        } catch (err) {
+            console.error('Failed to create question:', err);
+            alert('Failed to save. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Question';
+        }
+    };
+
+    // Close side panel on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const panel = document.getElementById('createPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                closeCreatePanel();
+                return;
+            }
+        }
+    });
+
     // === CONTEXT HELPER ===
     function getCurrentContext(){
         let deepestNodeId=null; let path=[];
@@ -402,5 +648,21 @@
         return { subjectId:currentSubjectId, subjectName:currentSubjectName, nodeId:deepestNodeId, path:path.join(' > ') };
     }
     window.getQuestionBankContext=getCurrentContext;
+
+    // Update AI and Create links with current context
+    function updateContextLinks(){
+        const ctx=getCurrentContext();
+        let aiParams='';
+        if(ctx.subjectId) aiParams+='subjectId='+ctx.subjectId;
+        if(ctx.subjectName) aiParams+=(aiParams?'&':'')+'subject='+encodeURIComponent(ctx.subjectName);
+        if(ctx.nodeId) aiParams+=(aiParams?'&':'')+'nodeId='+ctx.nodeId;
+        if(ctx.path) aiParams+=(aiParams?'&':'')+'topic='+encodeURIComponent(ctx.path);
+
+        const aiUrl='ai-question-creator.html'+(aiParams?'?'+aiParams:'');
+        const btnTop=document.getElementById('btnAITop');
+        const btnBottom=document.getElementById('btnAIBottom');
+        if(btnTop) btnTop.href=aiUrl;
+        if(btnBottom) btnBottom.href=aiUrl;
+    }
 
 })();

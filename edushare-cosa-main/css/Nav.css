@@ -115,6 +115,14 @@
     color: #ff6b35;
 }
 
+/* ---- User Name Display ---- */
+.nav-user-name {
+    color: #b8c6e3;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* ---- Hamburger Menu Button ---- */
 .hamburger-menu {
     display: flex;
@@ -220,6 +228,10 @@ body {
     .side-menu {
         width: 260px;
         left: -260px;
+    }
+
+    .nav-user-name {
+        display: none;
     }
 }
 
