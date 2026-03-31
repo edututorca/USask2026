@@ -50,3 +50,14 @@ function logout() {
     nameEl.textContent = name;
     profileMenu.parentNode.insertBefore(nameEl, profileMenu);
 })();
+
+// Make logo clickable — link to dashboard on all pages
+(function() {
+    const logo = document.querySelector('.logo-container .logo');
+    if (logo && !logo.closest('a')) {
+        const link = document.createElement('a');
+        link.href = 'dashboard.html';
+        logo.parentNode.insertBefore(link, logo);
+        link.appendChild(logo);
+    }
+})();

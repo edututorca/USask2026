@@ -94,7 +94,7 @@ function generateQuizRow(quiz) {
                     <div class="quiz-stat"><strong>${quiz.question_count || 0}</strong> questions</div>
                     <div class="quiz-stat"><strong>${quiz.total_points || 0}</strong> points</div>
                     <div class="quiz-stat">${formatDate(quiz.created_at)}</div>
-                    <span class="status-badge status-${statusClass}">${statusLabel}</span>
+                    <button class="status-badge status-${statusClass}" onclick="event.stopPropagation(); togglePublish(${quiz.id}, ${quiz.is_public ? 0 : 1})" title="Click to ${quiz.is_public ? 'unpublish' : 'publish'}">${statusLabel}</button>
                 </div>
             </div>
             
@@ -171,6 +171,19 @@ async function deleteQuiz(quizId, quizName) {
             alert('Quiz deleted successfully!');
             loadQuizzes();
         } catch (error) { console.error('Error:', error); alert('Failed to delete quiz.'); }
+    }
+}
+
+async function togglePublish(quizId, newStatus) {
+    try {
+        await apiRequest(`${API_CONFIG.ENDPOINTS.QUIZZES}/${quizId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ is_public: newStatus })
+        });
+        loadQuizzes(); // Refresh the list
+    } catch (error) {
+        console.error('Error toggling publish:', error);
+        alert('Failed to update quiz status.');
     }
 }
 

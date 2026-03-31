@@ -63,6 +63,15 @@
                 html+='</div>';
             }
             sidebarCourses.innerHTML=html;
+
+            // Auto-select first course so the page never looks empty
+            const firstSubject = sidebarCourses.querySelector('.subject-item');
+            if (firstSubject) {
+                const key = firstSubject.dataset.subjectName.toLowerCase().replace(/\s+/g, '-');
+                toggleSidebarSubject(firstSubject, key);
+                const firstCourse = document.querySelector('#children-' + key + ' .course-item');
+                if (firstCourse) selectSidebarCourse(firstCourse);
+            }
         }catch(err){ console.error('Failed to load sidebar:',err); sidebarCourses.innerHTML='<div class="sidebar-loading">Failed to load courses</div>'; }
     }
 
@@ -249,7 +258,7 @@
 
     function renderQuestions(){
         if(questions.length===0){
-            questionList.innerHTML='<div class="prompt-state"><div class="prompt-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="13" cy="13" r="10"/><path d="M9 9h.01M17 9h.01M9 16c1.5 1.5 5.5 1.5 7 0"/></svg></div><h3>No questions here yet</h3><p>Create questions manually or generate them with AI to get started.</p></div>';
+            questionList.innerHTML='<div class="prompt-state"><div class="prompt-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="13" cy="13" r="10"/><path d="M9 9h.01M17 9h.01M9 16c1.5 1.5 5.5 1.5 7 0"/></svg></div><h3>No questions here yet</h3><p>Create questions manually or generate them with AI to get started.</p><div style="display:flex;gap:10px;justify-content:center;margin-top:16px;"><button class="btn btn-outline" onclick="openCreatePanel()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg> Create Question</button><button class="btn btn-primary" onclick="openAIPanel()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg> Generate with AI</button></div></div>';
             return;
         }
         questionList.innerHTML=questions.map((q,idx)=>{
@@ -278,8 +287,36 @@
             let metaParts=['<span class="q-badge '+typeClass+'">'+esc(typeLabel)+'</span>'];
             if(q.topic) metaParts.push('<span class="q-meta-dot">·</span><span class="q-meta-text">'+esc(q.topic)+'</span>');
             if(q.difficulty) metaParts.push('<span class="q-meta-dot">·</span><span class="q-meta-text">'+esc(q.difficulty)+'</span>');
-            return '<div class="q-card" data-id="'+q.id+'" style="animation-delay:'+Math.min(idx*0.02,0.2)+'s"><input type="checkbox" class="checkbox" data-id="'+q.id+'" onchange="onQuestionCheck(this)"><div class="q-body"><div class="q-text">'+esc(q.question_text)+'</div><div class="q-meta">'+metaParts.join('')+'</div>'+optionsHtml+'</div><div class="q-actions"><button class="q-action-btn" title="Edit" onclick="editQuestion('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 1.5l2 2L5 10H3V8z"/></svg></button><button class="q-action-btn" title="Add to Quiz" onclick="addQuestionToQuiz('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6.5h7M6.5 3v7"/></svg></button><button class="q-action-btn danger" title="Delete" onclick="deleteQuestion('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3.5h9M4.5 3.5V2.5h4v1M3.5 3.5v7a1 1 0 001 1h4a1 1 0 001-1v-7"/></svg></button></div></div>';
+            return '<div class="q-card" data-id="'+q.id+'" style="animation-delay:'+Math.min(idx*0.02,0.2)+'s"><div class="q-drag-handle" title="Drag to reorder"><svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="4" r="1" fill="currentColor"/><circle cx="5" cy="9" r="1" fill="currentColor"/><circle cx="5" cy="14" r="1" fill="currentColor"/><circle cx="11" cy="4" r="1" fill="currentColor"/><circle cx="11" cy="9" r="1" fill="currentColor"/><circle cx="11" cy="14" r="1" fill="currentColor"/></svg></div><input type="checkbox" class="checkbox" data-id="'+q.id+'" onchange="onQuestionCheck(this)"><div class="q-body"><div class="q-text">'+esc(q.question_text)+'</div><div class="q-meta">'+metaParts.join('')+'</div>'+optionsHtml+'</div><div class="q-actions"><button class="q-action-btn" title="Edit" onclick="editQuestion('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 1.5l2 2L5 10H3V8z"/></svg></button><button class="q-action-btn" title="Add to Quiz" onclick="addQuestionToQuiz('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6.5h7M6.5 3v7"/></svg></button><button class="q-action-btn danger" title="Delete" onclick="deleteQuestion('+q.id+')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3.5h9M4.5 3.5V2.5h4v1M3.5 3.5v7a1 1 0 001 1h4a1 1 0 001-1v-7"/></svg></button></div></div>';
         }).join('');
+        initSortable();
+    }
+
+    // === SORTABLE DRAG-DROP ===
+    let sortableInstance = null;
+    function initSortable() {
+        if (typeof Sortable === 'undefined') return;
+        if (sortableInstance) sortableInstance.destroy();
+        if (questions.length === 0) return;
+
+        sortableInstance = new Sortable(questionList, {
+            animation: 150,
+            handle: '.q-drag-handle',
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: function() {
+                // Update local questions array to match new DOM order
+                const cards = questionList.querySelectorAll('.q-card');
+                const newQuestions = [];
+                cards.forEach(card => {
+                    const id = parseInt(card.dataset.id);
+                    const q = questions.find(x => x.id === id);
+                    if (q) newQuestions.push(q);
+                });
+                questions = newQuestions;
+                showToast('Order updated!');
+            }
+        });
     }
 
     // === QUESTION ACTIONS ===
@@ -498,6 +535,55 @@
         document.getElementById('createQText').focus();
     };
 
+    // === QUESTION SUGGESTIONS (auto-complete in create panel) ===
+    (function() {
+        const input = document.getElementById('createQText');
+        if (!input) return;
+
+        input.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            const container = document.getElementById('createQSuggestions');
+            if (!container) return;
+            if (val.length < 3) { container.classList.add('hidden'); return; }
+
+            const matches = questions.filter(q =>
+                (q.question_text || '').toLowerCase().includes(val)
+            ).slice(0, 5);
+
+            if (matches.length === 0) { container.classList.add('hidden'); return; }
+
+            container.innerHTML = matches.map(q =>
+                '<div class="suggestion-item" onclick="selectCreateQSuggestion('+q.id+')">'+
+                    '<div class="s-text">'+esc(q.question_text)+'</div>'+
+                    '<div class="s-meta">'+(TYPE_LABELS[q.question_type]||q.question_type)+' • '+(q.difficulty||'Medium')+'</div>'+
+                '</div>'
+            ).join('');
+            container.classList.remove('hidden');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.edit-field')) {
+                const sugg = document.getElementById('createQSuggestions');
+                if (sugg) sugg.classList.add('hidden');
+            }
+        });
+    })();
+
+    window.selectCreateQSuggestion = function(qId) {
+        const q = questions.find(x => x.id === qId);
+        if (!q) return;
+        document.getElementById('createQText').value = q.question_text;
+        document.getElementById('createQType').value = q.question_type || 'multiple_choice';
+        document.getElementById('createQDifficulty').value = (q.difficulty || 'medium').toLowerCase();
+        createTypeChanged();
+        if (q.options && q.options.length > 0) {
+            const list = document.getElementById('createOptionsList');
+            list.innerHTML = '';
+            q.options.forEach(opt => addCreateOptionRow(opt.option_text, opt.is_correct));
+        }
+        document.getElementById('createQSuggestions').classList.add('hidden');
+    };
+
     window.closeCreatePanel = function() {
         const panel = document.getElementById('createPanel');
         const overlay = document.getElementById('createPanelOverlay');
@@ -633,6 +719,258 @@
             const panel = document.getElementById('createPanel');
             if (panel && !panel.classList.contains('hidden')) {
                 closeCreatePanel();
+                return;
+            }
+        }
+    });
+
+    // === AI GENERATION SIDE PANEL ===
+
+    let aiGenerated = [];
+
+    // Wire type checkboxes
+    document.querySelectorAll('input[name="aiTypes"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const countInput = this.closest('.ai-panel-type-row').querySelector('.ai-panel-count');
+            countInput.disabled = !this.checked;
+            if (this.checked && parseInt(countInput.value) < 1) countInput.value = 3;
+            if (!this.checked) countInput.value = 0;
+        });
+    });
+
+    window.openAIPanel = function() {
+        if (!currentSubjectId) { alert('Please select a course first.'); return; }
+
+        const panel = document.getElementById('aiPanel');
+        const overlay = document.getElementById('aiPanelOverlay');
+
+        // Set location
+        const ctx = getCurrentContext();
+        const pathEl = document.getElementById('aiPanelPath');
+        if (ctx.subjectName && ctx.path) {
+            pathEl.textContent = ctx.subjectName + ' > ' + ctx.path;
+        } else if (ctx.subjectName) {
+            pathEl.textContent = ctx.subjectName;
+        } else {
+            pathEl.textContent = 'Current subject';
+        }
+
+        // Reset to config view
+        showAIConfig();
+        aiGenerated = [];
+
+        overlay.classList.remove('hidden');
+        panel.classList.remove('hidden');
+        requestAnimationFrame(() => { panel.classList.add('open'); });
+    };
+
+    window.closeAIPanel = function() {
+        const panel = document.getElementById('aiPanel');
+        const overlay = document.getElementById('aiPanelOverlay');
+        panel.classList.remove('open');
+        setTimeout(() => {
+            panel.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }, 300);
+    };
+
+    window.showAIConfig = function() {
+        document.getElementById('aiConfigSection').classList.remove('hidden');
+        document.getElementById('aiResultsSection').classList.add('hidden');
+    };
+
+    window.generateFromPanel = async function() {
+        const ctx = getCurrentContext();
+        const grade = document.getElementById('aiGradeSelect').value;
+        const customPrompt = document.getElementById('aiCustomPrompt').value.trim();
+
+        // Gather types
+        const typeEntries = [];
+        document.querySelectorAll('input[name="aiTypes"]:checked').forEach(cb => {
+            const count = parseInt(cb.closest('.ai-panel-type-row').querySelector('.ai-panel-count').value) || 0;
+            if (count > 0) typeEntries.push({ type: cb.value, count: count });
+        });
+
+        if (typeEntries.length === 0) {
+            alert('Select at least one question type and set a count.');
+            return;
+        }
+
+        const btn = document.getElementById('aiGenerateBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="ai-panel-spinner"></span> Generating...';
+
+        // Build topic from context path
+        const subjectName = ctx.subjectName || 'General';
+        const topic = ctx.path || subjectName;
+
+        try {
+            const response = await apiRequest('/ai/generate', {
+                method: 'POST',
+                body: JSON.stringify({
+                    subject: subjectName,
+                    topic: topic,
+                    subtopic: '',
+                    grade: grade,
+                    types: typeEntries,
+                    customPrompt: customPrompt
+                })
+            });
+
+            aiGenerated = (response.questions || []).map((q, i) => ({
+                ...q,
+                keep: false,
+                index: i
+            }));
+
+            renderAIResults();
+
+            // Switch to results view
+            document.getElementById('aiConfigSection').classList.add('hidden');
+            document.getElementById('aiResultsSection').classList.remove('hidden');
+
+        } catch (e) {
+            console.error('AI generation failed:', e);
+            alert('Failed to generate questions. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg> Generate';
+        }
+    };
+
+    function renderAIResults() {
+        const list = document.getElementById('aiResultsList');
+        const countEl = document.getElementById('aiResultsCount');
+        const typeLabels = { MCQ: 'Multiple Choice', TF: 'True / False', SA: 'Short Answer', LA: 'Essay' };
+
+        countEl.textContent = aiGenerated.length + ' question' + (aiGenerated.length !== 1 ? 's' : '') + ' generated';
+
+        list.innerHTML = aiGenerated.map((q, i) => {
+            let optionsHtml = '';
+            if (q.options && q.options.length > 0 && (q.type === 'MCQ' || q.type === 'TF')) {
+                const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                optionsHtml = '<div class="ai-panel-result-options">';
+                q.options.forEach((opt, j) => {
+                    const letter = q.type === 'TF' ? (j === 0 ? 'T' : 'F') : letters[j];
+                    const correct = opt.correct ? ' correct' : '';
+                    optionsHtml += '<div class="ai-panel-result-option' + correct + '"><strong>' + letter + '</strong> ' + esc(opt.text) + '</div>';
+                });
+                optionsHtml += '</div>';
+            }
+
+            return '<div class="ai-panel-result ' + (q.keep ? 'kept' : '') + '" data-index="' + i + '">' +
+                '<div class="ai-panel-result-text">' + esc(q.text) + '</div>' +
+                optionsHtml +
+                '<div class="ai-panel-result-meta">' +
+                    '<span class="ai-panel-result-badge">' + esc(typeLabels[q.type] || q.type) + '</span>' +
+                    '<button class="ai-panel-toggle-btn ' + (q.keep ? 'discard' : 'keep') + '" onclick="toggleAIKeep(' + i + ')">' +
+                        (q.keep ? 'Discard' : 'Keep') +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        updateAISaveBtn();
+    }
+
+    window.toggleAIKeep = function(index) {
+        aiGenerated[index].keep = !aiGenerated[index].keep;
+        renderAIResults();
+    };
+
+    function updateAISaveBtn() {
+        const kept = aiGenerated.filter(x => x.keep).length;
+        const btn = document.getElementById('aiSaveBtn');
+        btn.disabled = kept === 0;
+        btn.textContent = kept > 0 ? 'Add ' + kept + ' to Question Bank' : 'Add to Question Bank';
+    }
+
+    window.discardAIResults = function() {
+        if (!confirm('Discard all generated questions?')) return;
+        aiGenerated = [];
+        showAIConfig();
+    };
+
+    window.saveAIResults = async function() {
+        const kept = aiGenerated.filter(x => x.keep);
+        if (kept.length === 0) return;
+
+        const btn = document.getElementById('aiSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        const ctx = getCurrentContext();
+        const typeMap = { MCQ: 'multiple_choice', TF: 'true_false', SA: 'short_answer', LA: 'essay' };
+        let savedCount = 0;
+
+        try {
+            for (const q of kept) {
+                const dbType = typeMap[q.type] || 'short_answer';
+                const body = {
+                    questionText: q.text,
+                    questionType: dbType,
+                    difficulty: 'medium',
+                    subjectId: currentSubjectId,
+                    grade: document.getElementById('aiGradeSelect').value || 10,
+                    topic: ctx.path || '',
+                    nodeId: ctx.nodeId || null,
+                    userId: getCurrentUserId() || 1
+                };
+
+                if (q.options && q.options.length > 0) {
+                    body.options = q.options.map(o => ({ text: o.text, isCorrect: !!o.correct }));
+                }
+
+                if (q.type === 'MCQ' && q.options && q.options.length >= 4) {
+                    body.optionA = q.options[0]?.text || '';
+                    body.optionB = q.options[1]?.text || '';
+                    body.optionC = q.options[2]?.text || '';
+                    body.optionD = q.options[3]?.text || '';
+                    const correct = q.options.find(o => o.correct);
+                    body.correctAnswer = correct ? correct.text : body.optionA;
+                } else if (q.type === 'TF') {
+                    body.optionA = 'True';
+                    body.optionB = 'False';
+                    const correct = q.options.find(o => o.correct);
+                    body.correctAnswer = correct ? correct.text : 'True';
+                }
+
+                await apiRequest('/questions', {
+                    method: 'POST',
+                    body: JSON.stringify(body)
+                });
+                savedCount++;
+            }
+
+            // Remove saved from list
+            aiGenerated = aiGenerated.filter(x => !x.keep);
+
+            closeAIPanel();
+            showToast('Added ' + savedCount + ' question' + (savedCount !== 1 ? 's' : '') + ' to the bank!');
+
+            // Reload questions so new ones appear
+            loadQuestions();
+
+        } catch (e) {
+            console.error('Save failed:', e);
+            if (savedCount > 0) {
+                showToast('Saved ' + savedCount + ', but some failed.');
+                loadQuestions();
+            } else {
+                alert('Failed to save questions.');
+            }
+        } finally {
+            btn.disabled = false;
+            updateAISaveBtn();
+        }
+    };
+
+    // Close AI panel on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const panel = document.getElementById('aiPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                closeAIPanel();
                 return;
             }
         }

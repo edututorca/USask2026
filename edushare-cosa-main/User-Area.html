@@ -84,10 +84,10 @@
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
                     Create Question
                 </button>
-                <a href="ai-question-creator.html" class="btn btn-primary" id="btnAITop">
+                <button class="btn btn-primary" id="btnAITop" onclick="openAIPanel()">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
                     Generate with AI
-                </a>
+                </button>
             </div>
         </div>
 
@@ -248,9 +248,10 @@
         <form id="createQuestionForm" onsubmit="saveNewQuestion(event)">
 
             <!-- Question Text -->
-            <div class="edit-field">
+            <div class="edit-field" style="position:relative;">
                 <label class="edit-label">Question Text <span style="color:var(--error)">*</span></label>
                 <textarea class="edit-textarea" id="createQText" rows="3" required placeholder="Enter your question..."></textarea>
+                <div id="createQSuggestions" class="suggestions-list hidden"></div>
             </div>
 
             <!-- Type + Difficulty -->
@@ -292,6 +293,87 @@
     </div>
 </div>
 
+<!-- AI Generation Side Panel -->
+<div class="side-panel-overlay hidden" id="aiPanelOverlay" onclick="closeAIPanel()"></div>
+<div class="side-panel side-panel-wide hidden" id="aiPanel">
+    <div class="side-panel-header">
+        <h2>Generate with AI</h2>
+        <button class="modal-close" onclick="closeAIPanel()">&times;</button>
+    </div>
+
+    <div class="side-panel-location" id="aiPanelLocation">
+        <span class="side-panel-location-label">Generating for:</span>
+        <span class="side-panel-location-path" id="aiPanelPath">Select a location first</span>
+    </div>
+
+    <div class="side-panel-body">
+        <!-- Config Section -->
+        <div id="aiConfigSection">
+            <div class="edit-field">
+                <label class="edit-label">Grade Level</label>
+                <select class="edit-select" id="aiGradeSelect">
+                    <option value="9">Grade 9</option>
+                    <option value="10" selected>Grade 10</option>
+                    <option value="11">Grade 11</option>
+                    <option value="12">Grade 12</option>
+                </select>
+            </div>
+
+            <div class="edit-field">
+                <label class="edit-label">Question Types & Counts</label>
+                <div class="ai-panel-types">
+                    <label class="ai-panel-type-row">
+                        <input type="checkbox" name="aiTypes" value="MCQ" checked>
+                        <span>Multiple Choice</span>
+                        <input type="number" class="ai-panel-count" data-type="MCQ" value="3" min="1" max="10">
+                    </label>
+                    <label class="ai-panel-type-row">
+                        <input type="checkbox" name="aiTypes" value="TF">
+                        <span>True / False</span>
+                        <input type="number" class="ai-panel-count" data-type="TF" value="0" min="1" max="10" disabled>
+                    </label>
+                    <label class="ai-panel-type-row">
+                        <input type="checkbox" name="aiTypes" value="SA">
+                        <span>Short Answer</span>
+                        <input type="number" class="ai-panel-count" data-type="SA" value="0" min="1" max="10" disabled>
+                    </label>
+                    <label class="ai-panel-type-row">
+                        <input type="checkbox" name="aiTypes" value="LA">
+                        <span>Essay</span>
+                        <input type="number" class="ai-panel-count" data-type="LA" value="0" min="1" max="5" disabled>
+                    </label>
+                </div>
+            </div>
+
+            <div class="edit-field">
+                <label class="edit-label">Additional Instructions <span style="color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:500;">(optional)</span></label>
+                <textarea class="edit-textarea" id="aiCustomPrompt" rows="2" placeholder="e.g. Focus on character motivations, include vocabulary..."></textarea>
+            </div>
+
+            <div class="side-panel-actions">
+                <button type="button" class="btn btn-outline" onclick="closeAIPanel()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="aiGenerateBtn" onclick="generateFromPanel()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
+                    Generate
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section (hidden until generated) -->
+        <div id="aiResultsSection" class="hidden">
+            <div class="ai-panel-results-header">
+                <span class="edit-label" id="aiResultsCount">0 questions generated</span>
+                <button class="btn btn-outline btn-sm" onclick="showAIConfig()">Generate More</button>
+            </div>
+            <div id="aiResultsList" class="ai-panel-results-list"></div>
+            <div class="side-panel-actions">
+                <button type="button" class="btn btn-outline" onclick="discardAIResults()">Discard All</button>
+                <button type="button" class="btn btn-primary" id="aiSaveBtn" onclick="saveAIResults()">Add to Question Bank</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Success Toast -->
 <div class="toast hidden" id="successToast">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
@@ -305,10 +387,10 @@
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="3" x2="7" y2="11"/><line x1="3" y1="7" x2="11" y2="7"/></svg>
             Create Question
         </button>
-        <a href="ai-question-creator.html" class="btn-bar outline" id="btnAIBottom">
+        <button class="btn-bar outline" id="btnAIBottom" onclick="openAIPanel()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1L1 4l6 3 6-3-6-3z"/><path d="M1 10l6 3 6-3"/></svg>
             Generate with AI
-        </a>
+        </button>
     </div>
     <div class="action-bar-right">
         <div class="sel-group hidden" id="selGroup">
@@ -321,6 +403,7 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="js/api-config.js"></script>
 <script src="js/question-bank.js"></script>
 
