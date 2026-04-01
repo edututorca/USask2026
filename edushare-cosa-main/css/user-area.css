@@ -25,7 +25,7 @@
     --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(23,50,95,0.06), 0 4px 12px rgba(23,50,95,0.04);
     --shadow-lg: 0 4px 20px rgba(23,50,95,0.1);
-    --topbar-h: 60px;
+    --topbar-h: 70px;
     --sidebar-w: 260px;
     --actionbar-h: 52px;
 }
@@ -51,8 +51,10 @@ body {
 }
 
 .top-bar-left { display: flex; align-items: center; }
+.logo-container { display: flex; align-items: center; gap: 12px; }
 .logo-link { display: flex; align-items: center; text-decoration: none; }
-.logo { height: 36px; border-radius: 6px; }
+.logo { height: 44px; width: 44px; object-fit: cover; object-position: center; border-radius: 10px; }
+.logo-text { font-size: 1.35rem; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
 
 .top-bar-right { display: flex; align-items: center; gap: 12px; }
 
