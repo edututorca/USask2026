@@ -782,6 +782,7 @@
     window.generateFromPanel = async function() {
         const ctx = getCurrentContext();
         const grade = document.getElementById('aiGradeSelect').value;
+        const bloomsLevel = document.getElementById('aiBloomsSelect').value;
         const customPrompt = document.getElementById('aiCustomPrompt').value.trim();
 
         // Gather types
@@ -812,6 +813,7 @@
                     topic: topic,
                     subtopic: '',
                     grade: grade,
+                    bloomsLevel: bloomsLevel,
                     types: typeEntries,
                     customPrompt: customPrompt
                 })

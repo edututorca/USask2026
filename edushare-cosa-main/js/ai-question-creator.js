@@ -226,6 +226,7 @@
         const subjectName = subjectSelect.options[subjectSelect.selectedIndex].text;
         const topic = getTopicString();
         const grade = gradeSelect.value;
+        const bloomsLevel = document.getElementById('bloomsSelect').value;
         const customPrompt = customPromptEl.value.trim();
 
         btnGenerate.disabled = true;
@@ -242,6 +243,7 @@
                     topic: topic || subjectName,
                     subtopic: '',
                     grade: grade,
+                    bloomsLevel: bloomsLevel,
                     types: typeEntries,
                     customPrompt: customPrompt
                 })
