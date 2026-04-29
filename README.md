@@ -1,125 +1,108 @@
 # EduShare
 
-EduShare is a web-based educational platform that uses a MySQL database, a Node.js backend API, and a frontend served through a local web server.
-
-This document explains how to set up and run the project locally.
+A web platform for educators to create, organize, and share quiz questions, with AI-powered question generation.
 
 ---
 
-## Prerequisites
+## Tech Stack
 
-Before starting, make sure you have the following installed:
-
-* Node.js (v18 or later recommended)
-* npm (comes with Node.js)
-* MySQL Server
-* MySQL Workbench
-* Visual Studio Code (recommended)
+- **Frontend:** Vanilla HTML / CSS / JavaScript (no framework)
+- **Backend:** Node.js + Express
+- **Database:** MySQL 8
+- **AI:** OpenAI GPT-4o mini (via the `openai` npm package)
+- **Auth:** bcrypt for password hashing
 
 ---
 
-## 1. Database Setup (MySQL)
-
-Before running the application, the database must be created and populated.
-
-1. Open **MySQL Workbench**.
-2. Open the file **`database-schema-updated.sql`**, located in the root folder of the project.
-3. Click the **Execute** button (lightning bolt icon).
-4. This will:
-
-   * Create the required tables
-   * Insert the initial data
-
----
-
-## 2. Backend Setup (API)
-
-The backend API is responsible for communicating with the MySQL database and serving data to the frontend.
-
-1. Open **Visual Studio Code**.
-2. Open a terminal (`Ctrl + '`).
-3. Navigate to the API folder:
-
-   ```bash
-   cd edushare-api
-   ```
-4. If this is your first time running the project, install dependencies:
-
-   ```bash
-   npm install
-   ```
-5. Start the API server:
-
-   ```bash
-   npm start
-   ```
-
-If the setup is successful, you should see a message similar to:
+## Project Structure
 
 ```
-Server running on port 3000
+EduShare/
+├── frontend/              ← all HTML, CSS, JS, and images
+│   ├── *.html             ← every page lives at the top level
+│   ├── css/
+│   ├── js/
+│   └── assets/
+├── backend/               ← Express server + AI routes
+│   ├── server.js          ← main server (all DB routes inline)
+│   ├── ai-routes.js       ← /api/ai/generate endpoint
+│   ├── _env.template      ← copy to .env and fill in
+│   └── package.json
+├── database/
+│   ├── schema.sql         ← create tables
+│   └── seed.sql           ← demo data (subjects, questions, etc.)
+├── README.md
+└── backendReference.md    ← detailed API and DB reference
 ```
 
 ---
 
-## 3. Frontend Setup (Website)
+## Quick Start
 
-Because the project uses modern JavaScript modules and file paths, the frontend must be served through a web server.
+### 1. Set up the database
 
-1. Open a **second terminal** in VS Code.
-2. Navigate to the frontend folder:
+Make sure MySQL is installed and running, then:
 
-   ```bash
-   cd edushare-cosa-main
-   ```
-3. Start a local web server:
-
-   ```bash
-   npx -y http-server -p 8080
-   ```
-4. The frontend will be available at:
-
-   ```
-   http://127.0.0.1:8080
-   ```
-
----
-
-## 4. Running the Application
-
-1. Make sure **both terminals are running**:
-
-   * Backend API (`npm start`)
-   * Frontend server (`http-server`)
-2. Open your browser.
-3. Go to:
-
-   ```
-   http://127.0.0.1:8080/home.html
-   ```
-4. Navigate to **`User-Area.html`** from the site.
-
----
-
-## Quick Command Reference
-
-```md
-| Component   | Folder               | Command                     |
-|------------|----------------------|-----------------------------|
-| Backend API | edushare-api         | npm start                   |
-| Frontend    | edushare-cosa-main   | npx http-server -p 8080     |
+```bash
+mysql -u root -p < database/schema.sql
+mysql -u root -p edushare < database/seed.sql
 ```
+
+You'll also want to create a database user the backend can use:
+
+```sql
+CREATE USER 'edushare_user'@'localhost' IDENTIFIED BY 'edushare_pass';
+GRANT ALL PRIVILEGES ON edushare.* TO 'edushare_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### 2. Set up the backend
+
+```bash
+cd backend
+npm install
+cp _env.template .env
+```
+
+Then open `.env` and fill in your values. The two important ones:
+
+- **Database credentials** — match whatever you set up in step 1
+- **`OPENAI_API_KEY`** — get one at https://platform.openai.com/api-keys (required for AI question generation; without it, the backend falls back to mock questions)
+
+Start the server:
+
+```bash
+node server.js
+```
+
+You should see something like `Server running on port 3000`.
+
+### 3. Serve the frontend
+
+The `frontend/` folder is just static files — any local web server works. A few options:
+
+- VS Code's **Live Server** extension
+- `npx http-server frontend/ -p 8080`
+- `python3 -m http.server 8080` (run from inside `frontend/`)
+
+Then visit the URL it gives you and open `Login.html`.
+
+### 4. Point the frontend at your backend
+
+If your backend isn't on `localhost:3000`, edit `frontend/js/api-config.js` and change the `BASE_URL` value at the top. Comments in that file explain the options.
+
+### 5. Log in
+
+Demo account in the seed data:
+
+- **Email:** teacher@example.com
+- **Password:** demo123
 
 ---
 
 ## Notes
 
-* Do not open HTML files by double-clicking them.
-* Always start the backend before using the frontend.
-* Ensure MySQL is running before starting the API.
-
----
-
-## Author / Project
-
-Daniel Maia – Academic Project
+- The backend's `server.js` is one big monolithic file with all the routes inline. Not pretty, but it works. If someone wants to break it into modules later, that'd be a nice cleanup.
+- The AI generation endpoint (`/api/ai/generate`) gracefully falls back to mock questions if `OPENAI_API_KEY` isn't set — useful for development.
+- Don't commit `.env` files. The `.gitignore` is set up to keep them out.
+- See `backendReference.md` for full API documentation and database schema details.
