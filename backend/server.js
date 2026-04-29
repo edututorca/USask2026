@@ -162,6 +162,30 @@ app.get('/api/subjects', async (req, res) => {
     }
 });
 
+//=========================create new subject
+
+// Create new subject
+app.post('/api/subjects', async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name || !name.trim()) {
+            return res.status(400).json({ error: 'Subject name is required' });
+        }
+        const [result] = await db.execute(
+            'INSERT INTO subjects (name) VALUES (?)',
+            [name.trim()]
+        );
+        res.json({ success: true, id: result.insertId, name: name.trim() });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ error: 'Subject already exists' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+});
+
+
 // ============ COURSES ROUTE (uses subjects) ============
 
 app.get('/api/courses', async (req, res) => {
@@ -394,7 +418,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
     try {
         const userId = req.query.userId || 1;
 
-        const [subjectRows] = await db.execute("SELECT COUNT(*) AS total FROM subjects");
+        const [subjectRows] = await db.execute("SELECT COUNT(*) AS total FROM user_courses WHERE user_id = ?", [userId]);
         const [quizRows] = await db.execute(
             "SELECT COUNT(*) AS total FROM quizzes WHERE user_id = ?", [userId]
         );
@@ -425,7 +449,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
 // Get all questions (with optional filters — now supports node_id)
 app.get('/api/questions', async (req, res) => {
     try {
-        const { userId, subjectId, grade, nodeId } = req.query;
+        const { userId, subjectId, grade, nodeId, nodeIdExact } = req.query;
         let query = `
             SELECT q.*, s.name as subject_name
             FROM questions q
@@ -459,6 +483,11 @@ app.get('/api/questions', async (req, res) => {
             )`;
             params.push(nodeId);
         }
+if (nodeIdExact) {
+            query += ' AND q.node_id = ?';
+            params.push(nodeIdExact);
+        }
+
 
         query += ' ORDER BY q.created_at DESC';
 
@@ -515,6 +544,42 @@ app.post('/api/questions', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+// Update question
+app.put('/api/questions/:id', async (req, res) => {
+    try {
+        const { questionText, questionType, difficulty, optionA, optionB, optionC, optionD, correctAnswer, options } = req.body;
+        const questionId = req.params.id;
+
+        await db.execute(
+            `UPDATE questions SET question_text=?, question_type=?, difficulty=?,
+             option_a=?, option_b=?, option_c=?, option_d=?, correct_answer=?
+             WHERE id=?`,
+            [questionText, questionType, difficulty || 'medium',
+             optionA || null, optionB || null, optionC || null, optionD || null, correctAnswer || null,
+             questionId]
+        );
+
+        // Update question_options if provided
+        if (options && Array.isArray(options)) {
+            await db.execute('DELETE FROM question_options WHERE question_id = ?', [questionId]);
+            for (let i = 0; i < options.length; i++) {
+                const opt = options[i];
+                await db.execute(
+                    'INSERT INTO question_options (question_id, option_text, is_correct, sort_order) VALUES (?, ?, ?, ?)',
+                    [questionId, opt.text || opt.option_text, opt.isCorrect || opt.is_correct ? 1 : 0, i]
+                );
+            }
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 
 // Delete question
 app.delete('/api/questions/:id', async (req, res) => {
