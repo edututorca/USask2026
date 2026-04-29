@@ -100,6 +100,14 @@ Demo account in the seed data:
 
 ---
 
+## Known Issues / Quirks
+
+- **Demo account password is plain text.** The backend supports bcrypt comparison, but the seed data stores `demo123` as plain text. Production use should hash all passwords.
+- **Old questions use legacy schema.** A handful of seed questions use the original `topic` + `option_a-d` columns. Newer questions use `node_id` + the `question_options` table. Both are supported, but consolidating would simplify the codebase.
+- **Add Course "New Subject" uses a browser prompt.** The "Add New Subject" flow on the Add Course page uses the native browser `prompt()` dialog. Functional but inconsistent with the rest of the UI.
+
+---
+
 ## Notes
 
 - The backend's `server.js` is one big monolithic file with all the routes inline. Not pretty, but it works. If someone wants to break it into modules later, that'd be a nice cleanup.
